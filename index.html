@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>みーなグルメ｜サンプルHP一覧</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf9f6;
+      --card: #ffffff;
+      --text: #2c2820;
+      --muted: #8a7a66;
+      --border: #e8e0d8;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans JP', sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #2c2820;
+      color: #fff;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    .header-label {
+      font-size: .65rem;
+      letter-spacing: .35em;
+      text-transform: uppercase;
+      color: #c8a060;
+      margin-bottom: .6rem;
+    }
+    .header-title {
+      font-family: 'Noto Serif JP', serif;
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: .1em;
+      margin-bottom: .5rem;
+    }
+    .header-sub {
+      font-size: .85rem;
+      color: rgba(255,255,255,.6);
+      letter-spacing: .1em;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 4rem 1.5rem;
+    }
+
+    .section-title {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1.8rem;
+      padding-bottom: .6rem;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+
+    .samples {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 4rem;
+    }
+
+    .sample-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: transform .25s, box-shadow .25s;
+      display: block;
+    }
+    .sample-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 28px rgba(44,40,32,.1);
+    }
+
+    .card-thumb {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .cafe-thumb    { background: linear-gradient(135deg, #c8e0c0, #a8cca0); }
+    .bistro-thumb  { background: linear-gradient(135deg, #f0c8c0, #d89090); }
+    .izakaya-thumb { background: linear-gradient(135deg, #4a3018, #2a1a0a); }
+    .teishoku-thumb{ background: linear-gradient(135deg, #f5dfc5, #e8c8a0); }
+    .koukyuu-thumb { background: linear-gradient(135deg, #201810, #100c08); }
+
+    .card-body { padding: 1.2rem 1.3rem 1.4rem; }
+    .card-tag {
+      font-size: .63rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .4rem;
+    }
+    .card-name {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: .4rem;
+    }
+    .card-desc {
+      font-size: .76rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .card-arrow {
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .72rem;
+      color: #c8a060;
+      font-weight: 700;
+      margin-top: .8rem;
+      letter-spacing: .05em;
+    }
+
+    .info-box {
+      background: #f5f0e8;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem 1.8rem;
+      font-size: .83rem;
+      color: var(--muted);
+      line-height: 2;
+    }
+    .info-box strong { color: var(--text); }
+
+    footer {
+      text-align: center;
+      padding: 2.5rem;
+      font-size: .72rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <p class="header-label">miiinagurume · WEB SAMPLES</p>
+  <h1 class="header-title">みーなグルメ サンプルHP</h1>
+  <p class="header-sub">飲食店カテゴリ別 ホームページサンプル一覧</p>
+</header>
+
+<main>
+  <h2 class="section-title">🍽️ 飲食店カテゴリ別 サンプル</h2>
+  <div class="samples">
+
+    <a href="WEB制作担当/サンプル/カフェ用/index.html" class="sample-card">
+      <div class="card-thumb cafe-thumb">☕</div>
+      <div class="card-body">
+        <p class="card-tag">Café</p>
+        <p class="card-name">カフェ用サンプル</p>
+        <p class="card-desc">自家焙煎コーヒー・スイーツ・ランチ。明るく居心地の良いカフェスタイル。</p>
+        <p class="card-arrow">サンプルを見る →</p>
+      </div>
+    </a>
+
+    <a href="WEB制作担当/サンプル/ビストロ用/index.html" class="sample-card">
+      <div class="card-thumb bistro-thumb">🍷</div>
+      <div class="card-body">
+        <p class="card-tag">Bistro</p>
+        <p class="card-name">ビストロ用サンプル</p>
+        <p class="card-desc">フレンチコース・ワイン・記念日対応。エレガントなビストロスタイル。</p>
+        <p class="card-arrow">サンプルを見る →</p>
+      </div>
+    </a>
+
+    <a href="WEB制作担当/サンプル/居酒屋用/index.html" class="sample-card">
+      <div class="card-thumb izakaya-thumb">🍺</div>
+      <div class="card-body">
+        <p class="card-tag">Izakaya</p>
+        <p class="card-name">居酒屋用サンプル</p>
+        <p class="card-desc">旬の一品料理・地酒・宴会対応。活気あるダーク系居酒屋スタイル。</p>
+        <p class="card-arrow">サンプルを見る →</p>
+      </div>
+    </a>
+
+    <a href="WEB制作担当/サンプル/定食屋用/index.html" class="sample-card">
+      <div class="card-thumb teishoku-thumb">🍱</div>
+      <div class="card-body">
+        <p class="card-tag">Teishoku</p>
+        <p class="card-name">定食屋用サンプル</p>
+        <p class="card-desc">日替わり定食・地元野菜・テイクアウト。温かみのある定食屋スタイル。</p>
+        <p class="card-arrow">サンプルを見る →</p>
+      </div>
+    </a>
+
+    <a href="WEB制作担当/サンプル/高級店用/index.html" class="sample-card">
+      <div class="card-thumb koukyuu-thumb">✨</div>
+      <div class="card-body">
+        <p class="card-tag">Fine Dining</p>
+        <p class="card-name">高級店用サンプル</p>
+        <p class="card-desc">懐石コース・ミシュラン掲載・完全予約制。ラグジュアリーな高級店スタイル。</p>
+        <p class="card-arrow">サンプルを見る →</p>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="info-box">
+    <strong>自動更新について</strong><br>
+    このページのファイルを編集して git push すると、<strong>約1〜2分</strong>でGitHub Pagesに自動反映されます。<br>
+    ファイルパス: <code>WEB制作担当/サンプル/（カテゴリ名）/index.html</code>
+  </div>
+</main>
+
+<footer>
+  © みーなグルメ · <a href="https://www.instagram.com/miiinagurume/" style="color:inherit">@miiinagurume</a>
+</footer>
+
+</body>
+</html>

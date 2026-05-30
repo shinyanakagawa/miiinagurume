@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="酒亭 ながれ｜○○市の居酒屋。旬の一品料理と地酒・クラフトビール。宴会・個室対応。深夜営業。">
+  <title>酒亭 ながれ｜居酒屋 サンプル（みーなグルメ制作）</title>
+  <meta property="og:type" content="restaurant">
+  <meta property="og:title" content="酒亭 ながれ｜○○市の居酒屋">
+  <meta property="og:locale" content="ja_JP">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#17150f; --bg-alt:#1d1b14; --bg-card:#231f17;
+      --ac:#c8921a; --ac-l:#e4b44a; --ac-dim:rgba(200,146,26,.18);
+      --cream:#f0e8d4; --muted:#a8987e;
+      --border:#2e2918; --border-a:rgba(200,146,26,.28);
+      --text:#f0e8d4; --r:12px; --ease:cubic-bezier(.4,0,.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;line-height:1.8;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+    img{display:block;max-width:100%} a{color:inherit;text-decoration:none}
+    .reveal{opacity:0;transform:translateY(24px);transition:opacity .65s var(--ease),transform .65s var(--ease)}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    .d1{transition-delay:.08s} .d2{transition-delay:.16s} .d3{transition-delay:.24s}
+    .label{display:block;font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ac);font-weight:600;margin-bottom:.5rem}
+    .heading{font-family:'Noto Serif JP',serif;font-size:clamp(1.45rem,5vw,2.2rem);font-weight:700;line-height:1.4;color:var(--cream)}
+    .divider{width:2rem;height:2px;background:var(--ac);border-radius:2px;margin:.9rem 0 1.6rem}
+
+    #header{position:fixed;inset:0 0 auto 0;z-index:500;padding:.85rem 1.4rem;display:flex;align-items:center;justify-content:space-between;transition:background .4s,border-bottom .4s}
+    #header.solid{background:rgba(23,21,15,.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--border-a)}
+    .logo{font-family:'Noto Serif JP',serif;font-size:1rem;font-weight:700;color:var(--cream);letter-spacing:.12em}
+    .logo em{font-style:normal;color:var(--ac-l)}
+    .hcta{display:inline-flex;align-items:center;gap:.35rem;background:var(--ac);color:#111;font-size:.76rem;font-weight:700;padding:.45rem 1rem;border-radius:100px;transition:background .2s}
+    .hcta:active{background:var(--ac-l)}
+
+    #hero{position:relative;height:100svh;min-height:560px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:5rem;overflow:hidden;text-align:center}
+    .hero-base{position:absolute;inset:0;background:radial-gradient(ellipse at 40% 30%,#3d2b0d 0%,#1c1508 50%,#17150f 100%)}
+    .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(200,146,26,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(200,146,26,.04) 1px,transparent 1px);background-size:44px 44px;pointer-events:none}
+    .hero-grad{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(23,21,15,.1) 0%,rgba(23,21,15,.55) 55%,rgba(23,21,15,.95) 85%,var(--bg) 100%)}
+    .hero-body{position:relative;padding:0 1.5rem}
+    .hero-badge{display:inline-block;border:1px solid var(--ac);color:var(--ac);font-size:.62rem;letter-spacing:.32em;padding:.3rem .9rem;margin-bottom:1.4rem;border-radius:2px}
+    .hero-name{font-family:'Noto Serif JP',serif;font-size:clamp(3rem,14vw,5.5rem);font-weight:700;line-height:1.1;letter-spacing:.12em;margin-bottom:.75rem;color:var(--cream)}
+    .hero-name em{font-style:normal;color:var(--ac-l)}
+    .hero-sub{font-size:.8rem;color:var(--muted);letter-spacing:.18em;margin-bottom:.55rem}
+    .hero-copy{font-family:'Noto Serif JP',serif;font-size:clamp(.95rem,3.5vw,1.2rem);letter-spacing:.1em;margin-bottom:2.5rem}
+    .hero-btns{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap}
+    .btn-p{display:inline-flex;align-items:center;gap:.45rem;background:var(--ac);color:#111;font-size:.88rem;font-weight:700;padding:.85rem 2rem;border-radius:100px;transition:background .25s,transform .2s}
+    .btn-p:active{background:var(--ac-l);transform:scale(.96)}
+    .btn-g{display:inline-flex;align-items:center;gap:.45rem;border:1.5px solid rgba(240,232,212,.3);color:var(--cream);font-size:.88rem;font-weight:500;padding:.85rem 1.75rem;border-radius:100px;transition:border-color .25s}
+    .btn-g:active{border-color:var(--ac);color:var(--ac-l)}
+    .hero-scroll{position:absolute;bottom:1.4rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.35rem;color:var(--muted);font-size:.6rem;letter-spacing:.22em;animation:nudge 2.2s ease-in-out infinite}
+    .hero-scroll::after{content:'';display:block;width:1px;height:28px;background:linear-gradient(to bottom,var(--muted),transparent)}
+    @keyframes nudge{0%,100%{transform:translateX(-50%) translateY(0)}55%{transform:translateX(-50%) translateY(6px)}}
+
+    .strip{background:var(--ac);color:#111;padding:1.2rem 1.5rem;overflow:hidden}
+    .strip ul{display:flex;gap:2.5rem;white-space:nowrap;animation:marquee 18s linear infinite;list-style:none}
+    .strip li{font-size:.82rem;letter-spacing:.12em;flex-shrink:0;display:flex;align-items:center;gap:.5rem;font-weight:600}
+    @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+    .sec{padding:5.5rem 1.5rem} .sec-alt{background:var(--bg-alt)}
+    .inner{max-width:660px;margin:0 auto} .sec-head{margin-bottom:2.6rem}
+
+    .concept-lead{font-family:'Noto Serif JP',serif;font-size:clamp(1rem,3.5vw,1.2rem);line-height:2;color:var(--cream);margin-bottom:1.2rem}
+    .concept-lead strong{color:var(--ac-l)}
+    .concept-body{font-size:.87rem;color:var(--muted);line-height:2;margin-bottom:2.2rem}
+    .pts{display:grid;grid-template-columns:1fr;gap:.9rem}
+    @media(min-width:540px){.pts{grid-template-columns:repeat(3,1fr)}}
+    .pt{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem 1.1rem;text-align:center;transition:border-color .3s}
+    .pt:hover{border-color:var(--border-a)}
+    .pt-ico{font-size:2rem;margin-bottom:.6rem;display:block}
+    .pt h3{font-family:'Noto Serif JP',serif;font-size:.92rem;font-weight:700;color:var(--cream);margin-bottom:.35rem}
+    .pt p{font-size:.77rem;color:var(--muted);line-height:1.75}
+
+    .banquet-cards{display:grid;gap:1rem}
+    @media(min-width:480px){.banquet-cards{grid-template-columns:1fr 1fr}}
+    .bc{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color .3s}
+    .bc:hover{border-color:var(--border-a)}
+    .bc-head{background:var(--ac);padding:1rem 1.2rem;color:#111}
+    .bc-name{font-family:'Noto Serif JP',serif;font-size:.95rem;font-weight:700}
+    .bc-price{font-size:.82rem;font-weight:600;margin-top:.15rem}
+    .bc-body{padding:1rem 1.2rem}
+    .bc-items{list-style:none;font-size:.78rem;color:var(--muted);line-height:2}
+    .bc-items li::before{content:'✓ ';color:var(--ac);font-weight:700}
+    .bc-note{font-size:.68rem;color:var(--muted);margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--border)}
+
+    .mtabs{display:flex;gap:.5rem;margin-bottom:1.8rem;overflow-x:auto;padding-bottom:2px}
+    .tbtn{flex-shrink:0;padding:.45rem 1.1rem;border-radius:100px;border:1.5px solid var(--border);font-size:.78rem;font-weight:600;color:var(--muted);background:transparent;cursor:pointer;transition:all .2s;font-family:inherit}
+    .tbtn.active{background:var(--ac);border-color:var(--ac);color:#111}
+    .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    @media(min-width:540px){.mgrid{grid-template-columns:repeat(3,1fr)}}
+    .mc{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:transform .3s,border-color .3s}
+    .mc:hover{transform:translateY(-3px);border-color:var(--border-a)}
+    .mthumb{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.3rem;font-size:.62rem;color:rgba(200,146,26,.55);letter-spacing:.1em}
+    .mthumb .ico{font-size:2.4rem}
+    .t1{background:linear-gradient(145deg,#4a2e08,#2a1a06)} .t2{background:linear-gradient(145deg,#3d1208,#280c08)}
+    .t3{background:linear-gradient(145deg,#163008,#0e2008)} .t4{background:linear-gradient(145deg,#0a1832,#080e20)}
+    .t5{background:linear-gradient(145deg,#342e08,#201c08)} .t6{background:linear-gradient(145deg,#2a0e2e,#1a0c20)}
+    .mi{padding:.8rem .9rem 1rem}
+    .mtag{display:inline-block;background:var(--ac-dim);color:var(--ac);font-size:.58rem;font-weight:700;letter-spacing:.1em;padding:.15rem .5rem;border-radius:3px;margin-bottom:.35rem}
+    .mn{font-family:'Noto Serif JP',serif;font-size:.88rem;font-weight:700;color:var(--cream);margin-bottom:.25rem;line-height:1.45}
+    .md{font-size:.7rem;color:var(--muted);line-height:1.65;margin-bottom:.5rem}
+    .mp{font-size:.9rem;color:var(--ac-l);font-weight:700}
+    .mp span{font-size:.65rem;font-weight:400}
+    .mnote{text-align:center;margin-top:1.4rem;font-size:.74rem;color:var(--muted)}
+
+    .ggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin:0 -1.5rem}
+    .gi{aspect-ratio:1;overflow:hidden}
+    .gp{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.2rem;transition:transform .4s}
+    .gi:hover .gp{transform:scale(1.08)}
+    .g1{background:linear-gradient(160deg,#302010,#180f08)} .g2{background:linear-gradient(160deg,#0e180a,#081008)}
+    .g3{background:linear-gradient(160deg,#180a0a,#100808)} .g4{background:linear-gradient(160deg,#0a0e18,#080c10)}
+    .g5{background:linear-gradient(160deg,#181808,#101008)} .g6{background:linear-gradient(160deg,#180818,#100818)}
+
+    .vgrid{display:grid;grid-template-columns:1fr;gap:1rem}
+    @media(min-width:480px){.vgrid{grid-template-columns:1fr 1fr}}
+    .vc{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem 1.2rem}
+    .vstars{color:#f4a830;font-size:.9rem;margin-bottom:.5rem}
+    .vtxt{font-size:.83rem;line-height:1.8;margin-bottom:.9rem;font-style:italic;color:var(--cream)}
+    .vname{font-size:.72rem;color:var(--muted);font-weight:600}
+
+    #rsv{background:linear-gradient(135deg,#2a1c08,#1a1208);color:var(--cream);border-top:1px solid var(--border-a);border-bottom:1px solid var(--border-a);padding:4rem 1.5rem;text-align:center}
+    #rsv h2{font-family:'Noto Serif JP',serif;font-size:clamp(1.4rem,5vw,2rem);color:var(--cream);margin-bottom:.7rem}
+    #rsv .sub{font-size:.87rem;color:var(--muted);margin-bottom:2rem}
+    .tel-big{display:block;font-size:clamp(1.7rem,7vw,2.5rem);font-weight:700;letter-spacing:.1em;color:var(--ac-l);margin-bottom:.35rem}
+    .tel-note{font-size:.73rem;color:var(--muted)}
+
+    .itable{width:100%;border-collapse:collapse}
+    .itable tr{border-bottom:1px solid var(--border)}
+    .itable tr:last-child{border-bottom:none}
+    .itable th{text-align:left;vertical-align:top;padding:1rem 1rem 1rem 0;width:4.5rem;font-size:.74rem;font-weight:700;color:var(--ac);white-space:nowrap}
+    .itable td{padding:1rem 0;font-size:.87rem;line-height:1.8;color:var(--cream)}
+    .itable td a{color:var(--ac-l);border-bottom:1px solid var(--border-a)}
+    .isub{font-size:.72rem;color:var(--muted)}
+    .chip{display:inline-block;background:var(--ac-dim);border:1px solid var(--border-a);border-radius:4px;padding:.15rem .55rem;font-size:.67rem;color:var(--ac);margin-top:.25rem}
+
+    .mapw{border-radius:var(--r);overflow:hidden;border:1px solid var(--border-a);margin-bottom:1.2rem;background:linear-gradient(135deg,#2a2010,#1a1408);height:260px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.7rem;color:var(--ac)}
+    .mapw .mico{font-size:3rem} .mapw p{font-size:.75rem;letter-spacing:.1em;color:var(--muted)}
+    .arows{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:1.1rem}
+    .arow{display:flex;gap:1rem;align-items:flex-start;padding:.9rem 1.2rem;border-bottom:1px solid var(--border);font-size:.85rem}
+    .arow:last-child{border-bottom:none}
+    .aico{color:var(--ac);font-size:1rem;width:1.4rem;text-align:center;flex-shrink:0}
+    .albl{font-size:.69rem;color:var(--muted);margin-bottom:.15rem}
+    .aval{color:var(--cream);line-height:1.65}
+    .btnmap{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;background:var(--bg-card);border:1.5px solid var(--border-a);color:var(--ac);font-size:.87rem;font-weight:700;padding:.9rem;border-radius:var(--r);transition:background .2s}
+    .btnmap:active{background:var(--ac-dim)}
+
+    footer{background:#0e0c08;color:rgba(240,232,212,.5);padding:3rem 1.5rem;text-align:center;border-top:1px solid var(--border)}
+    .flogo{font-family:'Noto Serif JP',serif;font-size:1.1rem;font-weight:700;color:var(--cream);letter-spacing:.15em;margin-bottom:.3rem}
+    .flogo em{font-style:normal;color:var(--ac-l)}
+    .fsub{font-size:.67rem;letter-spacing:.18em;margin-bottom:1.6rem}
+    .fnav{display:flex;flex-wrap:wrap;gap:.3rem 1.2rem;justify-content:center;margin-bottom:2rem}
+    .fnav a{font-size:.74rem;color:rgba(240,232,212,.45);transition:color .2s}
+    .fcopy{font-size:.62rem;color:rgba(240,232,212,.2);letter-spacing:.12em}
+
+    .floating{position:fixed;bottom:calc(1.4rem + env(safe-area-inset-bottom));right:1.2rem;z-index:400}
+    .fbtn{display:inline-flex;align-items:center;gap:.4rem;background:var(--ac);color:#111;font-size:.82rem;font-weight:700;padding:.9rem 1.6rem;border-radius:100px;box-shadow:0 4px 20px rgba(200,146,26,.45);transition:background .2s,transform .2s;white-space:nowrap}
+    .fbtn:active{transform:scale(.95);background:var(--ac-l)}
+  </style>
+</head>
+<body>
+
+<header id="header">
+  <div class="logo"><em>酒亭</em> ながれ</div>
+  <a href="tel:00-0000-0000" class="hcta">🍺 ご予約</a>
+</header>
+
+<section id="hero">
+  <div class="hero-base"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-grad"></div>
+  <div class="hero-body reveal">
+    <div class="hero-badge">○○市 · IZAKAYA · SINCE 2015</div>
+    <h1 class="hero-name"><em>酒亭</em><br>ながれ</h1>
+    <p class="hero-sub">○○市の本格居酒屋</p>
+    <p class="hero-copy">「旬の肴と、うまい酒。それだけでいい夜になる。」</p>
+    <div class="hero-btns">
+      <a href="tel:00-0000-0000" class="btn-p">🍺 ご予約・宴会相談</a>
+      <a href="#banquet" class="btn-g">宴会プランを見る</a>
+    </div>
+  </div>
+  <span class="hero-scroll">SCROLL</span>
+</section>
+
+<div class="strip">
+  <ul>
+    <li>🐟 毎朝仕入れの鮮魚</li><li>🍶 全国の地酒50種</li>
+    <li>🍺 クラフトビール常時10種</li><li>🏮 宴会・貸切対応</li>
+    <li>🌙 深夜0時まで営業</li><li>🍱 個室あり（4〜20名）</li>
+    <li>🐟 毎朝仕入れの鮮魚</li><li>🍶 全国の地酒50種</li>
+    <li>🍺 クラフトビール常時10種</li><li>🏮 宴会・貸切対応</li>
+    <li>🌙 深夜0時まで営業</li><li>🍱 個室あり（4〜20名）</li>
+  </ul>
+</div>
+
+<section class="sec" id="concept">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">OUR STORY</span><h2 class="heading">うまいもんと、うまい酒。<br>それだけでいい。</h2><div class="divider"></div></div>
+    <p class="concept-lead reveal d1"><strong>毎朝市場から仕入れる旬の鮮魚と、</strong><br>全国から選んだ地酒・クラフトビール。<br>肩肘張らずに、ゆっくり飲める店を作りたかった。</p>
+    <p class="concept-body reveal d2">刺し盛りは毎日内容が変わります。焼き鳥は炭火で丁寧に。おでんは朝から仕込んだだし汁で。気の置けない仲間と来ても、一人でカウンターに寄るのも大歓迎です。宴会・個室も完備しています。</p>
+    <div class="pts">
+      <div class="pt reveal d1"><span class="pt-ico">🐟</span><h3>毎朝仕入れ鮮魚</h3><p>市場から直送。その日一番の魚介を刺身・焼き物でご提供。</p></div>
+      <div class="pt reveal d2"><span class="pt-ico">🍶</span><h3>地酒50種以上</h3><p>全国の蔵元から厳選した日本酒を常時ラインナップ。</p></div>
+      <div class="pt reveal d3"><span class="pt-ico">🏮</span><h3>宴会・個室完備</h3><p>4〜20名の個室。宴会コースは飲み放題付きで充実。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-alt" id="banquet">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">BANQUET PLAN</span><h2 class="heading">宴会プラン</h2><div class="divider"></div></div>
+    <div class="banquet-cards">
+      <div class="bc reveal d1">
+        <div class="bc-head"><p class="bc-name">🥢 気軽コース</p><p class="bc-price">¥ 3,500 / 人（2h飲み放題込）</p></div>
+        <div class="bc-body">
+          <ul class="bc-items"><li>お通し</li><li>刺し盛り</li><li>焼き鳥5本</li><li>揚げ物盛り合わせ</li><li>締めの食事（選択）</li></ul>
+          <p class="bc-note">4名〜承ります。前日18時までにご予約を。</p>
+        </div>
+      </div>
+      <div class="bc reveal d2">
+        <div class="bc-head" style="background:linear-gradient(135deg,#a87014,#c89030)"><p class="bc-name">🍶 ながれ特選コース</p><p class="bc-price">¥ 5,500 / 人（3h飲み放題込）</p></div>
+        <div class="bc-body">
+          <ul class="bc-items"><li>お通し2品</li><li>季節の刺し盛り</li><li>焼き鳥8本（吟味）</li><li>季節の煮物</li><li>天ぷら盛り合わせ</li><li>特製おでん5種</li><li>締めの食事・デザート</li></ul>
+          <p class="bc-note">6名〜。地酒・クラフトビール含む3h飲み放題付き。</p>
+        </div>
+      </div>
+    </div>
+    <p class="mnote reveal">※ 貸切（20名〜）も承ります。詳細はお電話にてご相談ください。</p>
+  </div>
+</section>
+
+<section class="sec" id="menu">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">À LA CARTE</span><h2 class="heading">一品料理</h2><div class="divider"></div></div>
+    <div class="mtabs reveal">
+      <button class="tbtn active">魚介</button>
+      <button class="tbtn">焼き物</button>
+      <button class="tbtn">お酒</button>
+    </div>
+    <div class="mgrid">
+      <div class="mc reveal d1"><div class="mthumb t1"><span class="ico">🐟</span><span>写真準備中</span></div><div class="mi"><span class="mtag">本日のおすすめ</span><p class="mn">旬魚の刺し盛り</p><p class="md">毎日変わる鮮魚を丁寧に盛り付け（2〜3人前）</p><p class="mp">¥ 1,980<span>〜（税込）</span></p></div></div>
+      <div class="mc reveal d2"><div class="mthumb t2"><span class="ico">🦑</span><span>写真準備中</span></div><div class="mi"><span class="mtag">人気</span><p class="mn">イカの一夜干し焼き</p><p class="md">肉厚なイカを炭火でじっくり焼いた定番の一品</p><p class="mp">¥ 680<span>（税込）</span></p></div></div>
+      <div class="mc reveal d3"><div class="mthumb t3"><span class="ico">🍢</span><span>写真準備中</span></div><div class="mi"><span class="mtag">朝から仕込み</span><p class="mn">特製おでん盛り</p><p class="md">昆布と鰹節の上品なだしで煮込んだ5種盛り</p><p class="mp">¥ 780<span>（税込）</span></p></div></div>
+      <div class="mc reveal d1"><div class="mthumb t4"><span class="ico">🍗</span><span>写真準備中</span></div><div class="mi"><span class="mtag">炭火焼き</span><p class="mn">焼き鳥 盛り合わせ</p><p class="md">もも・ねぎま・つくね・砂肝など5本盛り</p><p class="mp">¥ 880<span>（税込）</span></p></div></div>
+      <div class="mc reveal d2"><div class="mthumb t5"><span class="ico">🍶</span><span>写真準備中</span></div><div class="mi"><span class="mtag">利き酒あり</span><p class="mn">地酒3種飲み比べ</p><p class="md">今月のおすすめ銘柄を少量で試せる飲み比べセット</p><p class="mp">¥ 980<span>（税込）</span></p></div></div>
+      <div class="mc reveal d3"><div class="mthumb t6"><span class="ico">🍺</span><span>写真準備中</span></div><div class="mi"><span class="mtag">クラフトビール</span><p class="mn">地ビール タップ5種</p><p class="md">IPA・ラガー・ヴァイツェンなど常時5種を樽生で</p><p class="mp">¥ 680<span>〜（税込）</span></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-alt" id="gallery">
+  <div class="inner"><div class="sec-head reveal"><span class="label">GALLERY</span><h2 class="heading">店内の様子</h2><div class="divider"></div></div></div>
+  <div class="ggrid reveal">
+    <div class="gi"><div class="gp g1">🐟</div></div><div class="gi"><div class="gp g2">🍗</div></div>
+    <div class="gi"><div class="gp g3">🍶</div></div><div class="gi"><div class="gp g4">🍢</div></div>
+    <div class="gi"><div class="gp g5">🏮</div></div><div class="gi"><div class="gp g6">🍺</div></div>
+  </div>
+  <div style="text-align:center;margin-top:2rem"><a href="#" class="btn-g" style="display:inline-flex">📷 Instagramで最新写真を見る</a></div>
+</section>
+
+<section class="sec" id="voice">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">VOICE</span><h2 class="heading">お客様の声</h2><div class="divider"></div></div>
+    <div class="vgrid">
+      <div class="vc reveal d1"><div class="vstars">★★★★★</div><p class="vtxt">「刺し盛りのクオリティが高すぎる。毎日変わるのが最高で、来るたびに楽しみです。」</p><p class="vname">— 40代・常連男性</p></div>
+      <div class="vc reveal d2"><div class="vstars">★★★★★</div><p class="vtxt">「会社の飲み会で個室を使わせてもらいました。コースの料理もボリュームたっぷりで大満足！」</p><p class="vname">— 30代・会社員グループ</p></div>
+      <div class="vc reveal d1"><div class="vstars">★★★★☆</div><p class="vtxt">「地酒の品ぞろえが神。スタッフさんの説明も丁寧で、日本酒の勉強になります。」</p><p class="vname">— 50代・日本酒好き</p></div>
+      <div class="vc reveal d2"><div class="vstars">★★★★★</div><p class="vtxt">「一人でカウンターに寄ることが多いですが、大将と話しながら飲める雰囲気が好きです。」</p><p class="vname">— 30代・男性</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="rsv">
+  <span class="label reveal">RESERVATION</span>
+  <h2 class="reveal">ご予約・宴会のご相談</h2>
+  <p class="sub reveal">お電話でお気軽にご予約ください。宴会・貸切のご相談も承ります。</p>
+  <a href="tel:00-0000-0000" class="tel-big reveal">00-0000-0000</a>
+  <p class="tel-note reveal">17:00〜23:30（営業時間内）にお電話ください</p>
+</section>
+
+<section class="sec sec-alt" id="info">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">SHOP INFO</span><h2 class="heading">店舗情報</h2><div class="divider"></div></div>
+    <table class="itable reveal">
+      <tr><th>店名</th><td>酒亭 ながれ</td></tr>
+      <tr><th>住所</th><td>○○県○○市○○3-3-3<p class="isub">※ このページはサンプルです</p></td></tr>
+      <tr><th>TEL</th><td><a href="tel:00-0000-0000">00-0000-0000</a></td></tr>
+      <tr><th>営業</th><td>17:00 〜 翌0:00（L.O. 23:30）</td></tr>
+      <tr><th>定休日</th><td>日曜日<span class="chip">月〜土営業</span></td></tr>
+      <tr><th>最寄駅</th><td>○○線「○○駅」東口 徒歩3分</td></tr>
+      <tr><th>席数</th><td>カウンター8席・テーブル24席・個室4部屋（4〜20名）</td></tr>
+      <tr><th>予算</th><td>2,500〜5,000円<span class="chip">宴会コースあり</span></td></tr>
+    </table>
+  </div>
+</section>
+
+<section class="sec" id="access">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">ACCESS</span><h2 class="heading">アクセス</h2><div class="divider"></div></div>
+    <div class="mapw reveal"><span class="mico">📍</span><p>地図（Googleマップ埋め込み）</p><p style="font-size:.65rem">○○県○○市○○3-3-3</p></div>
+    <div class="arows reveal">
+      <div class="arow"><span class="aico">📍</span><div><p class="albl">住所</p><p class="aval">○○県○○市○○3-3-3</p></div></div>
+      <div class="arow"><span class="aico">🚃</span><div><p class="albl">最寄り駅</p><p class="aval">○○線「○○駅」東口 徒歩3分</p></div></div>
+      <div class="arow"><span class="aico">🅿️</span><div><p class="albl">駐車場</p><p class="aval">近隣コインパーキングをご利用ください（飲酒運転厳禁）</p></div></div>
+      <div class="arow"><span class="aico">📞</span><div><p class="albl">電話</p><p class="aval"><a href="tel:00-0000-0000" style="color:var(--ac-l)">00-0000-0000</a></p></div></div>
+    </div>
+    <a href="https://maps.google.com/" class="btnmap reveal">🗺 Google マップで開く</a>
+  </div>
+</section>
+
+<footer>
+  <p class="flogo"><em>酒亭</em> ながれ</p>
+  <p class="fsub">○○市 · IZAKAYA</p>
+  <nav class="fnav">
+    <a href="#concept">こだわり</a><a href="#banquet">宴会</a>
+    <a href="#menu">メニュー</a><a href="#info">店舗情報</a><a href="#access">アクセス</a>
+  </nav>
+  <a href="tel:00-0000-0000" class="hcta" style="margin-bottom:1.2rem;display:inline-flex">🍺 ご予約はこちら</a>
+  <p class="fcopy">© 2024 酒亭 ながれ. ※ このページはみーなグルメ制作のサンプルです</p>
+</footer>
+
+<div class="floating"><a href="tel:00-0000-0000" class="fbtn">🍺 予約する</a></div>
+
+<script>
+  const hdr=document.getElementById('header');
+  window.addEventListener('scroll',()=>hdr.classList.toggle('solid',scrollY>60),{passive:true});
+  const io=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('visible');io.unobserve(x.target)}})},{threshold:.08});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  document.querySelector('#hero .reveal')?.classList.add('visible');
+  document.querySelectorAll('.tbtn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active')}));
+</script>
+</body>
+</html>

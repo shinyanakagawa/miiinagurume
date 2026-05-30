@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="ごはん処 さくら｜○○市の手作り定食屋。毎日変わる日替わり定食と家庭の味。ランチ900円〜。テイクアウトOK。">
+  <title>ごはん処 さくら｜定食屋 サンプル（みーなグルメ制作）</title>
+  <meta property="og:type" content="restaurant">
+  <meta property="og:title" content="ごはん処 さくら｜○○市の手作り定食屋">
+  <meta property="og:locale" content="ja_JP">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#fdf8f2; --bg-alt:#f5ede0; --bg-card:#fff9f2;
+      --ac:#c0613a; --ac-l:#d4845f; --ac-dim:rgba(192,97,58,.12);
+      --dk:#2e1f10; --mid:#8a6040; --muted:#9e7d63;
+      --border:#e6d8c8; --border-a:rgba(192,97,58,.25);
+      --text:#2e1f10; --r:14px; --ease:cubic-bezier(.4,0,.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;line-height:1.8;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+    img{display:block;max-width:100%} a{color:inherit;text-decoration:none}
+    .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    .d1{transition-delay:.08s} .d2{transition-delay:.16s} .d3{transition-delay:.24s}
+    .label{display:block;font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ac);font-weight:600;margin-bottom:.5rem}
+    .heading{font-family:'Noto Serif JP',serif;font-size:clamp(1.45rem,5vw,2.2rem);font-weight:700;line-height:1.4;color:var(--dk)}
+    .divider{width:2.2rem;height:3px;background:var(--ac);border-radius:2px;margin:.9rem 0 1.6rem}
+
+    #header{position:fixed;inset:0 0 auto 0;z-index:500;padding:.85rem 1.4rem;display:flex;align-items:center;justify-content:space-between;transition:background .35s,box-shadow .35s}
+    #header.solid{background:rgba(253,248,242,.95);backdrop-filter:blur(12px);box-shadow:0 1px 0 var(--border)}
+    .logo{font-family:'Noto Serif JP',serif;font-size:1.05rem;font-weight:700;color:var(--dk);letter-spacing:.08em}
+    .logo em{font-style:normal;color:var(--ac)}
+    .hcta{display:inline-flex;align-items:center;gap:.35rem;background:var(--ac);color:#fff;font-size:.76rem;font-weight:700;padding:.45rem 1rem;border-radius:100px;transition:background .2s}
+    .hcta:active{background:var(--ac-l)}
+
+    #hero{position:relative;height:100svh;min-height:560px;display:flex;align-items:center;justify-content:center;overflow:hidden;text-align:center}
+    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 25%,#f0c9a0 0%,transparent 55%),radial-gradient(ellipse at 75% 70%,#e8b08a 0%,transparent 50%),linear-gradient(160deg,#faebd7 0%,#f5dfc5 50%,#ecdbb0 100%)}
+    .hero-dots{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(192,97,58,.07) 1px,transparent 1px);background-size:28px 28px;pointer-events:none}
+    .hero-grad{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(253,248,242,.7) 80%,var(--bg) 100%)}
+    .hero-body{position:relative;padding:0 1.5rem}
+    .hero-badge{display:inline-block;background:var(--ac-dim);border:1px solid var(--border-a);color:var(--ac);font-size:.63rem;letter-spacing:.28em;padding:.3rem 1rem;border-radius:100px;margin-bottom:1.4rem}
+    .hero-name{font-family:'Noto Serif JP',serif;font-size:clamp(2.8rem,13vw,5.5rem);font-weight:700;line-height:1.1;color:var(--dk);letter-spacing:.1em;margin-bottom:.5rem}
+    .hero-name em{font-style:normal;color:var(--ac)}
+    .hero-sub{font-size:clamp(.88rem,3vw,1.05rem);color:var(--muted);letter-spacing:.12em;margin-bottom:.6rem}
+    .hero-copy{font-family:'Noto Serif JP',serif;font-size:clamp(1rem,3.8vw,1.25rem);color:var(--dk);margin-bottom:2.6rem}
+    .hero-btns{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap}
+    .btn-p{display:inline-flex;align-items:center;gap:.45rem;background:var(--ac);color:#fff;font-size:.9rem;font-weight:700;padding:.9rem 2.2rem;border-radius:100px;transition:background .2s,transform .2s}
+    .btn-p:active{background:var(--ac-l);transform:scale(.96)}
+    .btn-o{display:inline-flex;align-items:center;gap:.45rem;border:1.5px solid var(--border-a);color:var(--ac);font-size:.9rem;font-weight:600;padding:.9rem 1.8rem;border-radius:100px;transition:background .2s}
+    .btn-o:active{background:var(--ac-dim)}
+    .hero-scroll{position:absolute;bottom:1.8rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.3rem;color:var(--muted);font-size:.58rem;letter-spacing:.22em;animation:nudge 2.4s ease-in-out infinite}
+    .hero-scroll::after{content:'';display:block;width:1px;height:30px;background:linear-gradient(to bottom,var(--muted),transparent)}
+    @keyframes nudge{0%,100%{transform:translateX(-50%) translateY(0)}55%{transform:translateX(-50%) translateY(7px)}}
+
+    .strip{background:var(--ac);color:#fff;padding:1.2rem 1.5rem;overflow:hidden}
+    .strip ul{display:flex;gap:2.5rem;white-space:nowrap;animation:marquee 18s linear infinite;list-style:none}
+    .strip li{font-size:.82rem;letter-spacing:.12em;flex-shrink:0;display:flex;align-items:center;gap:.5rem}
+    @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+    .sec{padding:5.5rem 1.5rem} .sec-alt{background:var(--bg-alt)}
+    .inner{max-width:660px;margin:0 auto} .sec-head{margin-bottom:2.6rem}
+
+    .today-card{background:var(--bg-card);border:2px solid var(--ac);border-radius:var(--r);padding:1.8rem 1.5rem;display:flex;gap:1.4rem;align-items:center}
+    .today-thumb{width:100px;height:100px;flex-shrink:0;border-radius:10px;background:linear-gradient(145deg,#f5dfc5,#e8c8a0);display:flex;align-items:center;justify-content:center;font-size:2.5rem}
+    .today-badge{display:inline-block;background:var(--ac);color:#fff;font-size:.6rem;font-weight:700;letter-spacing:.12em;padding:.2rem .6rem;border-radius:3px;margin-bottom:.5rem}
+    .today-name{font-family:'Noto Serif JP',serif;font-size:1.05rem;font-weight:700;color:var(--dk);margin-bottom:.3rem}
+    .today-desc{font-size:.8rem;color:var(--muted);line-height:1.7;margin-bottom:.6rem}
+    .today-price{font-size:1.1rem;color:var(--ac);font-weight:700}
+
+    .concept-lead{font-family:'Noto Serif JP',serif;font-size:clamp(1rem,3.5vw,1.2rem);line-height:2;color:var(--dk);margin-bottom:1.2rem}
+    .concept-lead strong{color:var(--ac)}
+    .concept-body{font-size:.87rem;color:var(--muted);line-height:2;margin-bottom:2.2rem}
+    .pts{display:grid;grid-template-columns:1fr;gap:.9rem}
+    @media(min-width:540px){.pts{grid-template-columns:repeat(3,1fr)}}
+    .pt{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem 1.1rem;text-align:center;transition:box-shadow .3s,border-color .3s}
+    .pt:hover{box-shadow:0 4px 18px rgba(192,97,58,.12);border-color:var(--border-a)}
+    .pt-ico{font-size:2rem;margin-bottom:.6rem;display:block}
+    .pt h3{font-family:'Noto Serif JP',serif;font-size:.92rem;font-weight:700;color:var(--dk);margin-bottom:.35rem}
+    .pt p{font-size:.77rem;color:var(--muted);line-height:1.75}
+
+    .mtabs{display:flex;gap:.5rem;margin-bottom:1.8rem;overflow-x:auto;padding-bottom:2px}
+    .tbtn{flex-shrink:0;padding:.45rem 1.1rem;border-radius:100px;border:1.5px solid var(--border);font-size:.78rem;font-weight:600;color:var(--muted);background:transparent;cursor:pointer;transition:all .2s;font-family:inherit}
+    .tbtn.active{background:var(--ac);border-color:var(--ac);color:#fff}
+    .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    @media(min-width:540px){.mgrid{grid-template-columns:repeat(3,1fr)}}
+    .mc{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s}
+    .mc:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(92,59,30,.1)}
+    .mthumb{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.3rem;font-size:.62rem;color:rgba(192,97,58,.45);letter-spacing:.1em}
+    .mthumb .ico{font-size:2.4rem}
+    .t1{background:linear-gradient(145deg,#f5dfc5,#e8c8a0)} .t2{background:linear-gradient(145deg,#f5e5c5,#e8d4a0)}
+    .t3{background:linear-gradient(145deg,#e8f0d8,#d0e0b8)} .t4{background:linear-gradient(145deg,#fce8d8,#f0c8a8)}
+    .t5{background:linear-gradient(145deg,#e8e0f0,#d0c8e8)} .t6{background:linear-gradient(145deg,#f0f0d8,#e0e0b8)}
+    .mi{padding:.8rem .9rem 1rem}
+    .mtag{display:inline-block;background:var(--ac-dim);color:var(--ac);font-size:.58rem;font-weight:700;letter-spacing:.1em;padding:.15rem .5rem;border-radius:3px;margin-bottom:.35rem}
+    .mn{font-family:'Noto Serif JP',serif;font-size:.88rem;font-weight:700;color:var(--dk);margin-bottom:.25rem;line-height:1.45}
+    .md{font-size:.7rem;color:var(--muted);line-height:1.65;margin-bottom:.5rem}
+    .mp{font-size:.9rem;color:var(--ac);font-weight:700}
+    .mp span{font-size:.65rem;font-weight:400}
+    .mnote{text-align:center;margin-top:1.4rem;font-size:.74rem;color:var(--muted)}
+
+    .ggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:0 -1.5rem}
+    .gi{aspect-ratio:1;overflow:hidden}
+    .gp{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;transition:transform .4s}
+    .gi:hover .gp{transform:scale(1.08)}
+    .g1{background:linear-gradient(145deg,#f5dfc5,#e8c090)} .g2{background:linear-gradient(145deg,#e8f0d5,#d5e5b0)}
+    .g3{background:linear-gradient(145deg,#fce0d0,#f0c0a0)} .g4{background:linear-gradient(145deg,#f0e8d5,#e0d0b0)}
+    .g5{background:linear-gradient(145deg,#e8e0f0,#d0c5e8)} .g6{background:linear-gradient(145deg,#f8e8d0,#f0d0b0)}
+
+    .vgrid{display:grid;grid-template-columns:1fr;gap:1rem}
+    @media(min-width:480px){.vgrid{grid-template-columns:1fr 1fr}}
+    .vc{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem 1.2rem}
+    .vstars{color:#f4a830;font-size:.9rem;margin-bottom:.5rem}
+    .vtxt{font-size:.83rem;line-height:1.8;margin-bottom:.9rem;font-style:italic}
+    .vname{font-size:.72rem;color:var(--muted);font-weight:600}
+
+    #rsv{background:var(--ac);color:#fff;padding:4rem 1.5rem;text-align:center}
+    #rsv .label{color:rgba(255,255,255,.75)}
+    #rsv h2{font-family:'Noto Serif JP',serif;font-size:clamp(1.4rem,5vw,2rem);color:#fff;margin-bottom:.7rem}
+    #rsv .sub{font-size:.87rem;color:rgba(255,255,255,.8);margin-bottom:2rem}
+    .tel-big{display:block;font-size:clamp(1.7rem,7vw,2.5rem);font-weight:700;letter-spacing:.1em;color:#fff;margin-bottom:.35rem}
+    .tel-note{font-size:.73rem;color:rgba(255,255,255,.65)}
+    .open-badge{display:inline-flex;align-items:center;gap:.45rem;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);border-radius:100px;padding:.35rem .9rem;font-size:.7rem;color:#fff;letter-spacing:.08em;margin-bottom:1rem}
+    .open-dot{width:6px;height:6px;background:#fff;border-radius:50%;animation:blink 2s ease infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+    .itable{width:100%;border-collapse:collapse}
+    .itable tr{border-bottom:1px solid var(--border)}
+    .itable tr:last-child{border-bottom:none}
+    .itable th{text-align:left;vertical-align:top;padding:1rem 1rem 1rem 0;width:4.5rem;font-size:.74rem;font-weight:700;color:var(--ac);white-space:nowrap}
+    .itable td{padding:1rem 0;font-size:.87rem;line-height:1.8}
+    .itable td a{color:var(--ac);border-bottom:1px solid var(--border-a)}
+    .isub{font-size:.72rem;color:var(--muted)}
+    .chip{display:inline-block;background:var(--ac-dim);border:1px solid var(--border-a);border-radius:4px;padding:.15rem .55rem;font-size:.67rem;color:var(--ac);margin-top:.25rem}
+
+    .mapw{border-radius:var(--r);overflow:hidden;border:1px solid var(--border);margin-bottom:1.2rem;background:linear-gradient(135deg,#e8d8c8,#d0c0b0);height:260px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.7rem;color:var(--muted)}
+    .mapw .mico{font-size:3rem} .mapw p{font-size:.75rem;letter-spacing:.1em}
+    .arows{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:1.1rem}
+    .arow{display:flex;gap:1rem;align-items:flex-start;padding:.9rem 1.2rem;border-bottom:1px solid var(--border);font-size:.85rem}
+    .arow:last-child{border-bottom:none}
+    .aico{color:var(--ac);font-size:1rem;width:1.4rem;text-align:center;flex-shrink:0}
+    .albl{font-size:.69rem;color:var(--muted);margin-bottom:.15rem}
+    .aval{color:var(--text);line-height:1.65}
+    .btnmap{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;background:var(--bg-card);border:1.5px solid var(--border-a);color:var(--ac);font-size:.87rem;font-weight:700;padding:.9rem;border-radius:var(--r);transition:background .2s}
+    .btnmap:active{background:var(--ac-dim)}
+
+    footer{background:var(--dk);color:rgba(255,255,255,.7);padding:3rem 1.5rem;text-align:center}
+    .flogo{font-family:'Noto Serif JP',serif;font-size:1.1rem;font-weight:700;color:#fff;letter-spacing:.15em;margin-bottom:.3rem}
+    .flogo em{font-style:normal;color:var(--ac-l)}
+    .fsub{font-size:.67rem;letter-spacing:.18em;margin-bottom:1.6rem}
+    .fnav{display:flex;flex-wrap:wrap;gap:.3rem 1.2rem;justify-content:center;margin-bottom:2rem}
+    .fnav a{font-size:.74rem;color:rgba(255,255,255,.6);transition:color .2s}
+    .fcopy{font-size:.62rem;color:rgba(255,255,255,.3);letter-spacing:.12em}
+
+    .floating{position:fixed;bottom:calc(1.4rem + env(safe-area-inset-bottom));right:1.2rem;z-index:400}
+    .fbtn{display:inline-flex;align-items:center;gap:.4rem;background:var(--ac);color:#fff;font-size:.82rem;font-weight:700;padding:.9rem 1.6rem;border-radius:100px;box-shadow:0 4px 20px rgba(192,97,58,.45);transition:background .2s,transform .2s;white-space:nowrap}
+    .fbtn:active{transform:scale(.95);background:var(--ac-l)}
+  </style>
+</head>
+<body>
+
+<header id="header">
+  <div class="logo"><em>ごはん処</em> さくら</div>
+  <a href="tel:00-0000-0000" class="hcta">🍚 予約する</a>
+</header>
+
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-dots"></div>
+  <div class="hero-grad"></div>
+  <div class="hero-body reveal">
+    <div class="hero-badge">○○市 · 手作り定食 · SINCE 2019</div>
+    <h1 class="hero-name"><em>ごはん処</em><br>さくら</h1>
+    <p class="hero-sub">○○市の手作り定食屋</p>
+    <p class="hero-copy">「ただいま」と言いたくなるごはん。</p>
+    <div class="hero-btns">
+      <a href="tel:00-0000-0000" class="btn-p">🍚 ご予約・お問い合わせ</a>
+      <a href="#today" class="btn-o">今日の日替わりを見る</a>
+    </div>
+  </div>
+  <span class="hero-scroll">SCROLL</span>
+</section>
+
+<div class="strip">
+  <ul>
+    <li>🍱 毎日変わる日替わり定食</li><li>🌾 地元農家から直送の野菜</li>
+    <li>👩‍🍳 店主の手作り料理</li><li>💴 ランチ900円〜</li>
+    <li>📦 お弁当テイクアウトOK</li><li>🌸 ○○駅から徒歩5分</li>
+    <li>🍱 毎日変わる日替わり定食</li><li>🌾 地元農家から直送の野菜</li>
+    <li>👩‍🍳 店主の手作り料理</li><li>💴 ランチ900円〜</li>
+    <li>📦 お弁当テイクアウトOK</li><li>🌸 ○○駅から徒歩5分</li>
+  </ul>
+</div>
+
+<section class="sec sec-alt" id="today">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">TODAY'S SPECIAL</span><h2 class="heading">本日の日替わり定食</h2><div class="divider"></div></div>
+    <div class="today-card reveal">
+      <div class="today-thumb">🍖</div>
+      <div>
+        <span class="today-badge">本日のおすすめ</span>
+        <p class="today-name">豚の生姜焼き定食</p>
+        <p class="today-desc">甘辛たれでやわらかく仕上げた生姜焼き。ごはんが進む一品です。小鉢・味噌汁・お新香付き。</p>
+        <p class="today-price">¥ 980</p>
+      </div>
+    </div>
+    <p class="mnote reveal" style="margin-top:1rem">※ 日替わりはなくなり次第終了。ご来店前にお電話でご確認ください。</p>
+  </div>
+</section>
+
+<section class="sec" id="concept">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">OUR STORY</span><h2 class="heading">「また来たくなる」<br>そんな場所でありたい。</h2><div class="divider"></div></div>
+    <p class="concept-lead reveal d1">さくらは2019年、○○市の小さな一軒で産まれました。<br>
+    <strong>「おいしいごはんで、だれかの一日を元気にしたい」</strong>——<br>それだけを考えて、毎朝厨房に立っています。</p>
+    <p class="concept-body reveal d2">使う野菜は近くの農家さんから届いたもの。だしは毎朝とります。定食のごはんは土鍋で炊きます。手間がかかっても、それが「さくららしさ」だと思っています。</p>
+    <div class="pts">
+      <div class="pt reveal d1"><span class="pt-ico">🌾</span><h3>地元野菜を使用</h3><p>地元農家から届く旬の野菜中心に、毎日仕入れています。</p></div>
+      <div class="pt reveal d2"><span class="pt-ico">🍱</span><h3>毎日手作り</h3><p>出来合いは使いません。仕込みから仕上げまで全部厨房で。</p></div>
+      <div class="pt reveal d3"><span class="pt-ico">📦</span><h3>テイクアウトOK</h3><p>お弁当の持ち帰りも可能。前日までにご連絡ください。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-alt" id="menu">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">MENU</span><h2 class="heading">定番メニュー</h2><div class="divider"></div></div>
+    <div class="mtabs reveal">
+      <button class="tbtn active">定食</button>
+      <button class="tbtn">一品料理</button>
+      <button class="tbtn">ドリンク</button>
+    </div>
+    <div class="mgrid">
+      <div class="mc reveal d1"><div class="mthumb t1"><span class="ico">🍱</span><span>写真準備中</span></div><div class="mi"><span class="mtag">人気No.1</span><p class="mn">日替わり定食</p><p class="md">主菜・小鉢3品・ごはん・味噌汁・お新香</p><p class="mp">¥ 980<span>（税込）</span></p></div></div>
+      <div class="mc reveal d2"><div class="mthumb t2"><span class="ico">🐟</span><span>写真準備中</span></div><div class="mi"><span class="mtag">人気No.2</span><p class="mn">焼き魚定食</p><p class="md">旬の魚を塩焼きで。サバ・アジ・ホッケなど日替わり</p><p class="mp">¥ 1,050<span>（税込）</span></p></div></div>
+      <div class="mc reveal d3"><div class="mthumb t3"><span class="ico">🥗</span><span>写真準備中</span></div><div class="mi"><span class="mtag">野菜たっぷり</span><p class="mn">野菜炒め定食</p><p class="md">地元農家の旬野菜をたっぷり炒めた、体にやさしい一皿</p><p class="mp">¥ 900<span>（税込）</span></p></div></div>
+      <div class="mc reveal d1"><div class="mthumb t4"><span class="ico">🍗</span><span>写真準備中</span></div><div class="mi"><span class="mtag">ボリューム大</span><p class="mn">から揚げ定食</p><p class="md">にんにく醤油ベースで漬け込んだジューシー唐揚げ</p><p class="mp">¥ 1,050<span>（税込）</span></p></div></div>
+      <div class="mc reveal d2"><div class="mthumb t5"><span class="ico">🍛</span><span>写真準備中</span></div><div class="mi"><span class="mtag">週替わり</span><p class="mn">煮込みカレー</p><p class="md">スパイスから作る本格カレー。毎週レシピが変わります</p><p class="mp">¥ 950<span>（税込）</span></p></div></div>
+      <div class="mc reveal d3"><div class="mthumb t6"><span class="ico">🍜</span><span>写真準備中</span></div><div class="mi"><span class="mtag">ランチ限定</span><p class="mn">手打ちうどんセット</p><p class="md">もちもちうどん。小鉢・おにぎり1個付き</p><p class="mp">¥ 920<span>（税込）</span></p></div></div>
+    </div>
+    <p class="mnote reveal">※ 仕入れ状況により内容が変わる場合があります</p>
+  </div>
+</section>
+
+<section class="sec" id="gallery">
+  <div class="inner"><div class="sec-head reveal"><span class="label">GALLERY</span><h2 class="heading">お店の様子</h2><div class="divider"></div></div></div>
+  <div class="ggrid reveal">
+    <div class="gi"><div class="gp g1">🍱</div></div><div class="gi"><div class="gp g2">🥗</div></div>
+    <div class="gi"><div class="gp g3">🍖</div></div><div class="gi"><div class="gp g4">🍶</div></div>
+    <div class="gi"><div class="gp g5">🏡</div></div><div class="gi"><div class="gp g6">☕</div></div>
+  </div>
+  <div style="text-align:center;margin-top:2rem"><a href="#" class="btn-o" style="display:inline-flex">📷 Instagramで最新写真を見る</a></div>
+</section>
+
+<section class="sec sec-alt" id="voice">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">VOICE</span><h2 class="heading">お客様の声</h2><div class="divider"></div></div>
+    <div class="vgrid">
+      <div class="vc reveal d1"><div class="vstars">★★★★★</div><p class="vtxt">「毎週通っています。日替わりのハズレがなくて、やさしい味が好きです。」</p><p class="vname">— 30代・会社員 女性</p></div>
+      <div class="vc reveal d2"><div class="vstars">★★★★★</div><p class="vtxt">「子どもが野菜嫌いなのに、ここの野菜炒め定食は残さず食べてくれます。」</p><p class="vname">— 40代・主婦</p></div>
+      <div class="vc reveal d1"><div class="vstars">★★★★☆</div><p class="vtxt">「900円でこのクオリティはありがたいです。ランチ難民が減りました。」</p><p class="vname">— 20代・フリーランス</p></div>
+      <div class="vc reveal d2"><div class="vstars">★★★★★</div><p class="vtxt">「おかみさんの笑顔で元気になります。料理もおいしいし、毎回楽しみです。」</p><p class="vname">— 50代・男性</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="rsv">
+  <div class="open-badge reveal"><span class="open-dot"></span>本日営業中</div>
+  <span class="label reveal">CONTACT</span>
+  <h2 class="reveal">ご予約・お問い合わせ</h2>
+  <p class="sub reveal">お電話でお気軽にどうぞ。<br>お弁当のテイクアウトは前日までにご連絡ください。</p>
+  <a href="tel:00-0000-0000" class="tel-big reveal">00-0000-0000</a>
+  <p class="tel-note reveal">営業時間内（11:30〜14:30）にお電話ください</p>
+</section>
+
+<section class="sec sec-alt" id="info">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">SHOP INFO</span><h2 class="heading">店舗情報</h2><div class="divider"></div></div>
+    <table class="itable reveal">
+      <tr><th>店名</th><td>ごはん処 さくら</td></tr>
+      <tr><th>住所</th><td>○○県○○市○○4-4-4<p class="isub">※ このページはサンプルです</p></td></tr>
+      <tr><th>TEL</th><td><a href="tel:00-0000-0000">00-0000-0000</a></td></tr>
+      <tr><th>営業</th><td>ランチ 11:30〜14:30（L.O. 14:00）<p class="isub">※ 売り切れ次第終了の場合あり</p></td></tr>
+      <tr><th>定休日</th><td>日曜・祝日<span class="chip">月〜土営業</span></td></tr>
+      <tr><th>最寄駅</th><td>○○線「○○駅」南口 徒歩5分</td></tr>
+      <tr><th>席数</th><td>カウンター6席・テーブル12席</td></tr>
+      <tr><th>予算</th><td>900〜1,200円<span class="chip">テイクアウトOK</span></td></tr>
+    </table>
+  </div>
+</section>
+
+<section class="sec" id="access">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">ACCESS</span><h2 class="heading">アクセス</h2><div class="divider"></div></div>
+    <div class="mapw reveal"><span class="mico">📍</span><p>地図（Googleマップ埋め込み）</p><p style="font-size:.65rem">○○県○○市○○4-4-4</p></div>
+    <div class="arows reveal">
+      <div class="arow"><span class="aico">📍</span><div><p class="albl">住所</p><p class="aval">○○県○○市○○4-4-4</p></div></div>
+      <div class="arow"><span class="aico">🚃</span><div><p class="albl">最寄り駅</p><p class="aval">○○線「○○駅」南口 徒歩5分</p></div></div>
+      <div class="arow"><span class="aico">🅿️</span><div><p class="albl">駐車場</p><p class="aval">近隣コインパーキングをご利用ください</p></div></div>
+      <div class="arow"><span class="aico">📞</span><div><p class="albl">電話</p><p class="aval"><a href="tel:00-0000-0000" style="color:var(--ac)">00-0000-0000</a></p></div></div>
+    </div>
+    <a href="https://maps.google.com/" class="btnmap reveal">🗺 Google マップで開く</a>
+  </div>
+</section>
+
+<footer>
+  <p class="flogo"><em>ごはん処</em> さくら</p>
+  <p class="fsub">○○市 · 手作り定食</p>
+  <nav class="fnav">
+    <a href="#today">日替わり</a><a href="#concept">こだわり</a>
+    <a href="#menu">メニュー</a><a href="#info">店舗情報</a><a href="#access">アクセス</a>
+  </nav>
+  <a href="tel:00-0000-0000" class="hcta" style="margin-bottom:1.2rem;display:inline-flex">🍚 ご予約はこちら</a>
+  <p class="fcopy">© 2024 ごはん処 さくら. ※ このページはみーなグルメ制作のサンプルです</p>
+</footer>
+
+<div class="floating"><a href="tel:00-0000-0000" class="fbtn">🍚 予約する</a></div>
+
+<script>
+  const hdr=document.getElementById('header');
+  window.addEventListener('scroll',()=>hdr.classList.toggle('solid',scrollY>60),{passive:true});
+  const io=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('visible');io.unobserve(x.target)}})},{threshold:.08});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  document.querySelector('#hero .reveal')?.classList.add('visible');
+  document.querySelectorAll('.tbtn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active')}));
+</script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="懐石 匠 TAKUMI｜○○市の懐石料理。季節の食材を使った特別なコース。完全予約制。ミシュラン掲載。">
+  <title>懐石 匠 TAKUMI｜高級店 サンプル（みーなグルメ制作）</title>
+  <meta property="og:type" content="restaurant">
+  <meta property="og:title" content="懐石 匠 TAKUMI｜○○市の懐石料理">
+  <meta property="og:locale" content="ja_JP">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#090807; --bg-alt:#100e0b; --bg-card:#181410;
+      --ac:#c8a060; --ac-l:#e0c080; --ac-dim:rgba(200,160,96,.12);
+      --cream:#f0ece4; --muted:#a09080;
+      --border:#201c16; --border-a:rgba(200,160,96,.22);
+      --text:#f0ece4; --r:12px; --ease:cubic-bezier(.4,0,.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;line-height:1.8;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+    img{display:block;max-width:100%} a{color:inherit;text-decoration:none}
+    .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    .d1{transition-delay:.1s} .d2{transition-delay:.2s} .d3{transition-delay:.3s}
+    .label{display:block;font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;color:var(--ac);font-weight:500;margin-bottom:.5rem}
+    .heading{font-family:'Noto Serif JP',serif;font-size:clamp(1.5rem,5vw,2.3rem);font-weight:700;line-height:1.4;color:var(--cream)}
+    .divider{width:1.6rem;height:1px;background:var(--ac);margin:.9rem 0 1.8rem}
+
+    #header{position:fixed;inset:0 0 auto 0;z-index:500;padding:.9rem 1.4rem;display:flex;align-items:center;justify-content:space-between;transition:background .4s,border-bottom .4s}
+    #header.solid{background:rgba(9,8,7,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border-a)}
+    .logo{font-family:'Noto Serif JP',serif;font-size:.95rem;font-weight:700;color:var(--cream);letter-spacing:.18em}
+    .logo em{font-style:normal;color:var(--ac)}
+    .hcta{display:inline-flex;align-items:center;gap:.35rem;background:transparent;border:1px solid var(--border-a);color:var(--ac);font-size:.76rem;font-weight:600;letter-spacing:.08em;padding:.45rem 1rem;border-radius:2px;transition:background .2s,color .2s}
+    .hcta:active{background:var(--ac-dim)}
+
+    #hero{position:relative;height:100svh;min-height:580px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;text-align:center}
+    .hero-base{position:absolute;inset:0;background:radial-gradient(ellipse at 40% 35%,#2a1e0e 0%,#150f08 45%,#090807 100%)}
+    .hero-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(200,160,96,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(200,160,96,.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+    .hero-grad{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(9,8,7,.1) 0%,rgba(9,8,7,.4) 55%,rgba(9,8,7,.9) 85%,var(--bg) 100%)}
+    .hero-body{position:relative;padding:0 1.5rem}
+    .hero-badge{display:inline-block;border:1px solid rgba(200,160,96,.45);color:var(--ac);font-size:.58rem;letter-spacing:.38em;padding:.35rem 1.2rem;margin-bottom:2rem;border-radius:1px}
+    .hero-name{font-family:'Noto Serif JP',serif;font-size:clamp(3rem,13vw,5rem);font-weight:700;line-height:1.1;color:var(--cream);letter-spacing:.18em;margin-bottom:.6rem}
+    .hero-name em{font-style:normal;color:var(--ac);display:block;font-size:.45em;letter-spacing:.32em;margin-bottom:.3rem}
+    .hero-sub{font-size:.78rem;color:var(--muted);letter-spacing:.22em;margin-bottom:.8rem}
+    .hero-copy{font-family:'Noto Serif JP',serif;font-size:clamp(.92rem,3.2vw,1.1rem);letter-spacing:.1em;color:rgba(240,236,228,.8);margin-bottom:3rem}
+    .hero-btns{display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap}
+    .btn-p{display:inline-flex;align-items:center;gap:.45rem;background:var(--ac);color:#0a0907;font-size:.88rem;font-weight:700;letter-spacing:.08em;padding:.9rem 2.2rem;border-radius:1px;transition:background .2s,transform .2s}
+    .btn-p:active{background:var(--ac-l);transform:scale(.97)}
+    .btn-o{display:inline-flex;align-items:center;gap:.45rem;border:1px solid rgba(240,236,228,.25);color:var(--cream);font-size:.88rem;font-weight:400;letter-spacing:.08em;padding:.9rem 1.8rem;border-radius:1px;transition:border-color .2s}
+    .btn-o:active{border-color:var(--ac);color:var(--ac-l)}
+    .hero-scroll{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.35rem;color:var(--muted);font-size:.58rem;letter-spacing:.28em;animation:nudge 2.5s ease-in-out infinite}
+    .hero-scroll::after{content:'';display:block;width:1px;height:28px;background:linear-gradient(to bottom,var(--muted),transparent)}
+    @keyframes nudge{0%,100%{transform:translateX(-50%) translateY(0)}55%{transform:translateX(-50%) translateY(6px)}}
+
+    .strip{background:var(--ac);color:#0a0907;padding:1rem 1.5rem;overflow:hidden}
+    .strip ul{display:flex;gap:3rem;white-space:nowrap;animation:marquee 22s linear infinite;list-style:none}
+    .strip li{font-size:.78rem;letter-spacing:.16em;flex-shrink:0;display:flex;align-items:center;gap:.5rem;font-weight:600}
+    @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+    .sec{padding:5.5rem 1.5rem} .sec-alt{background:var(--bg-alt)}
+    .inner{max-width:640px;margin:0 auto} .sec-head{margin-bottom:2.8rem}
+
+    .chef-card{background:var(--bg-card);border:1px solid var(--border-a);border-radius:2px;padding:2rem;margin-bottom:2.4rem}
+    .chef-meta{display:flex;gap:1.4rem;align-items:center;margin-bottom:1.2rem}
+    .chef-avatar{width:72px;height:72px;flex-shrink:0;border-radius:50%;background:linear-gradient(145deg,#3a2a14,#2a1c0e);display:flex;align-items:center;justify-content:center;font-size:2rem;border:1px solid var(--border-a)}
+    .chef-name{font-family:'Noto Serif JP',serif;font-size:1.05rem;font-weight:700;color:var(--cream);margin-bottom:.2rem}
+    .chef-title{font-size:.7rem;color:var(--ac);font-weight:500;letter-spacing:.12em}
+    .chef-bio{font-size:.83rem;color:var(--muted);line-height:1.85}
+    .awards{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+    .award{display:inline-flex;align-items:center;gap:.35rem;background:var(--ac-dim);border:1px solid var(--border-a);border-radius:2px;padding:.3rem .7rem;font-size:.65rem;color:var(--ac);letter-spacing:.08em;font-weight:600}
+
+    .concept-lead{font-family:'Noto Serif JP',serif;font-size:clamp(1rem,3.8vw,1.2rem);line-height:2.1;color:var(--cream);margin-bottom:1.4rem;letter-spacing:.04em}
+    .concept-lead strong{color:var(--ac-l)}
+    .concept-body{font-size:.85rem;color:var(--muted);line-height:2;margin-bottom:2.4rem}
+    .pts{display:grid;grid-template-columns:1fr;gap:.8rem}
+    @media(min-width:540px){.pts{grid-template-columns:repeat(3,1fr)}}
+    .pt{background:var(--bg-card);border:1px solid var(--border);border-radius:2px;padding:1.4rem 1.2rem;text-align:center;transition:border-color .3s}
+    .pt:hover{border-color:var(--border-a)}
+    .pt-ico{font-size:1.8rem;margin-bottom:.6rem;display:block}
+    .pt h3{font-family:'Noto Serif JP',serif;font-size:.9rem;font-weight:700;color:var(--cream);margin-bottom:.35rem}
+    .pt p{font-size:.75rem;color:var(--muted);line-height:1.75}
+
+    .course-list{display:grid;gap:1.2rem}
+    .course{background:var(--bg-card);border:1px solid var(--border);border-radius:2px;overflow:hidden;transition:border-color .3s}
+    .course:hover{border-color:var(--border-a)}
+    .course-head{padding:1.2rem 1.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+    .course-name{font-family:'Noto Serif JP',serif;font-size:.95rem;font-weight:700;color:var(--cream)}
+    .course-season{font-size:.65rem;color:var(--ac);letter-spacing:.12em;margin-top:.2rem}
+    .course-price-wrap{text-align:right;flex-shrink:0}
+    .course-price{font-size:1rem;font-weight:700;color:var(--ac-l);display:block}
+    .course-price-note{font-size:.62rem;color:var(--muted)}
+    .course-body{padding:1.2rem 1.6rem}
+    .course-flow{list-style:none;display:flex;flex-direction:column;gap:.35rem}
+    .course-flow li{display:flex;gap:.8rem;font-size:.8rem;color:var(--muted);align-items:flex-start}
+    .cf-num{color:var(--ac);font-size:.65rem;font-weight:700;letter-spacing:.06em;flex-shrink:0;margin-top:.15rem;width:1.6rem}
+    .cf-name{color:var(--cream)}
+    .course-note{font-size:.7rem;color:var(--muted);margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+
+    .ggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin:0 -1.5rem}
+    .gi{aspect-ratio:1;overflow:hidden}
+    .gp{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;transition:transform .4s}
+    .gi:hover .gp{transform:scale(1.06)}
+    .g1{background:linear-gradient(160deg,#2a1e10,#180e08)} .g2{background:linear-gradient(160deg,#0a1414,#080c0c)}
+    .g3{background:linear-gradient(160deg,#201808,#100e06)} .g4{background:linear-gradient(160deg,#0a1008,#080c06)}
+    .g5{background:linear-gradient(160deg,#181410,#100e0a)} .g6{background:linear-gradient(160deg,#180e18,#100a10)}
+
+    .vgrid{display:grid;grid-template-columns:1fr;gap:1rem}
+    @media(min-width:480px){.vgrid{grid-template-columns:1fr 1fr}}
+    .vc{background:var(--bg-card);border:1px solid var(--border);border-radius:2px;padding:1.4rem 1.3rem}
+    .vstars{color:#c8a060;font-size:.9rem;margin-bottom:.5rem}
+    .vtxt{font-size:.82rem;line-height:1.85;margin-bottom:.9rem;font-style:italic;color:var(--cream)}
+    .vname{font-size:.7rem;color:var(--muted);font-weight:500;letter-spacing:.06em}
+
+    #rsv{background:linear-gradient(160deg,#201808,#100e06);border-top:1px solid var(--border-a);border-bottom:1px solid var(--border-a);padding:5rem 1.5rem;text-align:center}
+    #rsv h2{font-family:'Noto Serif JP',serif;font-size:clamp(1.4rem,5vw,2rem);color:var(--cream);margin-bottom:.9rem}
+    #rsv .sub{font-size:.85rem;color:var(--muted);margin-bottom:2.4rem;line-height:1.9}
+    .tel-big{display:block;font-size:clamp(1.6rem,6vw,2.3rem);font-weight:700;letter-spacing:.12em;color:var(--ac-l);margin-bottom:.35rem}
+    .tel-note{font-size:.72rem;color:var(--muted)}
+    .rsv-note{background:var(--bg-card);border:1px solid var(--border-a);border-radius:2px;padding:1rem 1.4rem;margin:1.8rem auto 0;max-width:400px;font-size:.75rem;color:var(--muted);line-height:1.85;text-align:left}
+    .rsv-note strong{color:var(--ac)}
+
+    .itable{width:100%;border-collapse:collapse}
+    .itable tr{border-bottom:1px solid var(--border)}
+    .itable tr:last-child{border-bottom:none}
+    .itable th{text-align:left;vertical-align:top;padding:1rem 1rem 1rem 0;width:5rem;font-size:.72rem;font-weight:600;color:var(--ac);letter-spacing:.08em;white-space:nowrap}
+    .itable td{padding:1rem 0;font-size:.85rem;line-height:1.85;color:var(--cream)}
+    .itable td a{color:var(--ac-l)}
+    .isub{font-size:.7rem;color:var(--muted)}
+    .chip{display:inline-block;background:var(--ac-dim);border:1px solid var(--border-a);border-radius:2px;padding:.15rem .55rem;font-size:.65rem;color:var(--ac);margin-top:.25rem;letter-spacing:.06em}
+
+    .mapw{border-radius:2px;overflow:hidden;border:1px solid var(--border-a);margin-bottom:1.2rem;background:linear-gradient(135deg,#201a12,#140e0a);height:260px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.7rem;color:var(--ac)}
+    .mapw .mico{font-size:2.8rem} .mapw p{font-size:.73rem;letter-spacing:.12em;color:var(--muted)}
+    .arows{background:var(--bg-card);border:1px solid var(--border);border-radius:2px;overflow:hidden;margin-bottom:1.1rem}
+    .arow{display:flex;gap:1rem;align-items:flex-start;padding:.9rem 1.3rem;border-bottom:1px solid var(--border);font-size:.84rem}
+    .arow:last-child{border-bottom:none}
+    .aico{color:var(--ac);font-size:.95rem;width:1.4rem;text-align:center;flex-shrink:0}
+    .albl{font-size:.67rem;color:var(--muted);margin-bottom:.15rem;letter-spacing:.06em}
+    .aval{color:var(--cream);line-height:1.65}
+    .btnmap{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;background:var(--bg-card);border:1px solid var(--border-a);color:var(--ac);font-size:.85rem;font-weight:600;letter-spacing:.06em;padding:.9rem;border-radius:2px;transition:background .2s}
+    .btnmap:active{background:var(--ac-dim)}
+
+    footer{background:#060504;color:rgba(240,236,228,.4);padding:3.5rem 1.5rem;text-align:center;border-top:1px solid var(--border)}
+    .flogo{font-family:'Noto Serif JP',serif;font-size:1rem;font-weight:700;color:var(--cream);letter-spacing:.22em;margin-bottom:.25rem}
+    .flogo em{font-style:normal;color:var(--ac)}
+    .fsub{font-size:.63rem;letter-spacing:.22em;margin-bottom:1.8rem}
+    .fnav{display:flex;flex-wrap:wrap;gap:.3rem 1.4rem;justify-content:center;margin-bottom:2rem}
+    .fnav a{font-size:.72rem;color:rgba(240,236,228,.35);transition:color .2s;letter-spacing:.06em}
+    .fcopy{font-size:.6rem;color:rgba(240,236,228,.18);letter-spacing:.14em}
+
+    .floating{position:fixed;bottom:calc(1.4rem + env(safe-area-inset-bottom));right:1.2rem;z-index:400}
+    .fbtn{display:inline-flex;align-items:center;gap:.4rem;background:var(--ac);color:#0a0907;font-size:.8rem;font-weight:700;letter-spacing:.08em;padding:.9rem 1.6rem;border-radius:1px;box-shadow:0 4px 24px rgba(200,160,96,.35);transition:background .2s,transform .2s;white-space:nowrap}
+    .fbtn:active{transform:scale(.96);background:var(--ac-l)}
+  </style>
+</head>
+<body>
+
+<header id="header">
+  <div class="logo">懐石 <em>匠</em> TAKUMI</div>
+  <a href="tel:00-0000-0000" class="hcta">ご予約</a>
+</header>
+
+<section id="hero">
+  <div class="hero-base"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-grad"></div>
+  <div class="hero-body reveal">
+    <div class="hero-badge">○○市 · KAISEKI · SINCE 2012</div>
+    <h1 class="hero-name"><em>TAKUMI</em>懐石 匠</h1>
+    <p class="hero-sub">○○市の懐石料理 · 完全予約制</p>
+    <p class="hero-copy">「旬を纏い、刻を重ねる。」</p>
+    <div class="hero-btns">
+      <a href="tel:00-0000-0000" class="btn-p">ご予約はこちら</a>
+      <a href="#course" class="btn-o">コースを見る</a>
+    </div>
+  </div>
+  <span class="hero-scroll">SCROLL</span>
+</section>
+
+<div class="strip">
+  <ul>
+    <li>🌟 ミシュラン掲載</li><li>🌸 旬の食材のみ使用</li>
+    <li>🏮 完全個室 全4室</li><li>📅 完全予約制</li>
+    <li>🎂 記念日・接待に最適</li><li>🍶 厳選銘酒・ワイン</li>
+    <li>🌟 ミシュラン掲載</li><li>🌸 旬の食材のみ使用</li>
+    <li>🏮 完全個室 全4室</li><li>📅 完全予約制</li>
+    <li>🎂 記念日・接待に最適</li><li>🍶 厳選銘酒・ワイン</li>
+  </ul>
+</div>
+
+<section class="sec" id="concept">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">CHEF'S PHILOSOPHY</span><h2 class="heading">一皿に宿る、<br>季節と技。</h2><div class="divider"></div></div>
+    <div class="chef-card reveal">
+      <div class="chef-meta">
+        <div class="chef-avatar">👨‍🍳</div>
+        <div>
+          <p class="chef-name">山田 匠（Takumi Yamada）</p>
+          <p class="chef-title">オーナー料理人 / Chef Proprietor</p>
+        </div>
+      </div>
+      <p class="chef-bio">京都の老舗料亭で15年の修業を積み、帰郷後に「懐石 匠」を開店。「食材が主役、料理人は脇役」をモットーに、その日一番の旬の素材だけで献立を組む。</p>
+      <div class="awards">
+        <span class="award">⭐ ミシュランガイド掲載</span>
+        <span class="award">🏆 食べログ 百名店</span>
+        <span class="award">📰 ○○新聞 特集掲載</span>
+      </div>
+    </div>
+    <p class="concept-lead reveal d1">その日届いた食材だけで献立を決める。<br>
+    <strong>前日と同じ料理は、一度もない。</strong><br>それが匠の流儀です。</p>
+    <p class="concept-body reveal d2">器は京都・信楽の作家ものを使用。出汁は昆布と本枯れ節を毎朝丁寧に引き、素材の滋味を引き立てます。一期一会の食卓を、できるだけ多くの方に体験していただきたいと思っています。</p>
+    <div class="pts">
+      <div class="pt reveal d1"><span class="pt-ico">🌸</span><h3>旬の食材のみ</h3><p>全国から届く産地直送の食材で、毎回異なる献立を構成します。</p></div>
+      <div class="pt reveal d2"><span class="pt-ico">🏮</span><h3>完全個室4室</h3><p>他のお客様と顔を合わせない完全個室。接待・記念日に最適です。</p></div>
+      <div class="pt reveal d3"><span class="pt-ico">🍶</span><h3>厳選銘酒</h3><p>料理に合わせた日本酒・ワインのペアリングをご提案します。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-alt" id="course">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">COURSE MENU</span><h2 class="heading">コースメニュー</h2><div class="divider"></div></div>
+    <div class="course-list">
+      <div class="course reveal d1">
+        <div class="course-head">
+          <div><p class="course-name">花 HANA コース</p><p class="course-season">季節の小懐石・昼のみ</p></div>
+          <div class="course-price-wrap"><span class="course-price">¥ 12,000</span><span class="course-price-note">サービス料別</span></div>
+        </div>
+        <div class="course-body">
+          <ul class="course-flow">
+            <li><span class="cf-num">一</span><span class="cf-name">先付け</span></li>
+            <li><span class="cf-num">二</span><span class="cf-name">椀物</span></li>
+            <li><span class="cf-num">三</span><span class="cf-name">向付け（お造り）</span></li>
+            <li><span class="cf-num">四</span><span class="cf-name">焼き物</span></li>
+            <li><span class="cf-num">五</span><span class="cf-name">煮物</span></li>
+            <li><span class="cf-num">六</span><span class="cf-name">御飯・留椀・香の物</span></li>
+            <li><span class="cf-num">七</span><span class="cf-name">水菓子</span></li>
+          </ul>
+          <p class="course-note">昼のみ。12:00〜14:30。3日前までのご予約をお願いします。</p>
+        </div>
+      </div>
+      <div class="course reveal d2">
+        <div class="course-head">
+          <div><p class="course-name">雪月花 SETSUGETSUKA コース</p><p class="course-season">正統懐石・夜のみ</p></div>
+          <div class="course-price-wrap"><span class="course-price">¥ 25,000</span><span class="course-price-note">サービス料別</span></div>
+        </div>
+        <div class="course-body">
+          <ul class="course-flow">
+            <li><span class="cf-num">一</span><span class="cf-name">八寸（季節の前菜盛り合わせ）</span></li>
+            <li><span class="cf-num">二</span><span class="cf-name">先付け・強肴</span></li>
+            <li><span class="cf-num">三</span><span class="cf-name">お造り（旬魚3種）</span></li>
+            <li><span class="cf-num">四</span><span class="cf-name">椀物（だし素材の極み）</span></li>
+            <li><span class="cf-num">五</span><span class="cf-name">焼き物（国産牛または旬の魚）</span></li>
+            <li><span class="cf-num">六</span><span class="cf-name">蒸し物</span></li>
+            <li><span class="cf-num">七</span><span class="cf-name">煮物</span></li>
+            <li><span class="cf-num">八</span><span class="cf-name">御飯・留椀・香の物</span></li>
+            <li><span class="cf-num">九</span><span class="cf-name">菓子・薄茶</span></li>
+          </ul>
+          <p class="course-note">夜のみ。18:00〜21:30。1週間前までのご予約推奨。ペアリング酒（+¥8,000）も承ります。</p>
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:1.4rem;font-size:.72rem;color:var(--muted)" class="reveal">※ 食材の都合により内容が変わる場合があります。アレルギーはご予約時にお知らせください。</p>
+  </div>
+</section>
+
+<section class="sec" id="gallery">
+  <div class="inner"><div class="sec-head reveal"><span class="label">GALLERY</span><h2 class="heading">器と料理</h2><div class="divider"></div></div></div>
+  <div class="ggrid reveal">
+    <div class="gi"><div class="gp g1">🍱</div></div><div class="gi"><div class="gp g2">🐟</div></div>
+    <div class="gi"><div class="gp g3">🍵</div></div><div class="gi"><div class="gp g4">🌿</div></div>
+    <div class="gi"><div class="gp g5">🏮</div></div><div class="gi"><div class="gp g6">🌸</div></div>
+  </div>
+  <div style="text-align:center;margin-top:2rem"><a href="#" class="btn-o" style="display:inline-flex">📷 Instagramで最新写真を見る</a></div>
+</section>
+
+<section class="sec sec-alt" id="voice">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">VOICE</span><h2 class="heading">お客様の声</h2><div class="divider"></div></div>
+    <div class="vgrid">
+      <div class="vc reveal d1"><div class="vstars">★★★★★</div><p class="vtxt">「接待で利用しました。個室の静けさ、料理のクオリティ、すべてが一流。取引先に大変喜ばれました。」</p><p class="vname">— 50代・経営者</p></div>
+      <div class="vc reveal d2"><div class="vstars">★★★★★</div><p class="vtxt">「結婚記念日に雪月花コースを。九品すべてに季節を感じる素材が使われていて、食べながら感動しました。」</p><p class="vname">— 40代・ご夫婦</p></div>
+      <div class="vc reveal d1"><div class="vstars">★★★★★</div><p class="vtxt">「椀物の出汁の味が忘れられない。なぜあんな透明感のある旨みが出るのか。また来ます。」</p><p class="vname">— 60代・美食家</p></div>
+      <div class="vc reveal d2"><div class="vstars">★★★★★</div><p class="vtxt">「初めての懐石料理でしたが、スタッフが丁寧に説明してくれて安心できました。またぜひ伺います。」</p><p class="vname">— 30代・女性</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="rsv">
+  <span class="label reveal">RESERVATION</span>
+  <h2 class="reveal">ご予約</h2>
+  <p class="sub reveal">完全予約制です。<br>花コースは3日前まで、雪月花コースは1週間前までにご予約ください。</p>
+  <a href="tel:00-0000-0000" class="tel-big reveal">00-0000-0000</a>
+  <p class="tel-note reveal">10:00〜18:00（営業日のみ受付）</p>
+  <div class="rsv-note reveal">
+    <strong>ご予約の際にお知らせください</strong><br>
+    アレルギー・禁忌食材 / 記念日・特別なご希望 / 人数・ご利用のお部屋 / ご予算の目安
+  </div>
+</section>
+
+<section class="sec sec-alt" id="info">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">SHOP INFO</span><h2 class="heading">店舗情報</h2><div class="divider"></div></div>
+    <table class="itable reveal">
+      <tr><th>店名</th><td>懐石 匠（TAKUMI）</td></tr>
+      <tr><th>住所</th><td>○○県○○市○○5-5-5<p class="isub">※ このページはサンプルです</p></td></tr>
+      <tr><th>TEL</th><td><a href="tel:00-0000-0000">00-0000-0000</a></td></tr>
+      <tr><th>営業</th><td>昼 12:00〜14:30（要予約）/ 夜 18:00〜21:30（要予約）</td></tr>
+      <tr><th>定休日</th><td>月曜・火曜<span class="chip">完全予約制</span></td></tr>
+      <tr><th>最寄駅</th><td>○○線「○○駅」徒歩8分</td></tr>
+      <tr><th>個室</th><td>完全個室 全4室（2名〜最大8名）</td></tr>
+      <tr><th>予算</th><td>昼：12,000円〜 / 夜：25,000円〜（サービス料10%別）<span class="chip">接待・記念日対応</span></td></tr>
+    </table>
+  </div>
+</section>
+
+<section class="sec" id="access">
+  <div class="inner">
+    <div class="sec-head reveal"><span class="label">ACCESS</span><h2 class="heading">アクセス</h2><div class="divider"></div></div>
+    <div class="mapw reveal"><span class="mico">📍</span><p>地図（Googleマップ埋め込み）</p><p style="font-size:.65rem">○○県○○市○○5-5-5</p></div>
+    <div class="arows reveal">
+      <div class="arow"><span class="aico">📍</span><div><p class="albl">住所</p><p class="aval">○○県○○市○○5-5-5</p></div></div>
+      <div class="arow"><span class="aico">🚃</span><div><p class="albl">最寄り駅</p><p class="aval">○○線「○○駅」徒歩8分</p></div></div>
+      <div class="arow"><span class="aico">🅿️</span><div><p class="albl">駐車場</p><p class="aval">専用駐車場あり（3台）要予約時にお申し付けください</p></div></div>
+      <div class="arow"><span class="aico">📞</span><div><p class="albl">電話</p><p class="aval"><a href="tel:00-0000-0000" style="color:var(--ac-l)">00-0000-0000</a>（10:00〜18:00）</p></div></div>
+    </div>
+    <a href="https://maps.google.com/" class="btnmap reveal">🗺 Google マップで開く</a>
+  </div>
+</section>
+
+<footer>
+  <p class="flogo">懐石 <em>匠</em> TAKUMI</p>
+  <p class="fsub">○○市 · KAISEKI · SINCE 2012</p>
+  <nav class="fnav">
+    <a href="#concept">シェフについて</a><a href="#course">コース</a>
+    <a href="#gallery">ギャラリー</a><a href="#info">店舗情報</a><a href="#access">アクセス</a>
+  </nav>
+  <a href="tel:00-0000-0000" class="hcta" style="margin-bottom:1.2rem;display:inline-flex;border-color:var(--ac)">ご予約はこちら</a>
+  <p class="fcopy">© 2024 懐石 匠 TAKUMI. ※ このページはみーなグルメ制作のサンプルです</p>
+</footer>
+
+<div class="floating"><a href="tel:00-0000-0000" class="fbtn">ご予約</a></div>
+
+<script>
+  const hdr=document.getElementById('header');
+  window.addEventListener('scroll',()=>hdr.classList.toggle('solid',scrollY>60),{passive:true});
+  const io=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('visible');io.unobserve(x.target)}})},{threshold:.08});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  document.querySelector('#hero .reveal')?.classList.add('visible');
+</script>
+</body>
+</html>
