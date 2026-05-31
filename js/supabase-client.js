@@ -3,10 +3,10 @@
 // SUPABASE_URL と SUPABASE_ANON_KEY を自分のプロジェクトの値に変更してください
 // ============================================================
 
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
 const SUPABASE_URL      = 'https://fgwoqrnjrsnnhogxvtof.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_CmlWeDTHmnnyCQZ2luPqxg_1g5NdBsU';
-
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
