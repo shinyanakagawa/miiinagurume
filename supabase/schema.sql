@@ -61,14 +61,25 @@ CREATE TABLE contacts (
   created_at      TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 5. HP生成アプリ：生成したHPの保存
+CREATE TABLE generated_sites (
+  id          UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  store_name  TEXT NOT NULL,
+  category    TEXT CHECK (category IN ('カフェ','ビストロ','居酒屋','定食屋','高級店')),
+  form_data   JSONB,
+  html        TEXT,
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ============================================================
 -- Row Level Security（外部から読み取りできるように設定）
 -- ============================================================
 
-ALTER TABLE restaurants   ENABLE ROW LEVEL SECURITY;
-ALTER TABLE posts         ENABLE ROW LEVEL SECURITY;
-ALTER TABLE pr_campaigns  ENABLE ROW LEVEL SECURITY;
-ALTER TABLE contacts      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE restaurants      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE posts            ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pr_campaigns      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE contacts          ENABLE ROW LEVEL SECURITY;
+ALTER TABLE generated_sites   ENABLE ROW LEVEL SECURITY;
 
 -- 飲食店・投稿は誰でも読み取り可（サイトに表示するため）
 CREATE POLICY "public read restaurants" ON restaurants FOR SELECT USING (true);
@@ -76,6 +87,10 @@ CREATE POLICY "public read posts"       ON posts       FOR SELECT USING (true);
 
 -- お問い合わせは誰でも書き込み可（フォーム送信のため）
 CREATE POLICY "public insert contacts"  ON contacts    FOR INSERT WITH CHECK (true);
+
+-- HP生成アプリの保存データは誰でも読み書き可（チームツールのため）
+CREATE POLICY "public insert generated_sites" ON generated_sites FOR INSERT WITH CHECK (true);
+CREATE POLICY "public read generated_sites"   ON generated_sites FOR SELECT USING (true);
 
 -- PR案件・お問い合わせは読み取り不可（管理者のみ）
 CREATE POLICY "no public read pr"       ON pr_campaigns FOR SELECT USING (false);

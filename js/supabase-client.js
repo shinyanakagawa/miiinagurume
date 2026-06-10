@@ -68,3 +68,22 @@ export async function submitContact(contact) {
   if (error) throw error;
   return data[0];
 }
+
+// ---- HP生成アプリ ---------------------------------------------
+
+/** 生成したHPを保存 */
+export async function saveGeneratedSite(site) {
+  const { data, error } = await supabase.from('generated_sites').insert([site]).select();
+  if (error) throw error;
+  return data[0];
+}
+
+/** 保存済みの生成HP一覧を取得 */
+export async function getGeneratedSites() {
+  const { data, error } = await supabase
+    .from('generated_sites')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data;
+}

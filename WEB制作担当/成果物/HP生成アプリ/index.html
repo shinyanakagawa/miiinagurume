@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>みーなグルメ｜HP生成アプリ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf9f6;
+      --card: #ffffff;
+      --text: #2c2820;
+      --muted: #8a7a66;
+      --border: #e8e0d8;
+      --accent: #c8a060;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans JP', sans-serif;
+      min-height: 100vh;
+    }
+    header {
+      background: #2c2820; color: #fff;
+      padding: 2.5rem 1.5rem; text-align: center;
+    }
+    .header-label {
+      font-size: .65rem; letter-spacing: .35em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: .6rem;
+    }
+    .header-title {
+      font-family: 'Noto Serif JP', serif;
+      font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 700; letter-spacing: .08em;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(320px, 420px) 1fr;
+      gap: 1.5rem;
+      max-width: 1400px; margin: 0 auto; padding: 1.5rem;
+    }
+    @media (max-width: 960px) { .layout { grid-template-columns: 1fr; } }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .panel h2 {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 1rem; margin-bottom: 1rem;
+      padding-bottom: .6rem; border-bottom: 2px solid var(--border);
+    }
+    .field { margin-bottom: 1rem; }
+    .field label {
+      display: block; font-size: .78rem; color: var(--muted);
+      margin-bottom: .35rem; letter-spacing: .05em;
+    }
+    .field input, .field textarea, .field select {
+      width: 100%; padding: .6rem .8rem;
+      border: 1px solid var(--border); border-radius: 6px;
+      font-family: inherit; font-size: .88rem; color: var(--text);
+      background: #fff;
+    }
+    .field textarea { resize: vertical; min-height: 80px; }
+    .category-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: .5rem;
+      margin-bottom: 1.5rem;
+    }
+    .category-btn {
+      padding: .7rem .4rem; border: 2px solid var(--border); border-radius: 8px;
+      background: #fff; cursor: pointer; font-size: .78rem; text-align: center;
+      transition: border-color .2s, background .2s;
+    }
+    .category-btn .icon { font-size: 1.3rem; display: block; margin-bottom: .3rem; }
+    .category-btn.active { border-color: var(--accent); background: #fdf6e8; font-weight: 700; }
+
+    .hours-row {
+      display: grid; grid-template-columns: 4.5rem 1fr auto; gap: .5rem; align-items: center;
+      margin-bottom: .4rem;
+    }
+    .hours-row label { font-size: .8rem; color: var(--muted); margin: 0; }
+    .hours-row .closed-toggle { font-size: .72rem; display: flex; align-items: center; gap: .3rem; white-space: nowrap; }
+
+    .menu-item {
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: .8rem; margin-bottom: .6rem; position: relative;
+    }
+    .menu-item .field { margin-bottom: .5rem; }
+    .menu-item-row { display: grid; grid-template-columns: 1fr 8rem; gap: .5rem; }
+    .remove-btn {
+      position: absolute; top: .4rem; right: .4rem;
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; font-size: .9rem; line-height: 1;
+    }
+    .remove-btn:hover { color: #c0504a; }
+    .add-btn {
+      width: 100%; padding: .6rem; border: 1px dashed var(--border); border-radius: 8px;
+      background: none; color: var(--muted); cursor: pointer; font-size: .85rem;
+    }
+    .add-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .actions {
+      display: flex; gap: .6rem; margin-top: 1.5rem; flex-wrap: wrap;
+    }
+    .btn {
+      flex: 1; min-width: 140px; padding: .8rem 1rem; border: none; border-radius: 6px;
+      font-size: .88rem; font-weight: 700; cursor: pointer; letter-spacing: .05em;
+      transition: opacity .2s;
+    }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-primary { background: var(--accent); color: #2c2820; }
+    .btn-secondary { background: #2c2820; color: #fff; }
+    .btn:hover:not(:disabled) { opacity: .85; }
+
+    .status-msg {
+      margin-top: .8rem; padding: .7rem 1rem; border-radius: 6px;
+      font-size: .82rem; display: none;
+    }
+    .status-msg.show { display: block; }
+    .status-msg.success { background: #e6f4ea; color: #2e7d4f; }
+    .status-msg.error { background: #fdecec; color: #c0504a; }
+
+    .preview-panel {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      overflow: hidden; display: flex; flex-direction: column;
+      min-height: 600px;
+    }
+    .preview-header {
+      padding: .8rem 1.2rem; border-bottom: 1px solid var(--border);
+      font-size: .8rem; color: var(--muted); display: flex;
+      justify-content: space-between; align-items: center;
+    }
+    .preview-frame { flex: 1; border: none; width: 100%; min-height: 600px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <p class="header-label">miiinagurume · APP</p>
+  <h1 class="header-title">グルメHP生成アプリ</h1>
+</header>
+
+<div class="layout">
+  <div class="panel">
+    <h2>① カテゴリを選択</h2>
+    <div class="category-grid" id="category-grid"></div>
+
+    <h2>② 基本情報</h2>
+    <div class="field">
+      <label for="storeName">店名 *</label>
+      <input type="text" id="storeName" placeholder="例：みいな">
+    </div>
+    <div class="field">
+      <label for="catchCopy">キャッチコピー</label>
+      <input type="text" id="catchCopy" placeholder="例：旬の食材を、心を込めて。">
+    </div>
+    <div class="field">
+      <label for="description">コンセプト・紹介文</label>
+      <textarea id="description" placeholder="お店のこだわりや雰囲気を入力してください"></textarea>
+    </div>
+    <div class="field">
+      <label for="address">住所</label>
+      <input type="text" id="address" placeholder="例：○○県○○市○○1-1-1">
+    </div>
+    <div class="field">
+      <label for="phone">電話番号</label>
+      <input type="text" id="phone" placeholder="例：00-0000-0000">
+    </div>
+    <div class="field">
+      <label for="instagramUrl">Instagram URL</label>
+      <input type="text" id="instagramUrl" placeholder="https://www.instagram.com/...">
+    </div>
+
+    <h2>③ 営業時間</h2>
+    <div id="hours-list"></div>
+
+    <h2 style="margin-top:1.5rem">④ メニュー</h2>
+    <div id="menu-list"></div>
+    <button class="add-btn" id="add-menu-item">＋ メニューを追加</button>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="download-btn">HTMLをダウンロード</button>
+      <button class="btn btn-secondary" id="save-btn">Supabaseに保存</button>
+    </div>
+    <div class="status-msg" id="status-msg"></div>
+  </div>
+
+  <div class="preview-panel">
+    <div class="preview-header">
+      <span>プレビュー</span>
+      <span id="preview-store-name"></span>
+    </div>
+    <iframe class="preview-frame" id="preview-frame" title="HPプレビュー"></iframe>
+  </div>
+</div>
+
+<script type="module">
+  import { CATEGORIES, THEMES, DEFAULT_HOURS, generateHTML } from './templates.js';
+
+  let currentCategory = CATEGORIES[0];
+
+  // ── カテゴリ選択 ──────────────────────────────
+  const categoryGrid = document.getElementById('category-grid');
+  CATEGORIES.forEach((cat) => {
+    const btn = document.createElement('button');
+    btn.className = 'category-btn' + (cat === currentCategory ? ' active' : '');
+    btn.dataset.category = cat;
+    btn.innerHTML = `<span class="icon">${THEMES[cat].icon}</span>${cat}`;
+    btn.addEventListener('click', () => {
+      currentCategory = cat;
+      document.querySelectorAll('.category-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      updatePreview();
+    });
+    categoryGrid.appendChild(btn);
+  });
+
+  // ── 営業時間 ──────────────────────────────────
+  const hoursList = document.getElementById('hours-list');
+  DEFAULT_HOURS.forEach((h, i) => {
+    const row = document.createElement('div');
+    row.className = 'hours-row';
+    row.innerHTML = `
+      <label>${h.day}</label>
+      <input type="text" class="hours-time" data-index="${i}" value="${h.time}" placeholder="11:00 - 22:00" ${h.closed ? 'disabled' : ''}>
+      <label class="closed-toggle"><input type="checkbox" class="hours-closed" data-index="${i}" ${h.closed ? 'checked' : ''}> 定休日</label>
+    `;
+    hoursList.appendChild(row);
+  });
+  hoursList.addEventListener('change', (e) => {
+    if (e.target.classList.contains('hours-closed')) {
+      const i = e.target.dataset.index;
+      const timeInput = hoursList.querySelector(`.hours-time[data-index="${i}"]`);
+      timeInput.disabled = e.target.checked;
+    }
+    updatePreview();
+  });
+  hoursList.addEventListener('input', updatePreview);
+
+  function getHours() {
+    return DEFAULT_HOURS.map((h, i) => {
+      const closed = hoursList.querySelector(`.hours-closed[data-index="${i}"]`).checked;
+      const time = hoursList.querySelector(`.hours-time[data-index="${i}"]`).value;
+      return { day: h.day, time, closed };
+    });
+  }
+
+  // ── メニュー ──────────────────────────────────
+  const menuList = document.getElementById('menu-list');
+  function addMenuItem(name = '', price = '', desc = '') {
+    const item = document.createElement('div');
+    item.className = 'menu-item';
+    item.innerHTML = `
+      <button class="remove-btn" title="削除">✕</button>
+      <div class="field menu-item-row">
+        <input type="text" class="menu-name" placeholder="メニュー名" value="${name.replace(/"/g, '&quot;')}">
+        <input type="text" class="menu-price" placeholder="¥1,000" value="${price.replace(/"/g, '&quot;')}">
+      </div>
+      <div class="field">
+        <textarea class="menu-desc" placeholder="メニューの説明（任意）" style="min-height:50px">${desc}</textarea>
+      </div>
+    `;
+    item.querySelector('.remove-btn').addEventListener('click', () => {
+      item.remove();
+      updatePreview();
+    });
+    menuList.appendChild(item);
+  }
+  document.getElementById('add-menu-item').addEventListener('click', () => addMenuItem());
+  menuList.addEventListener('input', updatePreview);
+
+  // 初期メニュー3件
+  addMenuItem('本日のおすすめ', '¥1,200', '季節の食材を使った人気の一品です。');
+  addMenuItem('看板メニュー', '¥1,500', '');
+  addMenuItem('ドリンク', '¥500', '');
+
+  function getMenu() {
+    return Array.from(menuList.querySelectorAll('.menu-item')).map((item) => ({
+      name: item.querySelector('.menu-name').value,
+      price: item.querySelector('.menu-price').value,
+      desc: item.querySelector('.menu-desc').value,
+    }));
+  }
+
+  // ── 入力データ収集 ────────────────────────────
+  function getFormData() {
+    return {
+      storeName: document.getElementById('storeName').value,
+      catchCopy: document.getElementById('catchCopy').value,
+      description: document.getElementById('description').value,
+      address: document.getElementById('address').value,
+      phone: document.getElementById('phone').value,
+      instagramUrl: document.getElementById('instagramUrl').value,
+      hours: getHours(),
+      menu: getMenu(),
+    };
+  }
+
+  // ── プレビュー更新 ────────────────────────────
+  const previewFrame = document.getElementById('preview-frame');
+  const previewStoreName = document.getElementById('preview-store-name');
+  function updatePreview() {
+    const data = getFormData();
+    const html = generateHTML(currentCategory, data);
+    previewFrame.srcdoc = html;
+    previewStoreName.textContent = data.storeName || '';
+  }
+
+  document.querySelectorAll('#storeName, #catchCopy, #description, #address, #phone, #instagramUrl')
+    .forEach((el) => el.addEventListener('input', updatePreview));
+
+  updatePreview();
+
+  // ── ダウンロード ──────────────────────────────
+  document.getElementById('download-btn').addEventListener('click', () => {
+    const data = getFormData();
+    const html = generateHTML(currentCategory, data);
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${(data.storeName || 'みいな')}_HP.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // ── Supabase保存 ──────────────────────────────
+  const statusMsg = document.getElementById('status-msg');
+  function showStatus(message, type) {
+    statusMsg.textContent = message;
+    statusMsg.className = `status-msg show ${type}`;
+  }
+
+  document.getElementById('save-btn').addEventListener('click', async (e) => {
+    const data = getFormData();
+    if (!data.storeName.trim()) {
+      showStatus('店名を入力してください。', 'error');
+      return;
+    }
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    btn.textContent = '保存中...';
+    try {
+      const { saveGeneratedSite } = await import('../../../js/supabase-client.js');
+      const html = generateHTML(currentCategory, data);
+      await saveGeneratedSite({
+        store_name: data.storeName.trim(),
+        category: currentCategory,
+        form_data: data,
+        html,
+      });
+      showStatus('Supabaseに保存しました。', 'success');
+    } catch (err) {
+      showStatus('保存に失敗しました：' + (err.message || err), 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Supabaseに保存';
+    }
+  });
+</script>
+</body>
+</html>
