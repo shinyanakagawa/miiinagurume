@@ -87,3 +87,11 @@ export async function getGeneratedSites() {
   if (error) throw error;
   return data;
 }
+
+/** 画像をsite-imagesバケットにアップロードし、公開URLを返す */
+export async function uploadSiteImage(file, path) {
+  const { error } = await supabase.storage.from('site-images').upload(path, file, { upsert: true });
+  if (error) throw error;
+  const { data } = supabase.storage.from('site-images').getPublicUrl(path);
+  return data.publicUrl;
+}
