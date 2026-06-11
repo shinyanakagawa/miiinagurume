@@ -115,6 +115,31 @@
     .btn-secondary { background: #2c2820; color: #fff; }
     .btn:hover:not(:disabled) { opacity: .85; }
 
+    .image-preview, .image-preview-grid {
+      margin-top: .6rem;
+    }
+    .image-preview-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem;
+    }
+    .image-thumb {
+      position: relative; border: 1px solid var(--border); border-radius: 8px;
+      overflow: hidden; aspect-ratio: 4 / 3; background: var(--bg);
+    }
+    .image-thumb img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .image-thumb .thumb-status {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,.75); font-size: .72rem; color: var(--muted); text-align: center; padding: .3rem;
+    }
+    .image-thumb .thumb-remove {
+      position: absolute; top: .25rem; right: .25rem;
+      width: 1.4rem; height: 1.4rem; border-radius: 50%; border: none;
+      background: rgba(44,40,32,.75); color: #fff; cursor: pointer;
+      font-size: .8rem; line-height: 1; display: flex; align-items: center; justify-content: center;
+    }
+    .image-thumb .thumb-remove:hover { background: #c0504a; }
+
     .status-msg {
       margin-top: .8rem; padding: .7rem 1rem; border-radius: 6px;
       font-size: .82rem; display: none;
@@ -174,10 +199,22 @@
       <input type="text" id="instagramUrl" placeholder="https://www.instagram.com/...">
     </div>
 
-    <h2>③ 営業時間</h2>
+    <h2>③ 写真</h2>
+    <div class="field">
+      <label for="heroImageInput">メイン画像（外観・看板など）</label>
+      <input type="file" id="heroImageInput" accept="image/*">
+      <div id="heroImagePreview" class="image-preview"></div>
+    </div>
+    <div class="field">
+      <label for="galleryImageInput">ギャラリー画像（最大3枚）</label>
+      <input type="file" id="galleryImageInput" accept="image/*">
+      <div id="galleryImagePreview" class="image-preview-grid"></div>
+    </div>
+
+    <h2>④ 営業時間</h2>
     <div id="hours-list"></div>
 
-    <h2 style="margin-top:1.5rem">④ メニュー</h2>
+    <h2 style="margin-top:1.5rem">⑤ メニュー</h2>
     <div id="menu-list"></div>
     <button class="add-btn" id="add-menu-item">＋ メニューを追加</button>
 
@@ -285,6 +322,141 @@
     }));
   }
 
+  // ── 画像アップロード ──────────────────────────
+  let heroImage = null; // string|null
+  let galleryImages = []; // string[]
+
+  function fileExt(file) {
+    const m = /\.([a-zA-Z0-9]+)$/.exec(file.name || '');
+    return m ? m[1].toLowerCase() : 'jpg';
+  }
+
+  function uniquePath(file) {
+    const id = (crypto.randomUUID && crypto.randomUUID()) || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    return `uploads/${id}.${fileExt(file)}`;
+  }
+
+  async function uploadImage(file) {
+    const { uploadSiteImage } = await import('../../../js/supabase-client.js');
+    const path = uniquePath(file);
+    return await uploadSiteImage(file, path);
+  }
+
+  // メイン画像
+  const heroImagePreview = document.getElementById('heroImagePreview');
+  function renderHeroPreview(url, statusText) {
+    heroImagePreview.innerHTML = '';
+    if (!url && !statusText) return;
+    const thumb = document.createElement('div');
+    thumb.className = 'image-thumb';
+    thumb.style.maxWidth = '200px';
+    if (url) {
+      const img = document.createElement('img');
+      img.src = url;
+      thumb.appendChild(img);
+    }
+    if (statusText) {
+      const status = document.createElement('div');
+      status.className = 'thumb-status';
+      status.textContent = statusText;
+      thumb.appendChild(status);
+    }
+    if (url && !statusText) {
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'thumb-remove';
+      removeBtn.title = '削除';
+      removeBtn.textContent = '✕';
+      removeBtn.addEventListener('click', () => {
+        heroImage = null;
+        heroImagePreview.innerHTML = '';
+        document.getElementById('heroImageInput').value = '';
+        updatePreview();
+      });
+      thumb.appendChild(removeBtn);
+    }
+    heroImagePreview.appendChild(thumb);
+  }
+
+  document.getElementById('heroImageInput').addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const localUrl = URL.createObjectURL(file);
+    renderHeroPreview(localUrl, 'アップロード中...');
+    try {
+      const url = await uploadImage(file);
+      heroImage = url;
+      renderHeroPreview(url, '');
+      showStatus('メイン画像をアップロードしました。', 'success');
+      updatePreview();
+    } catch (err) {
+      heroImage = null;
+      renderHeroPreview(null, '');
+      showStatus('メイン画像のアップロードに失敗しました：' + (err?.message || err), 'error');
+    } finally {
+      e.target.value = '';
+    }
+  });
+
+  // ギャラリー画像
+  const galleryImagePreview = document.getElementById('galleryImagePreview');
+  const MAX_GALLERY_IMAGES = 3;
+
+  function renderGalleryPreview() {
+    galleryImagePreview.innerHTML = '';
+    galleryImages.forEach((url, i) => {
+      const thumb = document.createElement('div');
+      thumb.className = 'image-thumb';
+      const img = document.createElement('img');
+      img.src = url;
+      thumb.appendChild(img);
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'thumb-remove';
+      removeBtn.title = '削除';
+      removeBtn.textContent = '✕';
+      removeBtn.addEventListener('click', () => {
+        galleryImages.splice(i, 1);
+        renderGalleryPreview();
+        updatePreview();
+      });
+      thumb.appendChild(removeBtn);
+      galleryImagePreview.appendChild(thumb);
+    });
+  }
+
+  document.getElementById('galleryImageInput').addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    if (galleryImages.length >= MAX_GALLERY_IMAGES) {
+      showStatus(`ギャラリー画像は最大${MAX_GALLERY_IMAGES}枚までです。`, 'error');
+      e.target.value = '';
+      return;
+    }
+    const thumb = document.createElement('div');
+    thumb.className = 'image-thumb';
+    const localUrl = URL.createObjectURL(file);
+    const img = document.createElement('img');
+    img.src = localUrl;
+    thumb.appendChild(img);
+    const status = document.createElement('div');
+    status.className = 'thumb-status';
+    status.textContent = 'アップロード中...';
+    thumb.appendChild(status);
+    galleryImagePreview.appendChild(thumb);
+
+    try {
+      const url = await uploadImage(file);
+      galleryImages.push(url);
+      renderGalleryPreview();
+      showStatus('ギャラリー画像をアップロードしました。', 'success');
+      updatePreview();
+    } catch (err) {
+      thumb.remove();
+      showStatus('ギャラリー画像のアップロードに失敗しました：' + (err?.message || err), 'error');
+    } finally {
+      e.target.value = '';
+    }
+  });
+
   // ── 入力データ収集 ────────────────────────────
   function getFormData() {
     return {
@@ -296,6 +468,8 @@
       instagramUrl: document.getElementById('instagramUrl').value,
       hours: getHours(),
       menu: getMenu(),
+      heroImage,
+      galleryImages: [...galleryImages],
     };
   }
 

@@ -76,6 +76,8 @@ export function generateHTML(category, data) {
   const instagramUrl = data.instagramUrl?.trim() || '';
   const hours = (data.hours && data.hours.length) ? data.hours : DEFAULT_HOURS;
   const menu = (data.menu || []).filter((m) => m.name?.trim());
+  const heroImage = data.heroImage || null;
+  const galleryImages = (data.galleryImages || []).filter(Boolean);
 
   const hoursRows = hours.map((h) => `
         <tr class="${h.closed ? 'closed' : ''}">
@@ -93,6 +95,15 @@ export function generateHTML(category, data) {
           <p class="menu-card-desc">${escMultiline(m.desc)}</p>
         </div>`).join('')
     : `<p class="menu-empty">メニュー情報は準備中です。</p>`;
+
+  const gallerySection = galleryImages.length ? `
+  <section id="gallery">
+    <p class="section-label">Gallery</p>
+    <h2 class="section-title">ギャラリー</h2>
+    <div class="gallery-grid">
+      ${galleryImages.map((src) => `<div class="gallery-item"><img src="${esc(src)}" alt="${esc(storeName)}の写真" loading="lazy"></div>`).join('')}
+    </div>
+  </section>` : '';
 
   return `<!DOCTYPE html>
 <html lang="ja">
@@ -123,6 +134,9 @@ header {
   text-align: center;
   padding: 6rem 1.5rem;
   background: var(--surface);
+  ${heroImage ? `background-image: linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.45)), url('${esc(heroImage)}');
+  background-size: cover;
+  background-position: center;` : ''}
 }
 .header-icon { font-size: 3rem; margin-bottom: 1rem; }
 .header-name {
@@ -130,11 +144,11 @@ header {
   font-weight: 700;
   letter-spacing: .08em;
   margin-bottom: .8rem;
-  color: var(--primary);
+  color: ${heroImage ? '#fff' : 'var(--primary)'};
 }
 .header-copy {
   font-size: 1rem;
-  color: var(--muted);
+  color: ${heroImage ? '#f0ece4' : 'var(--muted)'};
   letter-spacing: .05em;
 }
 nav {
@@ -184,6 +198,20 @@ section:last-of-type { border-bottom: none; }
 .menu-card-price { color: var(--primary); font-weight: 700; white-space: nowrap; }
 .menu-card-desc { font-size: .85rem; color: var(--muted); }
 .menu-empty { color: var(--muted); font-size: .9rem; }
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.gallery-item {
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.gallery-item img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
 .hours-table { width: 100%; border-collapse: collapse; max-width: 360px; }
 .hours-table td { padding: .6rem 0; border-bottom: 1px solid var(--surface); font-size: .9rem; }
 .hours-table td:last-child { text-align: right; font-weight: 700; color: var(--primary); }
@@ -206,6 +234,7 @@ footer a { color: var(--primary); text-decoration: none; font-weight: 700; }
 <nav>
   <a href="#concept">コンセプト</a>
   <a href="#menu">メニュー</a>
+  ${galleryImages.length ? `<a href="#gallery">ギャラリー</a>` : ''}
   <a href="#access">アクセス</a>
 </nav>
 
@@ -229,7 +258,7 @@ footer a { color: var(--primary); text-decoration: none; font-weight: 700; }
       ${menuCards}
     </div>
   </section>
-
+${gallerySection}
   <section id="access">
     <p class="section-label">Access</p>
     <h2 class="section-title">営業時間・アクセス</h2>

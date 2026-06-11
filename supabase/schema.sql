@@ -95,3 +95,22 @@ CREATE POLICY "public read generated_sites"   ON generated_sites FOR SELECT USIN
 -- PR案件・お問い合わせは読み取り不可（管理者のみ）
 CREATE POLICY "no public read pr"       ON pr_campaigns FOR SELECT USING (false);
 CREATE POLICY "no public read contacts" ON contacts     FOR SELECT USING (false);
+
+-- ============================================================
+-- Storage：HP生成アプリの画像アップロード用バケット
+-- ============================================================
+
+-- site-images バケットを公開バケットとして作成
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('site-images', 'site-images', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- 誰でもアップロード可（HP生成アプリから画像を追加するため）
+CREATE POLICY "public insert site-images"
+  ON storage.objects FOR INSERT
+  WITH CHECK (bucket_id = 'site-images');
+
+-- 誰でも読み取り可（生成したHPに画像を表示するため）
+CREATE POLICY "public read site-images"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'site-images');
