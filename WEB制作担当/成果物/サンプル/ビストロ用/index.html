@@ -74,7 +74,9 @@
     }
     .hero-image-bg {
       position: absolute; inset: 0;
-      background: linear-gradient(135deg, #D4A0A8 0%, #A07080 35%, #8B2840 70%, #2C1820 100%);
+      background:
+        linear-gradient(135deg, rgba(212,160,168,.35) 0%, rgba(139,40,64,.55) 55%, rgba(44,24,32,.75) 100%),
+        url("images/hero.png") center center / cover no-repeat;
     }
     .hero-image-overlay {
       position: absolute; inset: 0;
@@ -98,7 +100,9 @@
       min-height: 600px;
     }
     .concept-visual {
-      background: linear-gradient(160deg, #8B2840 0%, #5A1828 100%);
+      background:
+        linear-gradient(160deg, rgba(139,40,64,.55) 0%, rgba(90,24,40,.75) 100%),
+        url("images/interior.png") center center / cover no-repeat;
       position: relative; overflow: hidden;
       display: flex; align-items: center; justify-content: center;
     }
@@ -188,6 +192,26 @@
       background: var(--beige); display: flex; align-items: center;
       justify-content: center; font-size: 1.4rem; margin-bottom: 1.2rem;
     }
+    .menu-feature {
+      max-width: 960px; margin: 0 auto 3.5rem;
+      display: grid; grid-template-columns: 1.1fr 1fr;
+      gap: 2.5rem; align-items: center;
+    }
+    .menu-feature-img {
+      width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+      border-radius: 2px;
+    }
+    .menu-feature-text .section-label { margin-bottom: .6rem; }
+    .menu-feature-text h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem; color: var(--dark); margin-bottom: 1rem;
+    }
+    .menu-feature-text p {
+      font-size: .88rem; line-height: 1.9; color: #7A6068;
+    }
+    @media (max-width: 900px) {
+      .menu-feature { grid-template-columns: 1fr; }
+    }
 
     /* ── ATMOSPHERE ── */
     #atmosphere { padding: 7rem 5rem; background: var(--dark); }
@@ -209,9 +233,17 @@
       transition: transform .5s;
     }
     .atm-card:hover .atm-bg { transform: scale(1.05); }
-    .atm-bg-1 { background: linear-gradient(135deg, #A07080, #8B2840); }
+    .atm-bg-1 {
+      background:
+        linear-gradient(transparent 50%, rgba(0,0,0,.35) 100%),
+        url("images/interior.png") center center / cover no-repeat;
+    }
     .atm-bg-2 { background: linear-gradient(135deg, #C8903A, #A07030); }
-    .atm-bg-3 { background: linear-gradient(135deg, #D4A0A8, #A07080); }
+    .atm-bg-3 {
+      background:
+        linear-gradient(transparent 50%, rgba(0,0,0,.35) 100%),
+        url("images/bar.png") center center / cover no-repeat;
+    }
     .atm-bg-4 { background: linear-gradient(135deg, #8B6030, #6A4820); }
     .atm-bg-5 { background: linear-gradient(135deg, #5A1828, #2C1820); }
     .atm-caption {
@@ -390,6 +422,17 @@
   <div class="section-header reveal">
     <p class="section-label">Course Menu</p>
     <h2 class="section-title">コースメニュー</h2>
+  </div>
+  <div class="menu-feature reveal">
+    <img class="menu-feature-img" src="images/dish.png" alt="鴨肉料理の盛り付け">
+    <div class="menu-feature-text">
+      <p class="section-label">Chef's Recommendation</p>
+      <h3>鴨胸肉のロースト</h3>
+      <p>
+        フランス産の技法で丁寧に火入れした鴨胸肉に、季節のソースと地元野菜を添えて。
+        外はパリッと、中はしっとりと仕上げたシェフ自慢の一皿です。
+      </p>
+    </div>
   </div>
   <div class="menu-tabs reveal">
     <button class="tab active" onclick="switchTab(this,'lunch')">ランチ</button>
