@@ -191,6 +191,7 @@
       width: 48px; height: 48px; border-radius: 50%;
       background: var(--beige); display: flex; align-items: center;
       justify-content: center; font-size: 1.4rem; margin-bottom: 1.2rem;
+      background-size: cover; background-position: center;
     }
     .menu-feature {
       max-width: 960px; margin: 0 auto 3.5rem;
@@ -543,27 +544,27 @@
 const menuData = {
   lunch: [
     { icon:'🥗', tag:'Amuse', name:'本日のアミューズ', desc:'季節の食材を使ったシェフの一口アミューズ。', price:'コースに含む' },
-    { icon:'🍲', tag:'Soup', name:'季節野菜のスープ', desc:'地元農家から届いた旬の野菜を丁寧に仕込んだポタージュ。', price:'コースに含む' },
-    { icon:'🐟', tag:'Main', name:'魚または肉のメイン', desc:'その日の仕入れにより魚料理か肉料理をご用意します。', price:'コースに含む' },
-    { icon:'🍰', tag:'Dessert', name:'デザート', desc:'パティシエが手がける季節のデザート。', price:'コースに含む' },
-    { icon:'☕', tag:'Beverage', name:'コーヒーまたは紅茶', desc:'厳選したコーヒーまたは紅茶。パン付き。', price:'コースに含む' },
-    { icon:'🌿', tag:'Course', name:'ランチコース', desc:'平日ランチ限定。内容は週替わりです。', price:'¥2,800' },
+    { icon:'🍲', img:'images/soup.png', tag:'Soup', name:'季節野菜のスープ', desc:'地元農家から届いた旬の野菜を丁寧に仕込んだポタージュ。', price:'コースに含む' },
+    { icon:'🐟', img:'images/fish.png', tag:'Main', name:'魚または肉のメイン', desc:'その日の仕入れにより魚料理か肉料理をご用意します。', price:'コースに含む' },
+    { icon:'🍰', img:'images/dessert.png', tag:'Dessert', name:'デザート', desc:'パティシエが手がける季節のデザート。', price:'コースに含む' },
+    { icon:'☕', img:'images/coffee.png', tag:'Beverage', name:'コーヒーまたは紅茶', desc:'厳選したコーヒーまたは紅茶。パン付き。', price:'コースに含む' },
+    { icon:'🌿', img:'images/course-table.png', tag:'Course', name:'ランチコース', desc:'平日ランチ限定。内容は週替わりです。', price:'¥2,800' },
   ],
   dinner: [
     { icon:'🥂', tag:'Amuse', name:'アミューズ・ブーシュ', desc:'シェフからのご挨拶、季節の小さな一口料理。', price:'コースに含む' },
     { icon:'🥗', tag:'Appetizer', name:'前菜 2品', desc:'冷前菜・温前菜から成る季節の前菜。', price:'コースに含む' },
-    { icon:'🐟', tag:'Fish', name:'魚料理', desc:'地元漁港直送の旬魚をフランスの技で仕上げます。', price:'コースに含む' },
-    { icon:'🥩', tag:'Meat', name:'肉料理', desc:'地元産肉と厳選したフランス産肉から選りすぐり。', price:'コースに含む' },
+    { icon:'🐟', img:'images/fish.png', tag:'Fish', name:'魚料理', desc:'地元漁港直送の旬魚をフランスの技で仕上げます。', price:'コースに含む' },
+    { icon:'🥩', img:'images/meat.png', tag:'Meat', name:'肉料理', desc:'地元産肉と厳選したフランス産肉から選りすぐり。', price:'コースに含む' },
     { icon:'🧀', tag:'Cheese', name:'チーズ', desc:'フランス産・国産厳選チーズの盛り合わせ。', price:'コースに含む' },
-    { icon:'🍷', tag:'Course', name:'ディナーコース', desc:'ワインペアリング（+¥2,500）も承ります。', price:'¥5,800' },
+    { icon:'🍷', img:'images/course-table.png', tag:'Course', name:'ディナーコース', desc:'ワインペアリング（+¥2,500）も承ります。', price:'¥5,800' },
   ],
   special: [
     { icon:'✨', tag:'Amuse', name:'アミューズ 3種', desc:'シェフが腕をふるう3種の一口アミューズ。', price:'コースに含む' },
-    { icon:'🐟', tag:'Fish', name:'魚料理', desc:'旬の魚介をフランス伝統技法で表現した一皿。', price:'コースに含む' },
-    { icon:'🥩', tag:'Meat', name:'肉料理（国産牛）', desc:'国産牛の最高部位を低温調理で仕上げます。', price:'コースに含む' },
+    { icon:'🐟', img:'images/fish.png', tag:'Fish', name:'魚料理', desc:'旬の魚介をフランス伝統技法で表現した一皿。', price:'コースに含む' },
+    { icon:'🥩', img:'images/meat.png', tag:'Meat', name:'肉料理（国産牛）', desc:'国産牛の最高部位を低温調理で仕上げます。', price:'コースに含む' },
     { icon:'🧀', tag:'Cheese', name:'チーズ各種', desc:'希少なフランス産熟成チーズの食べ比べ。', price:'コースに含む' },
-    { icon:'🍮', tag:'Dessert', name:'デザート 2品', desc:'温かいデザートと冷たいデザートの饗宴。', price:'コースに含む' },
-    { icon:'🌟', tag:'Course', name:'シェフズスペシャル', desc:'完全予約制（3日前まで）。全8品コース。', price:'¥9,800' },
+    { icon:'🍮', img:'images/dessert.png', tag:'Dessert', name:'デザート 2品', desc:'温かいデザートと冷たいデザートの饗宴。', price:'コースに含む' },
+    { icon:'🌟', img:'images/course-table.png', tag:'Course', name:'シェフズスペシャル', desc:'完全予約制（3日前まで）。全8品コース。', price:'¥9,800' },
   ]
 };
 
@@ -578,7 +579,7 @@ function renderMenu() {
   const grid = document.getElementById('menu-grid');
   grid.innerHTML = menuData[currentTab].map(item => `
     <div class="menu-card">
-      <div class="menu-card-icon">${item.icon}</div>
+      <div class="menu-card-icon"${item.img ? ` style="background-image:url('${item.img}')"` : ''}>${item.img ? '' : item.icon}</div>
       <div class="menu-card-tag">${item.tag}</div>
       <div class="menu-card-name">${item.name}</div>
       <div class="menu-card-desc">${item.desc}</div>
