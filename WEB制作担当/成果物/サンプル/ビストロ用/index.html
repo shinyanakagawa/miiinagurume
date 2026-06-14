@@ -166,7 +166,7 @@
       max-width: 960px; margin: 0 auto;
     }
     .menu-card {
-      background: var(--cream); padding: 2.4rem 2rem;
+      background: var(--cream); overflow: hidden;
       transition: transform .25s, box-shadow .25s;
       cursor: pointer;
     }
@@ -174,6 +174,7 @@
       transform: translateY(-4px);
       box-shadow: 0 12px 40px rgba(44,24,32,.08);
     }
+    .menu-card-body { padding: 1.6rem 2rem 2.2rem; }
     .menu-card-tag {
       font-size: .68rem; letter-spacing: .25em; text-transform: uppercase;
       color: var(--gold); margin-bottom: .7rem;
@@ -187,11 +188,13 @@
       font-family: 'Playfair Display', serif;
       font-size: 1.1rem; color: var(--wine);
     }
-    .menu-card-icon {
-      width: 48px; height: 48px; border-radius: 50%;
+    .menu-card-img {
+      width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+      display: block;
+    }
+    .menu-card-img-fallback {
       background: var(--beige); display: flex; align-items: center;
-      justify-content: center; font-size: 1.4rem; margin-bottom: 1.2rem;
-      background-size: cover; background-position: center;
+      justify-content: center; font-size: 2.6rem;
     }
     .menu-feature {
       max-width: 960px; margin: 0 auto 3.5rem;
@@ -579,11 +582,15 @@ function renderMenu() {
   const grid = document.getElementById('menu-grid');
   grid.innerHTML = menuData[currentTab].map(item => `
     <div class="menu-card">
-      <div class="menu-card-icon"${item.img ? ` style="background-image:url('${item.img}')"` : ''}>${item.img ? '' : item.icon}</div>
-      <div class="menu-card-tag">${item.tag}</div>
-      <div class="menu-card-name">${item.name}</div>
-      <div class="menu-card-desc">${item.desc}</div>
-      <div class="menu-card-price">${item.price}</div>
+      ${item.img
+        ? `<img class="menu-card-img" src="${item.img}" alt="${item.name}">`
+        : `<div class="menu-card-img menu-card-img-fallback">${item.icon}</div>`}
+      <div class="menu-card-body">
+        <div class="menu-card-tag">${item.tag}</div>
+        <div class="menu-card-name">${item.name}</div>
+        <div class="menu-card-desc">${item.desc}</div>
+        <div class="menu-card-price">${item.price}</div>
+      </div>
     </div>
   `).join('');
 }
