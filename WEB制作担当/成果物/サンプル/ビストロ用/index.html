@@ -293,7 +293,11 @@
       display: flex; align-items: center; justify-content: center;
       position: relative; overflow: hidden;
     }
-    .map-pin { font-size: 3rem; position: relative; z-index: 2; }
+    .map-pin {
+      position: relative; z-index: 2;
+      width: 44px; height: 44px;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,.4));
+    }
     .map-ripple {
       position: absolute; border-radius: 50%;
       border: 2px solid rgba(255,255,255,.3);
@@ -498,7 +502,10 @@
     <div class="map-ripple"></div>
     <div class="map-ripple"></div>
     <div class="map-ripple"></div>
-    <div class="map-pin">🍷</div>
+    <svg class="map-pin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 6.5 11 8 11.5 1.5-.5 8-6.25 8-11.5 0-4.42-3.58-8-8-8z" fill="#C8903A"/>
+      <circle cx="12" cy="10" r="3" fill="#FAF6F2"/>
+    </svg>
   </div>
 </section>
 
