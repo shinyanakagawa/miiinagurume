@@ -520,9 +520,9 @@
     <input type="hidden" name="form-name" value="reservation">
     <input type="text" id="res-name" name="name" placeholder="お名前" required>
     <input type="tel" id="res-tel" name="tel" placeholder="電話番号" required>
-    <input type="date" id="res-date" name="date">
-    <select id="res-time" name="time"></select>
-    <select id="res-pax" name="pax"></select>
+    <input type="date" id="res-date" name="date" required>
+    <select id="res-time" name="time" required></select>
+    <select id="res-pax" name="pax" required></select>
     <button class="res-submit" type="submit">予約する</button>
   </form>
   <p id="reservation-status" class="reveal" style="margin-top:1.2rem;font-size:.85rem;color:var(--wine)"></p>
