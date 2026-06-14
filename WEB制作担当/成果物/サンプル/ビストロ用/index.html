@@ -312,7 +312,7 @@
       text-align: center;
     }
     .res-form {
-      display: grid; grid-template-columns: 1fr 1fr 1fr auto;
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
       gap: 1px; max-width: 800px; margin: 3rem auto 0;
       background: var(--beige);
     }
@@ -509,12 +509,16 @@
     <h2 class="section-title">ご予約</h2>
     <p style="margin-top:.8rem;color:#7A6068;font-size:.9rem">完全予約制。記念日・アレルギー対応はご予約時にお申し付けください。</p>
   </div>
-  <div class="res-form reveal">
-    <input type="date" id="res-date">
-    <select id="res-time"></select>
-    <select id="res-pax"></select>
-    <button class="res-submit">予約する</button>
-  </div>
+  <form class="res-form reveal" id="reservation-form" name="reservation" method="POST" data-netlify="true">
+    <input type="hidden" name="form-name" value="reservation">
+    <input type="text" id="res-name" name="name" placeholder="お名前" required>
+    <input type="tel" id="res-tel" name="tel" placeholder="電話番号" required>
+    <input type="date" id="res-date" name="date">
+    <select id="res-time" name="time"></select>
+    <select id="res-pax" name="pax"></select>
+    <button class="res-submit" type="submit">予約する</button>
+  </form>
+  <p id="reservation-status" class="reveal" style="margin-top:1.2rem;font-size:.85rem;color:var(--wine)"></p>
 </section>
 
 <!-- FOOTER -->
@@ -629,6 +633,34 @@ renderMenu();
     paxSelect.appendChild(opt);
   }
 })();
+
+// Reservation form submit: notify by email (Netlify Forms) and LINE
+const reservationForm = document.getElementById('reservation-form');
+const reservationStatus = document.getElementById('reservation-status');
+reservationForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(reservationForm);
+  reservationStatus.textContent = '送信中...';
+
+  try {
+    await fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(formData).toString(),
+    });
+
+    await fetch('/.netlify/functions/send-line', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.fromEntries(formData.entries())),
+    });
+
+    reservationStatus.textContent = 'ご予約を受け付けました。確認のご連絡をお待ちください。';
+    reservationForm.reset();
+  } catch (err) {
+    reservationStatus.textContent = '送信に失敗しました。お電話でお問い合わせください。';
+  }
+});
 
 // Scroll reveal
 const observer = new IntersectionObserver((entries) => {
