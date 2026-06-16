@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>編集｜グルメHP作成アプリ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+<style>
+  .ai-gen-btn { margin-top: .4rem; font-size: .85rem; }
+  .ai-modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.55);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+  }
+  .ai-modal-box {
+    background: var(--app-card); border-radius: 12px;
+    padding: 1.5rem; max-width: 480px; width: calc(100% - 2rem);
+    max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,.4);
+  }
+  .ai-modal-box h3 { margin: 0 0 1rem; font-size: 1.1rem; }
+  #gen-preview-img { width: 100%; border-radius: 8px; margin-top: .8rem; display: block; }
+  .ai-modal-actions { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1rem; }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <a href="dashboard.html" class="app-logo">← マイサイトへ戻る</a>
+  <nav>
+    <span id="save-status" style="color:var(--app-muted);font-size:.85rem"></span>
+    <button id="save-btn" class="app-btn">保存する</button>
+  </nav>
+</header>
+
+<div class="app-container">
+  <div id="msg"></div>
+
+  <div class="editor-layout">
+    <div>
+      <!-- テーマ -->
+      <div class="app-card editor-form-section">
+        <h3>テンプレート（テーマ）</h3>
+        <div class="theme-select-grid" id="theme-select"></div>
+      </div>
+
+      <!-- 基本情報 -->
+      <div class="app-card editor-form-section">
+        <h3>基本情報</h3>
+        <div class="app-form-group">
+          <label for="store_name">店名</label>
+          <input class="app-input" id="store_name">
+        </div>
+        <div class="app-form-group">
+          <label for="logo_text">ロゴ表記（未入力なら店名を使用）</label>
+          <input class="app-input" id="logo_text">
+        </div>
+        <div class="app-form-group">
+          <label for="genre">ジャンル（例：イタリアン、居酒屋）</label>
+          <input class="app-input" id="genre">
+        </div>
+        <div class="app-form-group">
+          <label for="catch_copy">キャッチコピー</label>
+          <input class="app-input" id="catch_copy" placeholder="例：旬を纏い、刻を重ねる。">
+        </div>
+        <div class="app-form-group">
+          <label for="description">お店の紹介文</label>
+          <textarea class="app-textarea" id="description"></textarea>
+        </div>
+      </div>
+
+      <!-- 写真 -->
+      <div class="app-card editor-form-section">
+        <h3>写真</h3>
+        <div class="app-form-group">
+          <label>メイン画像（トップ背景）</label>
+          <input type="file" accept="image/*" id="hero_image_input">
+          <button type="button" class="app-btn secondary ai-gen-btn" id="ai-gen-hero-btn">✨ AIで生成</button>
+          <div class="image-thumb-list" id="hero_image_preview"></div>
+        </div>
+        <div class="app-form-group">
+          <label>ギャラリー画像（複数可）</label>
+          <input type="file" accept="image/*" id="gallery_image_input" multiple>
+          <button type="button" class="app-btn secondary ai-gen-btn" id="ai-gen-gallery-btn">✨ AIで生成して追加</button>
+          <div class="image-thumb-list" id="gallery_preview"></div>
+        </div>
+      </div>
+
+      <!-- メニュー -->
+      <div class="app-card editor-form-section">
+        <h3>メニュー</h3>
+        <div id="menu-list"></div>
+        <button type="button" class="app-btn secondary" id="add-menu-item">＋ メニューを追加</button>
+      </div>
+
+      <!-- 特集セクション -->
+      <div class="app-card editor-form-section">
+        <h3>特集セクション（任意）</h3>
+        <p class="hint" style="margin-bottom:.6rem">例：宴会コース／本日の日替わり／おすすめコース　など自由に設定できます</p>
+        <div class="app-form-group">
+          <label for="special_title">タイトル</label>
+          <input class="app-input" id="special_title" placeholder="例：宴会コース">
+        </div>
+        <div class="app-form-group">
+          <label for="special_body">内容</label>
+          <textarea class="app-textarea" id="special_body"></textarea>
+        </div>
+      </div>
+
+      <!-- 口コミ -->
+      <div class="app-card editor-form-section">
+        <h3>お客様の声</h3>
+        <div id="reviews-list"></div>
+        <button type="button" class="app-btn secondary" id="add-review">＋ 口コミを追加</button>
+      </div>
+
+      <!-- 店舗情報 -->
+      <div class="app-card editor-form-section">
+        <h3>店舗情報・アクセス</h3>
+        <div class="app-form-group">
+          <label for="address">住所</label>
+          <input class="app-input" id="address">
+        </div>
+        <div class="app-form-group">
+          <label for="phone">電話番号</label>
+          <input class="app-input" id="phone" placeholder="例：03-1234-5678">
+        </div>
+        <div class="app-form-group">
+          <label for="hours">営業時間</label>
+          <input class="app-input" id="hours">
+        </div>
+        <div class="app-form-group">
+          <label for="closed_days">定休日</label>
+          <input class="app-input" id="closed_days">
+        </div>
+        <div class="app-form-group">
+          <label for="station">最寄駅</label>
+          <input class="app-input" id="station">
+        </div>
+        <div class="app-form-group">
+          <label for="seats">席数</label>
+          <input class="app-input" id="seats">
+        </div>
+        <div class="app-form-group">
+          <label for="budget">予算</label>
+          <input class="app-input" id="budget">
+        </div>
+        <div class="app-form-group">
+          <label for="sns_instagram">InstagramのURL</label>
+          <input class="app-input" id="sns_instagram" placeholder="https://www.instagram.com/...">
+        </div>
+      </div>
+
+      <!-- 公開・課金 -->
+      <div class="app-card editor-form-section">
+        <h3>公開設定</h3>
+        <div id="status-info" class="app-msg" style="margin-bottom:1rem"></div>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+          <button type="button" class="app-btn" id="publish-btn">公開する</button>
+          <button type="button" class="app-btn secondary" id="unpublish-btn">下書きに戻す</button>
+          <button type="button" class="app-btn secondary" id="subscribe-btn">月額プランを契約する</button>
+        </div>
+        <p class="hint" style="margin-top:.6rem">公開ページは「契約中」かつ「公開」状態のときに表示されます。月額1,000円／サイト。</p>
+      </div>
+    </div>
+
+    <div class="editor-preview">
+      <div class="preview-frame-wrap">
+        <iframe id="preview" title="プレビュー"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AI画像生成モーダル -->
+<div id="ai-modal-overlay" class="ai-modal-overlay" hidden>
+  <div class="ai-modal-box">
+    <h3>✨ AI画像生成（Gemini Imagen）</h3>
+    <div class="app-form-group">
+      <label for="gemini-key">Gemini APIキー</label>
+      <input class="app-input" type="password" id="gemini-key" placeholder="AIzaSy...">
+      <p class="hint">Google AI Studio で取得できます。入力するとブラウザに保存されます。</p>
+    </div>
+    <div class="app-form-group">
+      <label for="gen-prompt">プロンプト（英語推奨）</label>
+      <textarea class="app-textarea" id="gen-prompt" rows="3" placeholder="例: cozy Japanese cafe interior, warm lighting, wooden furniture"></textarea>
+    </div>
+    <div id="gen-preview" hidden>
+      <img id="gen-preview-img" alt="生成された画像">
+    </div>
+    <p id="gen-status" style="color:var(--app-muted);font-size:.85rem;margin-top:.5rem;min-height:1.2em"></p>
+    <div class="ai-modal-actions">
+      <button type="button" class="app-btn" id="gen-submit-btn">生成する</button>
+      <button type="button" class="app-btn secondary" id="gen-use-btn" hidden>この画像を使う</button>
+      <button type="button" class="app-btn secondary" id="gen-close-btn">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import {
+    getCurrentUser, getSiteById, updateSiteData, uploadSiteImage, createCheckoutSession,
+  } from './js/supabase-client.js';
+  import { renderSiteHTML, THEMES } from './js/template-renderer.js';
+
+  const params = new URLSearchParams(location.search);
+  const siteId = params.get('id');
+  const msgEl = document.getElementById('msg');
+
+  if (!siteId) {
+    location.href = 'dashboard.html';
+  }
+
+  const user = await getCurrentUser();
+  if (!user) location.href = 'index.html';
+
+  let site = null;
+
+  // ---- テーマ選択 ----
+  const swatchColors = {
+    cafe: '#b08d57', bistro: '#a9482f', izakaya: '#c8921a', teishoku: '#d97c3c', kaiseki: '#9a7b3c',
+  };
+  const themeSelect = document.getElementById('theme-select');
+  for (const [key, meta] of Object.entries(THEMES)) {
+    const div = document.createElement('div');
+    div.className = 'theme-option';
+    div.dataset.theme = key;
+    div.innerHTML = `<div class="theme-swatch" style="background:${swatchColors[key]}"></div>${meta.label}`;
+    div.addEventListener('click', () => {
+      site.theme = key;
+      [...themeSelect.children].forEach(c => c.classList.toggle('selected', c.dataset.theme === key));
+      updatePreview();
+    });
+    themeSelect.appendChild(div);
+  }
+
+  // ---- フォーム <-> data 双方向バインド（単純フィールド） ----
+  const simpleFields = [
+    'store_name', 'logo_text', 'genre', 'catch_copy', 'description',
+    'special_title', 'special_body',
+    'address', 'phone', 'hours', 'closed_days', 'station', 'seats', 'budget', 'sns_instagram',
+  ];
+
+  function fillForm() {
+    const d = site.data || {};
+    for (const key of simpleFields) {
+      document.getElementById(key).value = d[key] || '';
+    }
+    [...themeSelect.children].forEach(c => c.classList.toggle('selected', c.dataset.theme === site.theme));
+    renderHero();
+    renderGallery();
+    renderMenu(d.menu_items || []);
+    renderReviews(d.reviews || []);
+    renderStatus();
+    updatePreview();
+  }
+
+  function collectData() {
+    const d = site.data || {};
+    for (const key of simpleFields) {
+      d[key] = document.getElementById(key).value;
+    }
+    d.menu_items = collectMenu();
+    d.reviews = collectReviews();
+    site.data = d;
+    return d;
+  }
+
+  for (const key of simpleFields) {
+    document.getElementById(key).addEventListener('input', () => {
+      collectData();
+      updatePreview();
+    });
+  }
+
+  // ---- 画像 ----
+  function renderHero() {
+    const wrap = document.getElementById('hero_image_preview');
+    wrap.innerHTML = '';
+    const url = site.data?.hero_image;
+    if (!url) return;
+    wrap.innerHTML = `<div class="image-thumb"><img src="${url}"><button type="button" data-role="remove-hero">×</button></div>`;
+    wrap.querySelector('[data-role="remove-hero"]').addEventListener('click', () => {
+      site.data.hero_image = '';
+      renderHero();
+      updatePreview();
+    });
+  }
+
+  document.getElementById('hero_image_input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    msgEl.innerHTML = '<div class="app-msg">アップロード中...</div>';
+    try {
+      const url = await uploadSiteImage(file);
+      site.data.hero_image = url;
+      renderHero();
+      updatePreview();
+      msgEl.innerHTML = '';
+    } catch (err) {
+      msgEl.innerHTML = `<div class="app-msg error">${err.message}</div>`;
+    }
+    e.target.value = '';
+  });
+
+  function renderGallery() {
+    const wrap = document.getElementById('gallery_preview');
+    wrap.innerHTML = '';
+    const images = site.data?.gallery_images || [];
+    images.forEach((url, i) => {
+      const div = document.createElement('div');
+      div.className = 'image-thumb';
+      div.innerHTML = `<img src="${url}"><button type="button">×</button>`;
+      div.querySelector('button').addEventListener('click', () => {
+        site.data.gallery_images.splice(i, 1);
+        renderGallery();
+        updatePreview();
+      });
+      wrap.appendChild(div);
+    });
+  }
+
+  document.getElementById('gallery_image_input').addEventListener('change', async (e) => {
+    const files = [...e.target.files];
+    if (!files.length) return;
+    msgEl.innerHTML = '<div class="app-msg">アップロード中...</div>';
+    try {
+      site.data.gallery_images = site.data.gallery_images || [];
+      for (const file of files) {
+        const url = await uploadSiteImage(file);
+        site.data.gallery_images.push(url);
+      }
+      renderGallery();
+      updatePreview();
+      msgEl.innerHTML = '';
+    } catch (err) {
+      msgEl.innerHTML = `<div class="app-msg error">${err.message}</div>`;
+    }
+    e.target.value = '';
+  });
+
+  // ---- メニュー（繰り返し項目） ----
+  const menuListEl = document.getElementById('menu-list');
+
+  function addMenuItem(item = {}) {
+    const div = document.createElement('div');
+    div.className = 'repeat-item';
+    div.innerHTML = `
+      <button type="button" class="remove-btn">削除</button>
+      <div class="app-form-group">
+        <label>メニュー名</label>
+        <input class="app-input menu-name" value="${item.name ? esc(item.name) : ''}">
+      </div>
+      <div class="app-form-group">
+        <label>価格</label>
+        <input class="app-input menu-price" value="${item.price ? esc(item.price) : ''}" placeholder="例：880円">
+      </div>
+      <div class="app-form-group">
+        <label>説明</label>
+        <textarea class="app-textarea menu-desc">${item.description ? esc(item.description) : ''}</textarea>
+      </div>
+    `;
+    div.querySelector('.remove-btn').addEventListener('click', () => {
+      div.remove();
+      collectData();
+      updatePreview();
+    });
+    div.querySelectorAll('input, textarea').forEach(el => {
+      el.addEventListener('input', () => { collectData(); updatePreview(); });
+    });
+    menuListEl.appendChild(div);
+  }
+
+  function collectMenu() {
+    return [...menuListEl.children].map(div => ({
+      name: div.querySelector('.menu-name').value,
+      price: div.querySelector('.menu-price').value,
+      description: div.querySelector('.menu-desc').value,
+    })).filter(item => item.name || item.price || item.description);
+  }
+
+  function renderMenu(items) {
+    menuListEl.innerHTML = '';
+    (items.length ? items : []).forEach(addMenuItem);
+  }
+
+  document.getElementById('add-menu-item').addEventListener('click', () => {
+    addMenuItem();
+  });
+
+  // ---- 口コミ（繰り返し項目） ----
+  const reviewsListEl = document.getElementById('reviews-list');
+
+  function addReview(item = {}) {
+    const div = document.createElement('div');
+    div.className = 'repeat-item';
+    div.innerHTML = `
+      <button type="button" class="remove-btn">削除</button>
+      <div class="app-form-group">
+        <label>お客様名</label>
+        <input class="app-input rv-name" value="${item.name ? esc(item.name) : ''}" placeholder="例：田中様">
+      </div>
+      <div class="app-form-group">
+        <label>評価（1〜5）</label>
+        <input class="app-input rv-rating" type="number" min="1" max="5" value="${item.rating || 5}">
+      </div>
+      <div class="app-form-group">
+        <label>コメント</label>
+        <textarea class="app-textarea rv-comment">${item.comment ? esc(item.comment) : ''}</textarea>
+      </div>
+    `;
+    div.querySelector('.remove-btn').addEventListener('click', () => {
+      div.remove();
+      collectData();
+      updatePreview();
+    });
+    div.querySelectorAll('input, textarea').forEach(el => {
+      el.addEventListener('input', () => { collectData(); updatePreview(); });
+    });
+    reviewsListEl.appendChild(div);
+  }
+
+  function collectReviews() {
+    return [...reviewsListEl.children].map(div => ({
+      name: div.querySelector('.rv-name').value,
+      rating: Number(div.querySelector('.rv-rating').value) || 5,
+      comment: div.querySelector('.rv-comment').value,
+    })).filter(item => item.name || item.comment);
+  }
+
+  function renderReviews(items) {
+    reviewsListEl.innerHTML = '';
+    (items.length ? items : []).forEach(addReview);
+  }
+
+  document.getElementById('add-review').addEventListener('click', () => addReview());
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // ---- プレビュー ----
+  function updatePreview() {
+    const iframe = document.getElementById('preview');
+    iframe.srcdoc = renderSiteHTML(site);
+  }
+
+  // ---- 公開設定 ----
+  function renderStatus() {
+    const info = document.getElementById('status-info');
+    const isActive = site.subscription_status === 'active';
+    const isPublished = site.status === 'published';
+    info.className = 'app-msg ' + (isPublished && isActive ? 'success' : '');
+    info.textContent =
+      `状態: ${isPublished ? '公開' : '下書き'} ／ 契約: ${isActive ? '契約中' : '未契約'}` +
+      (isPublished && !isActive ? '（契約完了後に公開ページが表示されます）' : '');
+    document.getElementById('subscribe-btn').style.display = isActive ? 'none' : '';
+    document.getElementById('subscribe-btn').textContent = isActive ? '契約中' : '月額プランを契約する';
+  }
+
+  document.getElementById('publish-btn').addEventListener('click', async () => {
+    collectData();
+    site = await updateSiteData(siteId, { theme: site.theme, data: site.data, status: 'published' });
+    renderStatus();
+    msgEl.innerHTML = '<div class="app-msg success">公開設定にしました</div>';
+  });
+  document.getElementById('unpublish-btn').addEventListener('click', async () => {
+    collectData();
+    site = await updateSiteData(siteId, { theme: site.theme, data: site.data, status: 'draft' });
+    renderStatus();
+    msgEl.innerHTML = '<div class="app-msg">下書きに戻しました</div>';
+  });
+  document.getElementById('subscribe-btn').addEventListener('click', async () => {
+    msgEl.innerHTML = '<div class="app-msg">決済ページを準備しています...</div>';
+    try {
+      const { url } = await createCheckoutSession(siteId);
+      location.href = url;
+    } catch (err) {
+      msgEl.innerHTML = `<div class="app-msg error">決済ページの作成に失敗しました: ${err.message}</div>`;
+    }
+  });
+
+  // ---- 保存 ----
+  document.getElementById('save-btn').addEventListener('click', async () => {
+    collectData();
+    const status = document.getElementById('save-status');
+    status.textContent = '保存中...';
+    try {
+      site = await updateSiteData(siteId, { theme: site.theme, data: site.data });
+      status.textContent = '保存しました';
+      setTimeout(() => status.textContent = '', 2000);
+    } catch (err) {
+      msgEl.innerHTML = `<div class="app-msg error">${err.message}</div>`;
+    }
+  });
+
+  // ---- 初期読み込み ----
+  try {
+    site = await getSiteById(siteId);
+    if (site.user_id !== user.id) throw new Error('このサイトを編集する権限がありません');
+    site.data = site.data || {};
+    fillForm();
+  } catch (err) {
+    msgEl.innerHTML = `<div class="app-msg error">${err.message}</div>`;
+  }
+
+  // ---- Gemini AI画像生成 ----
+  const themePrompts = {
+    cafe:     'Cozy Japanese cafe interior, warm wooden furniture, sunlight through windows, latte art, soft bokeh, professional photography',
+    bistro:   'Elegant French bistro dining room, red leather banquettes, white tablecloths, candlelight, wine glasses, warm Parisian atmosphere',
+    izakaya:  'Traditional Japanese izakaya pub interior at night, warm lantern lighting, wooden counter seats, sake bottles on shelves, lively atmosphere',
+    teishoku: 'Bright and clean Japanese teishoku set-meal restaurant, wooden tables, homestyle cooking display, welcoming lunch spot',
+    kaiseki:  'Luxurious Japanese kaiseki private dining room, tatami floor, shoji screens, minimalist decor, exquisite table setting, serene high-end restaurant',
+  };
+
+  const overlay  = document.getElementById('ai-modal-overlay');
+  const keyInput = document.getElementById('gemini-key');
+  const promptEl = document.getElementById('gen-prompt');
+  const statusEl = document.getElementById('gen-status');
+  const previewEl = document.getElementById('gen-preview');
+  const previewImg = document.getElementById('gen-preview-img');
+  const genUseBtn = document.getElementById('gen-use-btn');
+  let aiTarget = 'hero';
+  let lastBase64 = null;
+
+  function openAiModal(target) {
+    aiTarget = target;
+    lastBase64 = null;
+    previewEl.hidden = true;
+    genUseBtn.hidden = true;
+    statusEl.textContent = '';
+    keyInput.value = localStorage.getItem('gemini_api_key') || '';
+    promptEl.value = themePrompts[site?.theme] || themePrompts.cafe;
+    overlay.hidden = false;
+  }
+
+  document.getElementById('ai-gen-hero-btn').addEventListener('click', () => openAiModal('hero'));
+  document.getElementById('ai-gen-gallery-btn').addEventListener('click', () => openAiModal('gallery'));
+  document.getElementById('gen-close-btn').addEventListener('click', () => { overlay.hidden = true; });
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.hidden = true; });
+
+  document.getElementById('gen-submit-btn').addEventListener('click', async () => {
+    const apiKey = keyInput.value.trim();
+    if (!apiKey) { statusEl.textContent = 'APIキーを入力してください'; return; }
+    const prompt = promptEl.value.trim();
+    if (!prompt) { statusEl.textContent = 'プロンプトを入力してください'; return; }
+
+    localStorage.setItem('gemini_api_key', apiKey);
+    statusEl.textContent = '生成中... (30秒ほどかかる場合があります)';
+    genUseBtn.hidden = true;
+    previewEl.hidden = true;
+    lastBase64 = null;
+
+    try {
+      const { GoogleGenAI } = await import('https://esm.sh/@google/genai');
+      const ai = new GoogleGenAI({ apiKey });
+      const response = await ai.models.generateImages({
+        model: 'imagen-4.0-generate-001',
+        prompt,
+        config: { numberOfImages: 1 },
+      });
+      const imageBytes = response.generatedImages?.[0]?.image?.imageBytes;
+      if (!imageBytes) throw new Error('画像データが返ってきませんでした');
+
+      lastBase64 = imageBytes;
+      previewImg.src = `data:image/png;base64,${imageBytes}`;
+      previewEl.hidden = false;
+      genUseBtn.hidden = false;
+      statusEl.textContent = '生成完了！「この画像を使う」で適用できます。';
+    } catch (err) {
+      statusEl.textContent = `エラー: ${err.message}`;
+    }
+  });
+
+  document.getElementById('gen-use-btn').addEventListener('click', async () => {
+    if (!lastBase64) return;
+    statusEl.textContent = 'Supabaseにアップロード中...';
+    genUseBtn.disabled = true;
+    try {
+      const bytes = atob(lastBase64);
+      const arr = new Uint8Array(bytes.length);
+      for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+      const file = new File([arr], `ai-generated-${Date.now()}.png`, { type: 'image/png' });
+      const url = await uploadSiteImage(file);
+
+      if (aiTarget === 'hero') {
+        site.data.hero_image = url;
+        renderHero();
+      } else {
+        site.data.gallery_images = site.data.gallery_images || [];
+        site.data.gallery_images.push(url);
+        renderGallery();
+      }
+      updatePreview();
+      overlay.hidden = true;
+    } catch (err) {
+      statusEl.textContent = `アップロードエラー: ${err.message}`;
+    } finally {
+      genUseBtn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>
