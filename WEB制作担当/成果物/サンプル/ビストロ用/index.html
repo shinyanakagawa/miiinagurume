@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bistrot MIIINA</title>
+  <title>Bistro Miina</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400;700&family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -76,7 +76,7 @@
       position: absolute; inset: 0;
       background:
         linear-gradient(135deg, rgba(212,160,168,.35) 0%, rgba(139,40,64,.55) 55%, rgba(44,24,32,.75) 100%),
-        url("images/hero.png") center center / cover no-repeat;
+        url("images/exterior.jpg") center center / cover no-repeat;
     }
     .hero-image-overlay {
       position: absolute; inset: 0;
@@ -240,7 +240,7 @@
     .atm-bg-1 {
       background:
         linear-gradient(transparent 50%, rgba(0,0,0,.35) 100%),
-        url("images/interior.png") center center / cover no-repeat;
+        url("images/dining.jpg") center center / cover no-repeat;
     }
     .atm-bg-2 {
       background:
@@ -250,7 +250,7 @@
     .atm-bg-3 {
       background:
         linear-gradient(transparent 50%, rgba(0,0,0,.35) 100%),
-        url("images/bar.png") center center / cover no-repeat;
+        url("images/bar.jpg") center center / cover no-repeat;
     }
     .atm-bg-4 {
       background:
@@ -359,6 +359,17 @@
       color: rgba(250,246,242,.35);
     }
 
+    /* ── VOICE ── */
+    #voice { padding: 7rem 5rem; background: var(--beige); }
+    .voice-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem; max-width: 900px; margin: 3rem auto 0;
+    }
+    .voice-card { background: var(--cream); padding: 2rem 1.8rem; border-left: 3px solid var(--wine); }
+    .voice-stars { color: var(--wine); font-size: .9rem; margin-bottom: .6rem; letter-spacing: .1em; }
+    .voice-text { font-size: .88rem; line-height: 1.9; font-style: italic; color: #5E3848; margin-bottom: .8rem; }
+    .voice-name { font-size: .72rem; color: var(--muted); font-weight: 700; letter-spacing: .08em; }
+
     /* ── SCROLL REVEAL ── */
     .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s, transform .7s; }
     .reveal.visible { opacity: 1; transform: none; }
@@ -390,7 +401,7 @@
 
 <!-- NAV -->
 <nav>
-  <span class="nav-logo">Bistrot <em>MIIINA</em></span>
+  <span class="nav-logo">Bistro <em>Miina</em></span>
   <ul class="nav-links">
     <li><a href="#concept">シェフの思い</a></li>
     <li><a href="#menu">コースメニュー</a></li>
@@ -402,7 +413,7 @@
 <section id="hero">
   <div class="hero-image-bg"></div>
   <div class="hero-image-overlay"></div>
-  <h1 class="hero-store-name">Bistrot<br><em>MIIINA</em></h1>
+  <h1 class="hero-store-name">Bistro<br><em>Miina</em></h1>
 </section>
 
 <!-- CONCEPT -->
@@ -446,7 +457,7 @@
     <h2 class="section-title">コースメニュー</h2>
   </div>
   <div class="menu-feature reveal">
-    <img class="menu-feature-img" src="images/dish.png" alt="鴨肉料理の盛り付け">
+    <img class="menu-feature-img" src="images/dish.jpg" alt="鴨肉料理の盛り付け">
     <div class="menu-feature-text">
       <p class="section-label">Chef's Recommendation</p>
       <h3>鴨胸肉のロースト</h3>
@@ -476,6 +487,36 @@
     <div class="atm-card"><div class="atm-bg atm-bg-3"></div><div class="atm-noise"></div><div class="atm-caption">バーカウンター</div></div>
     <div class="atm-card"><div class="atm-bg atm-bg-4"></div><div class="atm-noise"></div><div class="atm-caption">個室</div></div>
     <div class="atm-card"><div class="atm-bg atm-bg-5"></div><div class="atm-noise"></div><div class="atm-caption">ワインセラー</div></div>
+  </div>
+</section>
+
+<!-- VOICE -->
+<section id="voice">
+  <div class="section-header reveal">
+    <p class="section-label">Guest Reviews</p>
+    <h2 class="section-title">お客様の声</h2>
+  </div>
+  <div class="voice-grid">
+    <div class="voice-card reveal">
+      <div class="voice-stars">★★★★★</div>
+      <p class="voice-text">「記念日のディナーに利用しました。地元の食材をフランスの技法で仕上げた料理は、どれも繊細で感動的でした。ワインのペアリングも完璧です。」</p>
+      <p class="voice-name">— 40代・ご夫婦</p>
+    </div>
+    <div class="voice-card reveal">
+      <div class="voice-stars">★★★★★</div>
+      <p class="voice-text">「接待でシェフズスペシャルを。取引先の方が「こんな素晴らしいフランス料理を地元で食べられるとは」と大変喜ばれました。次回もぜひ。」</p>
+      <p class="voice-name">— 50代・経営者</p>
+    </div>
+    <div class="voice-card reveal">
+      <div class="voice-stars">★★★★★</div>
+      <p class="voice-text">「ランチコースのポタージュが絶品。農家直送の野菜の甘みが凝縮されていて、忘れられない一品です。週替わりなのでまた来ます。」</p>
+      <p class="voice-name">— 30代・女性</p>
+    </div>
+    <div class="voice-card reveal">
+      <div class="voice-stars">★★★★★</div>
+      <p class="voice-text">「バーカウンターでアラカルトを楽しみました。スタッフの方がワインを丁寧に説明してくれて、自分好みの一本に出会えました。また一人で来たいです。」</p>
+      <p class="voice-name">— 30代・男性</p>
+    </div>
   </div>
 </section>
 
@@ -531,7 +572,7 @@
 <!-- FOOTER -->
 <footer>
   <div class="footer-brand">
-    <span class="nav-logo">Bistrot <em>MIIINA</em></span>
+    <span class="nav-logo">Bistro <em>Miina</em></span>
     <p>地元の恵みとフランスの技が出会う場所。<br>特別なひとときを、大切な人と。<br>完全予約制でお迎えします。</p>
   </div>
   <div class="footer-col">
@@ -554,7 +595,7 @@
     </ul>
   </div>
 </footer>
-<div class="footer-bottom">© 2024 Bistrot MIIINA. All rights reserved. &nbsp;｜&nbsp; ※ このページはみーなグルメ制作のサンプルです</div>
+<div class="footer-bottom">© 2024 Bistro Miina. All rights reserved. &nbsp;｜&nbsp; ※ このページはみーなグルメ制作のサンプルです</div>
 
 <script>
 const menuData = {
