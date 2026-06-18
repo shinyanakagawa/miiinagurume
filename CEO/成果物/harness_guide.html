@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code Harness ガイド</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', 'Meiryo', sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    header .badge {
+      display: inline-block;
+      background: #1f6feb;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+
+    header h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #79c0ff, #d2a8ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header p {
+      color: #8b949e;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    /* What is Harness */
+    .intro-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-left: 4px solid #1f6feb;
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin-bottom: 36px;
+    }
+
+    .intro-card h2 {
+      font-size: 1rem;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 10px;
+    }
+
+    .intro-card p {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #e6edf3;
+    }
+
+    .intro-card strong {
+      color: #79c0ff;
+    }
+
+    /* Section title */
+    .section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #8b949e;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #21262d;
+    }
+
+    /* Events grid */
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+
+    .event-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 18px 16px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .event-card:hover {
+      border-color: #58a6ff;
+      transform: translateY(-2px);
+    }
+
+    .event-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+
+    .event-card.pre::before  { background: #f78166; }
+    .event-card.post::before { background: #3fb950; }
+    .event-card.stop::before { background: #d2a8ff; }
+    .event-card.sub::before  { background: #ffa657; }
+    .event-card.notif::before{ background: #79c0ff; }
+
+    .event-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    .pre  .event-tag { background: rgba(247,129,102,0.15); color: #f78166; }
+    .post .event-tag { background: rgba(63,185,80,0.15);  color: #3fb950; }
+    .stop .event-tag { background: rgba(210,168,255,0.15); color: #d2a8ff; }
+    .sub  .event-tag { background: rgba(255,166,87,0.15);  color: #ffa657; }
+    .notif .event-tag{ background: rgba(121,192,255,0.15); color: #79c0ff; }
+
+    .event-card p {
+      font-size: 0.82rem;
+      color: #8b949e;
+      line-height: 1.5;
+    }
+
+    /* Code block */
+    .code-section {
+      margin-bottom: 36px;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      padding: 10px 16px;
+    }
+
+    .code-header span {
+      font-size: 12px;
+      color: #8b949e;
+      font-family: 'SFMono-Regular', Consolas, monospace;
+    }
+
+    .code-header .file-badge {
+      background: #1f6feb22;
+      border: 1px solid #1f6feb55;
+      color: #79c0ff;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    pre {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 0 0 10px 10px;
+      padding: 20px 20px;
+      overflow-x: auto;
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: #e6edf3;
+    }
+
+    .kw  { color: #ff7b72; }
+    .str { color: #a5d6ff; }
+    .key { color: #79c0ff; }
+    .cmt { color: #8b949e; font-style: italic; }
+    .num { color: #ffa657; }
+
+    /* Use cases */
+    .usecases {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+
+    .usecase-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      transition: border-color 0.2s;
+    }
+
+    .usecase-card:hover {
+      border-color: #30363d;
+      background: #1c2128;
+    }
+
+    .usecase-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .usecase-card:nth-child(1) .usecase-icon { background: rgba(121,192,255,0.1); }
+    .usecase-card:nth-child(2) .usecase-icon { background: rgba(247,129,102,0.1); }
+    .usecase-card:nth-child(3) .usecase-icon { background: rgba(63,185,80,0.1); }
+
+    .usecase-body h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #e6edf3;
+    }
+
+    .usecase-body .trigger {
+      font-size: 11px;
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      color: #8b949e;
+      background: #21262d;
+      padding: 1px 6px;
+      border-radius: 3px;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+
+    .usecase-body p {
+      font-size: 0.8rem;
+      color: #8b949e;
+      line-height: 1.5;
+    }
+
+    /* Flow diagram */
+    .flow {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 28px;
+      margin-bottom: 36px;
+      text-align: center;
+    }
+
+    .flow-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .flow-box {
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .flow-box.highlight {
+      background: #1f3a5f;
+      border-color: #1f6feb;
+      color: #79c0ff;
+    }
+
+    .flow-arrow {
+      color: #30363d;
+      font-size: 1.2rem;
+    }
+
+    /* Tip */
+    .tip {
+      background: #1c2d1e;
+      border: 1px solid #238636;
+      border-radius: 10px;
+      padding: 16px 20px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: #8b949e;
+    }
+
+    .tip-icon {
+      color: #3fb950;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .tip strong {
+      color: #3fb950;
+    }
+
+    .tip code {
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 0.8rem;
+      background: #21262d;
+      padding: 1px 6px;
+      border-radius: 3px;
+      color: #e6edf3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <div class="badge">Claude Code</div>
+      <h1>Harness の仕組み</h1>
+      <p>Claude Code が動くたびに、自動でコマンドを走らせる仕組みです。</p>
+    </header>
+
+    <!-- What is -->
+    <div class="intro-card">
+      <h2>Harness とは</h2>
+      <p>
+        Claude Code がツールを呼び出したり、作業を終えたりする
+        <strong>特定のタイミング</strong>で、
+        あらかじめ設定したシェルコマンドを
+        <strong>自動実行する仕組み</strong>です。<br>
+        設定は <strong>settings.json</strong> の <strong>hooks</strong> セクションに記述します。
+      </p>
+    </div>
+
+    <!-- Flow -->
+    <p class="section-title">実行フロー</p>
+    <div class="flow" style="margin-bottom: 36px;">
+      <div class="flow-row">
+        <div class="flow-box">ユーザーが指示</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box highlight">PreToolUse hook</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">ツール実行</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box highlight">PostToolUse hook</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box">Claude 返答</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box highlight">Stop hook</div>
+      </div>
+    </div>
+
+    <!-- Events -->
+    <p class="section-title">イベントの種類</p>
+    <div class="events-grid">
+      <div class="event-card pre">
+        <div class="event-tag">PreToolUse</div>
+        <p>ツール呼び出しの<br><strong style="color:#e6edf3">直前</strong>に発火</p>
+      </div>
+      <div class="event-card post">
+        <div class="event-tag">PostToolUse</div>
+        <p>ツール呼び出しの<br><strong style="color:#e6edf3">直後</strong>に発火</p>
+      </div>
+      <div class="event-card stop">
+        <div class="event-tag">Stop</div>
+        <p>Claude が回答を<br><strong style="color:#e6edf3">完了</strong>したときに発火</p>
+      </div>
+      <div class="event-card sub">
+        <div class="event-tag">SubagentStop</div>
+        <p>サブエージェントが<br><strong style="color:#e6edf3">完了</strong>したときに発火</p>
+      </div>
+      <div class="event-card notif">
+        <div class="event-tag">Notification</div>
+        <p>Claude が<br><strong style="color:#e6edf3">通知を送る</strong>ときに発火</p>
+      </div>
+    </div>
+
+    <!-- Code -->
+    <p class="section-title">設定例</p>
+    <div class="code-section">
+      <div class="code-header">
+        <span>settings.json</span>
+        <span class="file-badge">.claude/settings.json</span>
+      </div>
+      <pre><span class="cmt">// Stop: 作業完了時に通知を送る</span>
+{
+  <span class="key">"hooks"</span>: {
+    <span class="key">"Stop"</span>: [
+      {
+        <span class="key">"hooks"</span>: [
+          {
+            <span class="key">"type"</span>: <span class="str">"command"</span>,
+            <span class="key">"command"</span>: <span class="str">"echo '✅ Claude が作業を完了しました'"</span>
+          }
+        ]
+      }
+    ],
+
+    <span class="cmt">// PreToolUse: Bash 実行前にログを残す</span>
+    <span class="key">"PreToolUse"</span>: [
+      {
+        <span class="key">"matcher"</span>: <span class="str">"Bash"</span>,
+        <span class="key">"hooks"</span>: [
+          {
+            <span class="key">"type"</span>: <span class="str">"command"</span>,
+            <span class="key">"command"</span>: <span class="str">"echo 'Bash を実行しようとしています'"</span>
+          }
+        ]
+      }
+    ]
+  }
+}</pre>
+    </div>
+
+    <!-- Use cases -->
+    <p class="section-title">実用例</p>
+    <div class="usecases">
+      <div class="usecase-card">
+        <div class="usecase-icon">💬</div>
+        <div class="usecase-body">
+          <h3>LINE / Slack 通知</h3>
+          <span class="trigger">Stop</span>
+          <p>作業完了時に LINE Notify や Slack webhook で通知を送る</p>
+        </div>
+      </div>
+      <div class="usecase-card">
+        <div class="usecase-icon">🛡️</div>
+        <div class="usecase-body">
+          <h3>危険コマンドをブロック</h3>
+          <span class="trigger">PreToolUse → Bash</span>
+          <p>rm -rf など危険なコマンドを検知して実行前に止める</p>
+        </div>
+      </div>
+      <div class="usecase-card">
+        <div class="usecase-icon">✨</div>
+        <div class="usecase-body">
+          <h3>自動フォーマット</h3>
+          <span class="trigger">PostToolUse → Edit</span>
+          <p>ファイル変更後に Prettier や ESLint を自動実行する</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tip -->
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <div>
+        <strong>設定を追加するには</strong><br>
+        Claude Code で <code>/update-config</code> と入力するとGUI付きで hooks を設定できます。
+        LINE 通知の組み込みや特定ツールのブロックなど、具体的なユースケースに合わせて設定できます。
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
