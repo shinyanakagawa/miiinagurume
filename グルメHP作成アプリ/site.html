@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>読み込み中...</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div class="center-page">
+  <div id="msg" class="app-card" style="text-align:center;max-width:420px">読み込み中...</div>
+</div>
+
+<script type="module">
+  import { getPublishedSiteBySlug } from './js/supabase-client.js';
+  import { renderSiteHTML } from './js/template-renderer.js';
+
+  const params = new URLSearchParams(location.search);
+  const slug = params.get('slug');
+  const msgEl = document.getElementById('msg');
+
+  if (!slug) {
+    msgEl.textContent = 'URLが正しくありません（slug指定が必要です）。';
+  } else {
+    try {
+      const site = await getPublishedSiteBySlug(slug);
+      document.open();
+      document.write(renderSiteHTML(site));
+      document.close();
+    } catch (err) {
+      msgEl.innerHTML = 'このページは現在公開されていません。<br><span style="color:var(--app-muted);font-size:.85rem">店舗の公開設定・お支払い状況をご確認ください。</span>';
+    }
+  }
+</script>
+</body>
+</html>

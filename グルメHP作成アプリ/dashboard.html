@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>マイサイト一覧｜グルメHP作成アプリ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+<style>
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.4);
+    display: none; align-items: center; justify-content: center; padding: 1rem; z-index: 100;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal { background: #fff; border-radius: 14px; padding: 1.5rem; max-width: 420px; width: 100%; }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <a href="dashboard.html" class="app-logo">グルメHP作成アプリ</a>
+  <nav>
+    <span id="user-email" style="color:var(--app-muted)"></span>
+    <a href="#" id="logout-link" class="app-btn secondary">ログアウト</a>
+  </nav>
+</header>
+
+<div class="app-container">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
+    <div>
+      <div class="app-title">マイサイト</div>
+      <div class="app-subtitle" style="margin-bottom:0">作成したHPの一覧です。テンプレートを選んで新しいHPを作成できます。</div>
+    </div>
+    <button id="open-create" class="app-btn">＋ 新しいHPを作成</button>
+  </div>
+
+  <div id="msg"></div>
+  <div id="sites" class="app-grid"></div>
+</div>
+
+<!-- 新規作成モーダル -->
+<div class="modal-overlay" id="create-modal">
+  <div class="modal">
+    <div class="app-title" style="font-size:1.1rem">新しいHPを作成</div>
+    <form id="create-form">
+      <div class="app-form-group">
+        <label>テンプレート（テーマ）</label>
+        <div class="theme-select-grid" id="theme-select"></div>
+      </div>
+      <div class="app-form-group">
+        <label for="store_name">店名</label>
+        <input class="app-input" id="store_name" required placeholder="例：みいなカフェ">
+      </div>
+      <div class="app-form-group">
+        <label for="slug">公開URL用ID（半角英数字とハイフン）</label>
+        <input class="app-input" id="slug" required pattern="[a-z0-9-]+" placeholder="例：miiina-cafe">
+        <p class="hint">公開URL: site.html?slug=入力した値</p>
+      </div>
+      <div id="create-msg"></div>
+      <div style="display:flex;gap:.6rem;margin-top:1rem">
+        <button type="button" class="app-btn secondary" id="close-create" style="flex:1">キャンセル</button>
+        <button type="submit" class="app-btn" style="flex:1" id="create-submit">作成する</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module">
+  import { getCurrentUser, signOut, getMySites, createSite, isSlugTaken, deleteSite } from './js/supabase-client.js';
+  import { THEMES } from './js/template-renderer.js';
+
+  const sitesEl = document.getElementById('sites');
+  const msgEl = document.getElementById('msg');
+
+  const user = await getCurrentUser();
+  if (!user) {
+    location.href = 'index.html';
+  } else {
+    document.getElementById('user-email').textContent = user.email;
+  }
+
+  document.getElementById('logout-link').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await signOut();
+    location.href = 'index.html';
+  });
+
+  // テーマ選択肢の描画
+  const swatchColors = {
+    cafe: '#b08d57', bistro: '#a9482f', izakaya: '#c8921a', teishoku: '#d97c3c', kaiseki: '#9a7b3c',
+  };
+  const themeSelect = document.getElementById('theme-select');
+  let selectedTheme = 'cafe';
+  for (const [key, meta] of Object.entries(THEMES)) {
+    const div = document.createElement('div');
+    div.className = 'theme-option' + (key === selectedTheme ? ' selected' : '');
+    div.dataset.theme = key;
+    div.innerHTML = `<div class="theme-swatch" style="background:${swatchColors[key]}"></div>${meta.label}`;
+    div.addEventListener('click', () => {
+      selectedTheme = key;
+      [...themeSelect.children].forEach(c => c.classList.toggle('selected', c.dataset.theme === key));
+    });
+    themeSelect.appendChild(div);
+  }
+
+  async function loadSites() {
+    sitesEl.innerHTML = '<p class="app-empty">読み込み中...</p>';
+    try {
+      const sites = await getMySites();
+      if (!sites.length) {
+        sitesEl.innerHTML = '<p class="app-empty">まだHPがありません。「＋ 新しいHPを作成」から始めましょう。</p>';
+        return;
+      }
+      sitesEl.innerHTML = '';
+      for (const site of sites) {
+        const card = document.createElement('div');
+        card.className = 'site-card';
+        const name = site.data?.store_name || '(店名未設定)';
+        card.innerHTML = `
+          <div class="name">${name}</div>
+          <div class="meta">テーマ: ${THEMES[site.theme]?.label || site.theme} ／ URL: ${site.slug}</div>
+          <div class="badges">
+            <span class="badge ${site.status}">${site.status === 'published' ? '公開中' : '下書き'}</span>
+            <span class="badge ${site.subscription_status === 'active' ? 'active' : 'inactive'}">
+              ${site.subscription_status === 'active' ? '契約中' : '未契約'}
+            </span>
+          </div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem">
+            <a href="editor.html?id=${site.id}" class="app-btn" style="flex:1">編集する</a>
+            <a href="site.html?slug=${encodeURIComponent(site.slug)}" target="_blank" class="app-btn secondary">プレビュー</a>
+          </div>
+          <button class="app-btn danger delete-btn" style="margin-top:.2rem">削除</button>
+        `;
+        card.querySelector('.delete-btn').addEventListener('click', async () => {
+          if (!confirm(`「${name}」を削除しますか？この操作は取り消せません。`)) return;
+          await deleteSite(site.id);
+          loadSites();
+        });
+        sitesEl.appendChild(card);
+      }
+    } catch (err) {
+      msgEl.innerHTML = `<div class="app-msg error">${err.message}</div>`;
+    }
+  }
+  loadSites();
+
+  // 新規作成モーダル
+  const modal = document.getElementById('create-modal');
+  document.getElementById('open-create').addEventListener('click', () => modal.classList.add('open'));
+  document.getElementById('close-create').addEventListener('click', () => modal.classList.remove('open'));
+
+  document.getElementById('create-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const createMsg = document.getElementById('create-msg');
+    const submitBtn = document.getElementById('create-submit');
+    const storeName = document.getElementById('store_name').value.trim();
+    const slug = document.getElementById('slug').value.trim().toLowerCase();
+    createMsg.innerHTML = '';
+
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+      createMsg.innerHTML = '<div class="app-msg error">URL用IDは半角英数字とハイフンのみ使用できます</div>';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    try {
+      if (await isSlugTaken(slug)) {
+        createMsg.innerHTML = '<div class="app-msg error">このURL用IDは既に使われています</div>';
+        return;
+      }
+      const site = await createSite({
+        slug,
+        theme: selectedTheme,
+        data: { store_name: storeName, genre: '' },
+      });
+      location.href = `editor.html?id=${site.id}`;
+    } catch (err) {
+      createMsg.innerHTML = `<div class="app-msg error">${err.message}</div>`;
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>

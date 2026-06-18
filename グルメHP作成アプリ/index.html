@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>グルメHP作成アプリ｜飲食店の公式HPを自分でかんたん作成</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+<style>
+  .hero { text-align: center; padding: 3rem 1.5rem 1rem; }
+  .hero h1 { font-family: 'Noto Serif JP', serif; font-size: clamp(1.6rem, 5vw, 2.4rem); margin-bottom: .8rem; }
+  .hero p { color: var(--app-muted); }
+  .tabs { display: flex; border-bottom: 1px solid var(--app-border); margin-bottom: 1.5rem; }
+  .tabs button {
+    flex: 1; padding: .8rem; border: none; background: none; cursor: pointer;
+    font-weight: 700; color: var(--app-muted); border-bottom: 2px solid transparent;
+  }
+  .tabs button.active { color: var(--app-text); border-bottom-color: var(--app-accent); }
+  .price-note { text-align: center; font-size: .85rem; color: var(--app-muted); margin-top: 1rem; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>テンプレートから、自分だけの飲食店HPを。</h1>
+  <p>テーマを選んで、文字や写真を入力するだけ。月額制で公開できます。</p>
+</div>
+
+<div class="center-page" style="min-height:auto;padding-top:0">
+  <div class="auth-card app-card">
+    <div class="tabs">
+      <button id="tab-login" class="active">ログイン</button>
+      <button id="tab-signup">新規登録</button>
+    </div>
+
+    <div id="msg"></div>
+
+    <form id="auth-form">
+      <div class="app-form-group">
+        <label for="email">メールアドレス</label>
+        <input class="app-input" type="email" id="email" required autocomplete="email">
+      </div>
+      <div class="app-form-group">
+        <label for="password">パスワード</label>
+        <input class="app-input" type="password" id="password" required minlength="6" autocomplete="current-password">
+        <p class="hint">6文字以上</p>
+      </div>
+      <button type="submit" class="app-btn" style="width:100%" id="submit-btn">ログイン</button>
+    </form>
+
+    <p class="price-note">月額プラン：1サイトあたり月額1,000円（Stripe決済）</p>
+  </div>
+</div>
+
+<script type="module">
+  import { signIn, signUp, getCurrentUser } from './js/supabase-client.js';
+
+  const tabLogin = document.getElementById('tab-login');
+  const tabSignup = document.getElementById('tab-signup');
+  const submitBtn = document.getElementById('submit-btn');
+  const form = document.getElementById('auth-form');
+  const msg = document.getElementById('msg');
+
+  let mode = 'login';
+
+  function setMode(next) {
+    mode = next;
+    tabLogin.classList.toggle('active', mode === 'login');
+    tabSignup.classList.toggle('active', mode === 'signup');
+    submitBtn.textContent = mode === 'login' ? 'ログイン' : '新規登録';
+    document.getElementById('password').autocomplete = mode === 'login' ? 'current-password' : 'new-password';
+    msg.innerHTML = '';
+  }
+  tabLogin.addEventListener('click', () => setMode('login'));
+  tabSignup.addEventListener('click', () => setMode('signup'));
+
+  // 既にログイン済みならダッシュボードへ
+  getCurrentUser().then(user => {
+    if (user) location.href = 'dashboard.html';
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    submitBtn.disabled = true;
+    msg.innerHTML = '';
+    try {
+      if (mode === 'login') {
+        await signIn(email, password);
+        location.href = 'dashboard.html';
+      } else {
+        await signUp(email, password);
+        msg.innerHTML = `<div class="app-msg success">登録確認メールを送信しました。メール内のリンクから認証後、ログインしてください。</div>`;
+      }
+    } catch (err) {
+      msg.innerHTML = `<div class="app-msg error">${err.message}</div>`;
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>
