@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "gemini-image": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["mcp-gemini-image/index.js"],
+      "env": {
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}",
+        "OUTPUT_DIR": "mcp-gemini-image/generated-images"
+      }
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "supabase": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@supabase/mcp-server-supabase@latest", "--access-token", "${SUPABASE_ACCESS_TOKEN}"]
+    }
+  }
+}
