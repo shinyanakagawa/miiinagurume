@@ -9,6 +9,17 @@
 //   TURNSTILE_SECRET_KEY      : Cloudflare Turnstileのシークレットキー
 const REQUIRED_FIELDS = ['name', 'tel', 'date', 'time', 'pax'];
 
+const RATE_LIMIT_WINDOW_MS = 10_000;
+const lastRequestByIp = new Map();
+
+function isRateLimited(ip) {
+  if (!ip) return false;
+  const now = Date.now();
+  const last = lastRequestByIp.get(ip);
+  lastRequestByIp.set(ip, now);
+  return typeof last === 'number' && now - last < RATE_LIMIT_WINDOW_MS;
+}
+
 async function verifyTurnstile(token, remoteIp) {
   const secret = process.env.TURNSTILE_SECRET_KEY;
   if (!secret) return true; // 未設定環境（ローカル検証等）はスキップ
@@ -48,6 +59,10 @@ exports.handler = async (event) => {
 
   const remoteIp = event.headers['x-nf-client-connection-ip'] || event.headers['client-ip'];
 
+  if (isRateLimited(remoteIp)) {
+    return { statusCode: 429, body: '送信間隔が短すぎます。少し待ってから再度お試しください。' };
+  }
+
   const turnstileOk = await verifyTurnstile(data['cf-turnstile-response'], remoteIp);
   if (!turnstileOk) {
     return { statusCode: 400, body: 'Bot確認に失敗しました' };
@@ -55,9 +70,10 @@ exports.handler = async (event) => {
 
   const results = {};
 
-  // LINE通知
+  // LINE通知（管理者宛のみ。broadcastは使わない）
   const lineToken = process.env.LINE_CHANNEL_ACCESS_TOKEN;
-  if (lineToken) {
+  const lineAdminUserId = process.env.LINE_ADMIN_USER_ID;
+  if (lineToken && lineAdminUserId) {
     const message =
       '【Bistrot MIIINA】新しいご予約\n' +
       `お名前: ${name || '-'}\n` +
@@ -66,13 +82,13 @@ exports.handler = async (event) => {
       `時間: ${time || '-'}\n` +
       `人数: ${pax ? pax + '名' : '-'}`;
 
-    const lineRes = await fetch('https://api.line.me/v2/bot/message/broadcast', {
+    const lineRes = await fetch('https://api.line.me/v2/bot/message/push', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${lineToken}`,
       },
-      body: JSON.stringify({ messages: [{ type: 'text', text: message }] }),
+      body: JSON.stringify({ to: lineAdminUserId, messages: [{ type: 'text', text: message }] }),
     });
     results.line = lineRes.ok ? 'ok' : await lineRes.text();
   }
