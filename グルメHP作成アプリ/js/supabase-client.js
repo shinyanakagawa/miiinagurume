@@ -62,7 +62,7 @@ export async function getSiteById(id) {
 export async function getPublishedSiteBySlug(slug) {
   const { data, error } = await supabase
     .from('sites')
-    .select('*')
+    .select('theme, status, data')
     .eq('slug', slug)
     .eq('status', 'published')
     .single();

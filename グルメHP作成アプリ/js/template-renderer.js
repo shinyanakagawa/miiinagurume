@@ -20,6 +20,12 @@ function esc(value) {
     .replace(/'/g, '&#39;');
 }
 
+export function safeUrl(value) {
+  const v = String(value ?? '').trim();
+  if (!/^https?:\/\//i.test(v)) return '';
+  return v;
+}
+
 function telHref(phone) {
   return 'tel:' + String(phone ?? '').replace(/[^\d+]/g, '');
 }
@@ -43,7 +49,7 @@ function renderMenu(items = []) {
 function renderGallery(images = []) {
   const valid = images.filter(Boolean);
   if (!valid.length) return '';
-  const imgs = valid.map(url => `<img src="${esc(url)}" alt="店内・料理写真" loading="lazy">`).join('');
+  const imgs = valid.map(url => `<img src="${esc(safeUrl(url))}" alt="店内・料理写真" loading="lazy">`).join('');
   return `
   <section class="site-section" id="gallery">
     <span class="site-section-label">GALLERY</span>
@@ -125,7 +131,7 @@ export function renderSiteHTML(site) {
   const logoText = data.logo_text || storeName;
   const genre = data.genre || meta.label;
   const heroStyle = data.hero_image
-    ? ` style="background-image:url('${esc(data.hero_image)}')"`
+    ? ` style="background-image:url('${esc(safeUrl(data.hero_image))}')"`
     : '';
 
   return `<!DOCTYPE html>
@@ -167,7 +173,7 @@ ${renderInfoAndAccess(data)}
 <footer class="site-footer">
   <p class="flogo">${esc(logoText)}</p>
   <p>${esc(genre)} ${esc(storeName)}</p>
-  ${data.sns_instagram ? `<p style="margin-top:.5rem"><a href="${esc(data.sns_instagram)}" target="_blank" rel="noopener" style="color:var(--accent)">Instagram</a></p>` : ''}
+  ${data.sns_instagram ? `<p style="margin-top:.5rem"><a href="${esc(safeUrl(data.sns_instagram))}" target="_blank" rel="noopener" style="color:var(--accent)">Instagram</a></p>` : ''}
   <p style="margin-top:1rem">※ このページは「グルメHP作成アプリ」で作成されたサンプルです</p>
 </footer>
 
