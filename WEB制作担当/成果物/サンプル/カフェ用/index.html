@@ -73,7 +73,7 @@
     }
     .hero-image-bg {
       position: absolute; inset: 0;
-      background: linear-gradient(135deg, #C8A090 0%, #9B7B6E 35%, #6B4F3A 70%, #2C1F14 100%);
+      background: linear-gradient(135deg, rgba(200,160,144,.45) 0%, rgba(155,123,110,.45) 35%, rgba(107,79,58,.55) 70%, rgba(44,31,20,.7) 100%), url("images/hero.png") center center/cover no-repeat;
     }
     .hero-image-overlay {
       position: absolute; inset: 0;
@@ -204,14 +204,15 @@
     .atm-card:first-child { grid-row: 1 / 3; }
     .atm-bg {
       position: absolute; inset: 0;
+      background-size: cover; background-position: center;
       transition: transform .5s;
     }
     .atm-card:hover .atm-bg { transform: scale(1.05); }
-    .atm-bg-1 { background: linear-gradient(135deg, #9B7B6E, #6B4F3A); }
-    .atm-bg-2 { background: linear-gradient(135deg, #7D9B76, #4A6B43); }
-    .atm-bg-3 { background: linear-gradient(135deg, #C8A090, #9B7B6E); }
-    .atm-bg-4 { background: linear-gradient(135deg, #C5A55A, #A08040); }
-    .atm-bg-5 { background: linear-gradient(135deg, #4A6B43, #2C4226); }
+    .atm-bg-1 { background-image: url("images/atm-main.png"); }
+    .atm-bg-2 { background-image: url("images/atm-terrace.png"); }
+    .atm-bg-3 { background-image: url("images/atm-counter.png"); }
+    .atm-bg-4 { background-image: url("images/atm-private.png"); }
+    .atm-bg-5 { background-image: url("images/atm-roastery.png"); }
     .atm-caption {
       position: relative; z-index: 2;
       padding: 1.4rem;
