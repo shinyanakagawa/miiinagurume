@@ -127,6 +127,15 @@
     #rsv .sub{font-size:.87rem;color:rgba(255,255,255,.8);margin-bottom:2rem}
     .tel-big{display:block;font-size:clamp(1.7rem,7vw,2.5rem);font-weight:700;letter-spacing:.1em;color:#fff;margin-bottom:.35rem}
     .tel-note{font-size:.73rem;color:rgba(255,255,255,.65)}
+    .rsv-or{font-size:.7rem;letter-spacing:.25em;color:rgba(255,255,255,.8);margin:2.2rem 0 1.6rem}
+    .res-form{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;max-width:480px;margin:0 auto;text-align:left}
+    .res-form input,.res-form select{width:100%;padding:.85rem 1rem;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--dk);font-size:.85rem;font-family:inherit;appearance:none;-webkit-appearance:none}
+    .res-form input::placeholder{color:var(--muted)}
+    .res-form input:focus,.res-form select:focus{outline:none;border-color:var(--dk)}
+    .res-form .full{grid-column:1 / -1}
+    .res-submit{grid-column:1 / -1;padding:.95rem;background:var(--dk);color:#fff;border:none;border-radius:100px;font-size:.85rem;font-weight:700;letter-spacing:.15em;cursor:pointer;transition:background .25s}
+    .res-submit:active{background:#1a1108}
+    .res-status{font-size:.78rem;color:#fff;margin-top:1rem}
     .open-badge{display:inline-flex;align-items:center;gap:.45rem;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);border-radius:100px;padding:.35rem .9rem;font-size:.7rem;color:#fff;letter-spacing:.08em;margin-bottom:1rem}
     .open-dot{width:6px;height:6px;background:#fff;border-radius:50%;animation:blink 2s ease infinite}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
@@ -163,6 +172,7 @@
     .fbtn{display:inline-flex;align-items:center;gap:.4rem;background:var(--ac);color:#fff;font-size:.82rem;font-weight:700;padding:.9rem 1.6rem;border-radius:100px;box-shadow:0 4px 20px rgba(192,97,58,.45);transition:background .2s,transform .2s;white-space:nowrap}
     .fbtn:active{transform:scale(.95);background:var(--ac-l)}
   </style>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -278,6 +288,19 @@
   <p class="sub reveal">お電話でお気軽にどうぞ。<br>お弁当のテイクアウトは前日までにご連絡ください。</p>
   <a href="tel:111-1111" class="tel-big reveal">111-1111</a>
   <p class="tel-note reveal">営業時間内（11:30〜14:30）にお電話ください</p>
+  <p class="rsv-or reveal">― または、フォームからご予約 ―</p>
+  <form class="res-form reveal" id="reservation-form" name="reservation" method="POST" data-netlify="true">
+    <input type="hidden" name="form-name" value="reservation">
+    <input type="text" id="res-name" name="name" class="full" placeholder="お名前" required>
+    <input type="tel" id="res-tel" name="tel" class="full" placeholder="電話番号" required>
+    <input type="date" id="res-date" name="date" required>
+    <select id="res-time" name="time" required></select>
+    <select id="res-pax" name="pax" class="full" required></select>
+    <input type="text" name="website" id="hp-field" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;opacity:0" aria-hidden="true">
+    <div class="cf-turnstile full" data-sitekey="YOUR_TURNSTILE_SITE_KEY"></div>
+    <button class="res-submit" type="submit">この内容で予約する</button>
+  </form>
+  <p id="reservation-status" class="res-status reveal"></p>
 </section>
 
 <section class="sec sec-alt" id="info">
@@ -330,6 +353,64 @@
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
   document.querySelector('#hero .reveal')?.classList.add('visible');
   document.querySelectorAll('.tbtn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active')}));
+
+  // Reservation form init
+  (function(){
+    const today=new Date();
+    const yyyy=today.getFullYear();
+    const mm=String(today.getMonth()+1).padStart(2,'0');
+    const dd=String(today.getDate()).padStart(2,'0');
+    document.getElementById('res-date').value=`${yyyy}-${mm}-${dd}`;
+
+    const timeSelect=document.getElementById('res-time');
+    timeSelect.innerHTML='<option value="">時間を選択</option>';
+    for(let h=11;h<=14;h++){
+      for(let m=0;m<60;m+=30){
+        if(h===11&&m<30)continue;
+        if(h===14&&m>30)break;
+        const hh=String(h).padStart(2,'0');
+        const ms=String(m).padStart(2,'0');
+        const opt=document.createElement('option');
+        opt.value=`${hh}:${ms}`;
+        opt.textContent=`${hh}:${ms}`;
+        timeSelect.appendChild(opt);
+      }
+    }
+
+    const paxSelect=document.getElementById('res-pax');
+    paxSelect.innerHTML='<option value="">人数を選択</option>';
+    for(let i=1;i<=20;i++){
+      const opt=document.createElement('option');
+      opt.value=i;
+      opt.textContent=`${i}名`;
+      paxSelect.appendChild(opt);
+    }
+  })();
+
+  // Reservation form submit: notify by email (Netlify Forms) and LINE
+  const reservationForm=document.getElementById('reservation-form');
+  const reservationStatus=document.getElementById('reservation-status');
+  reservationForm.addEventListener('submit',async(e)=>{
+    e.preventDefault();
+    const formData=new FormData(reservationForm);
+    reservationStatus.textContent='送信中...';
+    try{
+      await fetch('/',{
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:new URLSearchParams(formData).toString(),
+      });
+      await fetch('/.netlify/functions/send-line',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(Object.fromEntries(formData.entries())),
+      });
+      reservationStatus.textContent='ご予約を受け付けました。確認のご連絡をお待ちください。';
+      reservationForm.reset();
+    }catch(err){
+      reservationStatus.textContent='送信に失敗しました。お電話でお問い合わせください。';
+    }
+  });
 </script>
 </body>
 </html>
