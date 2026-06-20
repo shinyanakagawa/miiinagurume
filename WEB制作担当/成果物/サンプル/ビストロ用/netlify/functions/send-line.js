@@ -22,7 +22,10 @@ function isRateLimited(ip) {
 
 async function verifyTurnstile(token, remoteIp) {
   const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return true; // 未設定環境（ローカル検証等）はスキップ
+  if (!secret) {
+    console.warn('TURNSTILE_SECRET_KEY が未設定のため、Turnstile検証をスキップしています');
+    return true;
+  }
   if (!token) return false;
   const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
