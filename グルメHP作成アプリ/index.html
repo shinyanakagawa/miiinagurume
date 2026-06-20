@@ -87,6 +87,49 @@
   .template-body .tag { font-size: .62rem; letter-spacing: .15em; text-transform: uppercase; color: var(--lp-muted); margin-bottom: .3rem; }
   .template-body .name { font-weight: 700; font-size: .95rem; margin-bottom: .3rem; }
   .template-body .desc { font-size: .76rem; color: var(--lp-muted); }
+
+  /* 使い方（簡素版） */
+  .steps-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 2rem; }
+  .step-card { background: var(--lp-card); border: 1px solid var(--lp-border); border-radius: 14px; padding: 1.6rem; text-align: center; }
+  .step-num {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--lp-accent); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto .8rem;
+  }
+  .step-card h3 { font-size: .95rem; margin-bottom: .4rem; }
+  .step-card p { font-size: .83rem; color: var(--lp-muted); }
+  .steps-more { text-align: center; }
+
+  /* 料金 */
+  .pricing-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); align-items: start; }
+  .pricing-card { background: var(--lp-card); border: 1px solid var(--lp-border); border-radius: 16px; padding: 1.8rem; }
+  .pricing-card h3 { font-size: 1.05rem; margin-bottom: .4rem; }
+  .pricing-card .price { font-size: 1.6rem; font-weight: 700; margin-bottom: .8rem; }
+  .pricing-card .price span { font-size: .8rem; font-weight: 400; color: var(--lp-muted); }
+  .pricing-flow { list-style: none; font-size: .82rem; color: var(--lp-muted); margin-bottom: 1.2rem; }
+  .pricing-flow li { padding: .25rem 0; }
+  .pricing-note { font-size: .76rem; color: var(--lp-muted); margin-top: .8rem; }
+  .pricing-plans { display: grid; gap: 1rem; }
+  .plan-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    border-top: 1px solid var(--lp-border); padding-top: 1rem;
+  }
+  .plan-row:first-child { border-top: none; padding-top: 0; }
+  .plan-row .plan-name { font-weight: 700; font-size: .9rem; }
+  .plan-row .plan-price { font-size: .82rem; color: var(--lp-muted); }
+
+  /* FAQ */
+  .faq-item { border-bottom: 1px solid var(--lp-border); padding: 1.2rem 0; }
+  .faq-item h3 { font-size: .92rem; margin-bottom: .5rem; }
+  .faq-item p { font-size: .85rem; color: var(--lp-muted); }
+
+  /* 最終CTA */
+  #final-cta { text-align: center; background: var(--lp-text); color: #fff; border-radius: 20px; max-width: 1080px; margin: 0 auto 4rem; }
+  #final-cta h2 { color: #fff; }
+  #final-cta p { color: rgba(255,255,255,.7); margin-bottom: 1.6rem; }
+
+  /* フッター */
+  footer { text-align: center; padding: 2.5rem 1.5rem; font-size: .75rem; color: var(--lp-muted); border-top: 1px solid var(--lp-border); }
+  footer a { color: var(--lp-accent); text-decoration: none; }
 </style>
 </head>
 <body>
@@ -188,6 +231,100 @@
     </a>
   </div>
 </section>
+
+<section id="how-it-works">
+  <p class="section-label">How it works</p>
+  <h2 class="section-title">使い方</h2>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <h3>基本情報・写真を入力</h3>
+      <p>店名・営業時間・写真などをフォームに入れるだけ。</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <h3>公開する</h3>
+      <p>プレビューを確認して「公開する」を押すと完成です。</p>
+    </div>
+  </div>
+  <p class="steps-more"><a href="guide.html" class="btn btn-secondary btn-sm">詳しい使い方を見る →</a></p>
+</section>
+
+<section id="pricing">
+  <p class="section-label">Pricing</p>
+  <h2 class="section-title">料金プラン</h2>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <h3>セルフサーブ</h3>
+      <div class="price">月額1,000円<span> ／ サイト</span></div>
+      <ul class="pricing-flow">
+        <li>① 無料で会員登録</li>
+        <li>② 情報・写真を入力してプレビュー（無料）</li>
+        <li>③ 公開する時に決済</li>
+      </ul>
+      <a href="login.html?tab=signup" class="btn btn-primary" style="width:100%">無料で会員登録</a>
+      <p class="pricing-note">独自ドメインを使いたい場合は、公開前にご相談ください。</p>
+    </div>
+    <div class="pricing-card">
+      <h3>代行制作（みーなグルメにおまかせ）</h3>
+      <p class="pricing-note" style="margin-top:0;margin-bottom:1rem">HP制作に加えて、写真撮影・ドメイン設定・データ分析まで対応するフルサービスです。</p>
+      <div class="pricing-plans">
+        <div class="plan-row">
+          <span class="plan-name">ライト</span>
+          <span class="plan-price">29,800円〜</span>
+        </div>
+        <div class="plan-row">
+          <span class="plan-name">スタンダード</span>
+          <span class="plan-price">49,800円〜</span>
+        </div>
+        <div class="plan-row">
+          <span class="plan-name">プレミアム</span>
+          <span class="plan-price">89,800円〜</span>
+        </div>
+      </div>
+      <!-- TODO: coconala出品ページ公開後にURLを差し込む -->
+      <a href="#" class="btn btn-secondary" style="width:100%;margin-top:1.2rem">このプランで相談する</a>
+    </div>
+  </div>
+</section>
+
+<!-- お客様の声: coconala受注・レビューが集まった時点で追加する。ナビには現状リンクを置かない -->
+
+<section id="faq">
+  <p class="section-label">FAQ</p>
+  <h2 class="section-title">よくあるご質問</h2>
+  <div class="faq-item">
+    <h3>いつ料金が発生しますか？</h3>
+    <p>会員登録・情報入力・写真アップロード・プレビューはすべて無料です。「公開する」を押す時に、月額1,000円のお支払いが発生します。</p>
+  </div>
+  <div class="faq-item">
+    <h3>独自ドメインを使いたいのですが？</h3>
+    <p>公開前に個別にご相談ください。独自ドメインの取得費用はお客様負担となります。</p>
+  </div>
+  <div class="faq-item">
+    <h3>解約はいつでもできますか？</h3>
+    <p>いつでも解約可能です。解約後は公開ページが非表示になります。</p>
+  </div>
+  <div class="faq-item">
+    <h3>お店の写真がない場合はどうすればいいですか？</h3>
+    <p>編集画面のAI画像生成機能を使えば、お店のジャンルに合った写真を生成して使うことができます。</p>
+  </div>
+</section>
+
+<section id="final-cta">
+  <div style="padding:3.5rem 2rem">
+    <h2 class="section-title" style="margin-bottom:.6rem">まずは無料で試してみませんか？</h2>
+    <p>会員登録・作成・プレビューはすべて無料です。</p>
+    <div class="hero-ctas">
+      <a href="login.html?tab=signup" class="btn btn-primary">無料で始める</a>
+      <a href="#pricing" class="btn btn-secondary" style="border-color:rgba(255,255,255,.3);color:#fff">代行を相談する</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © みーなグルメ · <a href="https://www.instagram.com/miiinagurume/">@miiinagurume</a> · <a href="../index.html">サンプルHP一覧</a>
+</footer>
 
 </body>
 </html>
