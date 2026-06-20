@@ -396,6 +396,7 @@
       footer { grid-template-columns: 1fr; }
     }
   </style>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -564,6 +565,8 @@
     <input type="date" id="res-date" name="date" required>
     <select id="res-time" name="time" required></select>
     <select id="res-pax" name="pax" required></select>
+    <input type="text" name="website" id="hp-field" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;opacity:0" aria-hidden="true">
+    <div class="cf-turnstile" data-sitekey="YOUR_TURNSTILE_SITE_KEY"></div>
     <button class="res-submit" type="submit">予約する</button>
   </form>
   <p id="reservation-status" class="reveal" style="margin-top:1.2rem;font-size:.85rem;color:var(--wine)"></p>

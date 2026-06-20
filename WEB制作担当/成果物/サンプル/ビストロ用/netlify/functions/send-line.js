@@ -1,10 +1,27 @@
-// 予約フォーム送信時にLINE公式アカウントへのブロードキャスト通知と、
+// 予約フォーム送信時にLINE公式アカウントへの通知と、
 // 担当者宛のHTMLメール通知を送る。
 //
 // 必要な環境変数:
 //   LINE_CHANNEL_ACCESS_TOKEN : LINE Developersで発行したチャネルアクセストークン
+//   LINE_ADMIN_USER_ID        : 通知を受け取る管理者のLINE userId
 //   RESEND_API_KEY            : Resend (https://resend.com) のAPIキー
 //   NOTIFY_EMAIL              : 通知を受け取るメールアドレス
+//   TURNSTILE_SECRET_KEY      : Cloudflare Turnstileのシークレットキー
+const REQUIRED_FIELDS = ['name', 'tel', 'date', 'time', 'pax'];
+
+async function verifyTurnstile(token, remoteIp) {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) return true; // 未設定環境（ローカル検証等）はスキップ
+  if (!token) return false;
+  const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ secret, response: token, remoteip: remoteIp }),
+  });
+  const result = await res.json();
+  return result.success === true;
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
@@ -17,7 +34,25 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: 'Invalid JSON' };
   }
 
+  // ハニーポット: 人間には見えない欄が埋まっていたら静かに拒否
+  if (data.website) {
+    return { statusCode: 200, body: JSON.stringify({ ok: true }) };
+  }
+
+  // 必須項目検証
   const { name, tel, date, time, pax } = data;
+  const missing = REQUIRED_FIELDS.filter((field) => !String(data[field] ?? '').trim());
+  if (missing.length > 0) {
+    return { statusCode: 400, body: `必須項目が未入力です: ${missing.join(', ')}` };
+  }
+
+  const remoteIp = event.headers['x-nf-client-connection-ip'] || event.headers['client-ip'];
+
+  const turnstileOk = await verifyTurnstile(data['cf-turnstile-response'], remoteIp);
+  if (!turnstileOk) {
+    return { statusCode: 400, body: 'Bot確認に失敗しました' };
+  }
+
   const results = {};
 
   // LINE通知
