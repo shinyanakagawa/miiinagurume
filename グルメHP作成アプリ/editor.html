@@ -530,7 +530,8 @@
     previewEl.hidden = true;
     genUseBtn.hidden = true;
     statusEl.textContent = '';
-    keyInput.value = localStorage.getItem('gemini_api_key') || '';
+    localStorage.removeItem('gemini_api_key');
+    keyInput.value = sessionStorage.getItem('gemini_api_key') || '';
     promptEl.value = themePrompts[site?.theme] || themePrompts.cafe;
     overlay.hidden = false;
   }
@@ -546,7 +547,7 @@
     const prompt = promptEl.value.trim();
     if (!prompt) { statusEl.textContent = 'プロンプトを入力してください'; return; }
 
-    localStorage.setItem('gemini_api_key', apiKey);
+    sessionStorage.setItem('gemini_api_key', apiKey);
     statusEl.textContent = '生成中... (30秒ほどかかる場合があります)';
     genUseBtn.hidden = true;
     previewEl.hidden = true;
