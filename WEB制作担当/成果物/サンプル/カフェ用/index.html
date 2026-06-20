@@ -261,7 +261,7 @@
       text-align: center;
     }
     .res-form {
-      display: grid; grid-template-columns: 1fr 1fr 1fr auto;
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
       gap: 1px; max-width: 800px; margin: 3rem auto 0;
       background: var(--beige);
     }
@@ -269,6 +269,7 @@
       padding: 1.2rem 1.6rem; border: none; outline: none;
       background: var(--cream); font-size: .88rem;
       font-family: inherit; color: var(--dark); width: 100%;
+      appearance: none; -webkit-appearance: none; cursor: pointer;
     }
     .res-form input::placeholder { color: #B0A090; }
     .res-submit {
@@ -334,6 +335,7 @@
       footer { grid-template-columns: 1fr; }
     }
   </style>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -485,12 +487,18 @@
     <h2 class="section-title">ご予約</h2>
     <p style="margin-top:.8rem;color:#7A6B60;font-size:.9rem">特別なひとときを、ご予約でより快適に。</p>
   </div>
-  <div class="res-form reveal">
-    <input type="date" placeholder="日付">
-    <input type="time" placeholder="時間">
-    <input type="number" placeholder="人数" min="1" max="20">
-    <button class="res-submit">予約する</button>
-  </div>
+  <form class="res-form reveal" id="reservation-form" name="reservation" method="POST" data-netlify="true">
+    <input type="hidden" name="form-name" value="reservation">
+    <input type="text" id="res-name" name="name" placeholder="お名前" required>
+    <input type="tel" id="res-tel" name="tel" placeholder="電話番号" required>
+    <input type="date" id="res-date" name="date" required>
+    <select id="res-time" name="time" required></select>
+    <select id="res-pax" name="pax" required></select>
+    <input type="text" name="website" id="hp-field" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;opacity:0" aria-hidden="true">
+    <div class="cf-turnstile" data-sitekey="YOUR_TURNSTILE_SITE_KEY"></div>
+    <button class="res-submit" type="submit">予約する</button>
+  </form>
+  <p id="reservation-status" class="reveal" style="margin-top:1.2rem;font-size:.85rem;color:var(--brown)"></p>
 </section>
 
 <!-- FOOTER -->
@@ -569,6 +577,66 @@ function renderMenu() {
   `).join('');
 }
 renderMenu();
+
+// Reservation form init
+(function() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  document.getElementById('res-date').value = `${yyyy}-${mm}-${dd}`;
+
+  const timeSelect = document.getElementById('res-time');
+  timeSelect.innerHTML = '<option value="">時間を選択</option>';
+  for (let h = 9; h <= 18; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      if (h === 18 && m > 0) break;
+      const hh = String(h).padStart(2, '0');
+      const ms = String(m).padStart(2, '0');
+      const opt = document.createElement('option');
+      opt.value = `${hh}:${ms}`;
+      opt.textContent = `${hh}:${ms}`;
+      timeSelect.appendChild(opt);
+    }
+  }
+
+  const paxSelect = document.getElementById('res-pax');
+  paxSelect.innerHTML = '<option value="">人数を選択</option>';
+  for (let i = 1; i <= 20; i++) {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `${i}名`;
+    paxSelect.appendChild(opt);
+  }
+})();
+
+// Reservation form submit: notify by email (Netlify Forms) and LINE
+const reservationForm = document.getElementById('reservation-form');
+const reservationStatus = document.getElementById('reservation-status');
+reservationForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(reservationForm);
+  reservationStatus.textContent = '送信中...';
+
+  try {
+    await fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(formData).toString(),
+    });
+
+    await fetch('/.netlify/functions/send-line', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.fromEntries(formData.entries())),
+    });
+
+    reservationStatus.textContent = 'ご予約を受け付けました。確認のご連絡をお待ちください。';
+    reservationForm.reset();
+  } catch (err) {
+    reservationStatus.textContent = '送信に失敗しました。お電話でお問い合わせください。';
+  }
+});
 
 // Scroll reveal
 const observer = new IntersectionObserver((entries) => {
