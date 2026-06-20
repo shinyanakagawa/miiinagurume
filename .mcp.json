@@ -19,7 +19,7 @@
     "supabase": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@supabase/mcp-server-supabase@latest", "--access-token", "${SUPABASE_ACCESS_TOKEN}"]
+      "args": ["-y", "@supabase/mcp-server-supabase@0.8.2", "--access-token", "${SUPABASE_ACCESS_TOKEN}"]
     }
   }
 }
