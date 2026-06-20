@@ -658,7 +658,11 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 export function sanitizeFilename(filename, outputDir) {
-  const base = path.basename(String(filename ?? ""));
+  const raw = String(filename ?? "");
+  if (!raw || raw.includes("..")) {
+    return null;
+  }
+  const base = path.basename(raw);
   if (!base || !/^[a-zA-Z0-9._-]+$/.test(base)) {
     return null;
   }
