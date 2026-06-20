@@ -5,102 +5,189 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>グルメHP作成アプリ｜飲食店の公式HPを自分でかんたん作成</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
-  .hero { text-align: center; padding: 3rem 1.5rem 1rem; }
-  .hero h1 { font-family: 'Noto Serif JP', serif; font-size: clamp(1.6rem, 5vw, 2.4rem); margin-bottom: .8rem; }
-  .hero p { color: var(--app-muted); }
-  .tabs { display: flex; border-bottom: 1px solid var(--app-border); margin-bottom: 1.5rem; }
-  .tabs button {
-    flex: 1; padding: .8rem; border: none; background: none; cursor: pointer;
-    font-weight: 700; color: var(--app-muted); border-bottom: 2px solid transparent;
+  :root {
+    --lp-bg: #faf9f6;
+    --lp-card: #ffffff;
+    --lp-text: #2c2820;
+    --lp-muted: #8a7a66;
+    --lp-border: #e8e0d8;
+    --lp-accent: #c8a060;
   }
-  .tabs button.active { color: var(--app-text); border-bottom-color: var(--app-accent); }
-  .price-note { text-align: center; font-size: .85rem; color: var(--app-muted); margin-top: 1rem; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--lp-bg); color: var(--lp-text);
+    font-family: 'Noto Sans JP', sans-serif; min-height: 100vh; line-height: 1.7;
+  }
+  h1, h2, h3 { font-family: 'Noto Serif JP', serif; }
+  a { color: inherit; }
+
+  /* ヘッダー */
+  .lp-header {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 1.5rem; background: rgba(250,249,246,.92); backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--lp-border);
+  }
+  .lp-logo { font-weight: 700; font-size: 1.05rem; letter-spacing: .04em; text-decoration: none; }
+  .lp-nav { display: none; gap: 1.4rem; font-size: .82rem; }
+  @media (min-width: 768px) { .lp-nav { display: flex; align-items: center; } }
+  .lp-nav a { text-decoration: none; color: var(--lp-muted); }
+  .lp-nav a:hover { color: var(--lp-text); }
+  .lp-header-cta { display: flex; gap: .6rem; align-items: center; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
+    padding: .7rem 1.4rem; border-radius: 999px; font-size: .85rem; font-weight: 700;
+    text-decoration: none; cursor: pointer; border: none; transition: background .15s, transform .1s;
+  }
+  .btn-primary { background: var(--lp-accent); color: #fff; }
+  .btn-primary:hover { background: #b08d4d; }
+  .btn-secondary { background: transparent; color: var(--lp-text); border: 1px solid var(--lp-border); }
+  .btn-secondary:hover { background: var(--lp-card); }
+  .btn-sm { padding: .55rem 1.1rem; font-size: .78rem; }
+
+  /* Hero */
+  #hero { text-align: center; padding: 5rem 1.5rem 4rem; }
+  #hero h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); margin-bottom: 1rem; }
+  #hero p.sub { color: var(--lp-muted); font-size: 1rem; margin-bottom: 2rem; }
+  .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+  section { padding: 4rem 1.5rem; max-width: 1080px; margin: 0 auto; }
+  .section-label {
+    font-size: .65rem; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--lp-accent); text-align: center; margin-bottom: .6rem;
+  }
+  .section-title { font-size: clamp(1.4rem, 3vw, 1.9rem); text-align: center; margin-bottom: 3rem; }
+
+  /* 特徴 */
+  .features-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .feature-card { background: var(--lp-card); border: 1px solid var(--lp-border); border-radius: 14px; padding: 1.6rem; text-align: center; }
+  .feature-icon { font-size: 1.8rem; margin-bottom: .8rem; }
+  .feature-card h3 { font-size: 1rem; margin-bottom: .5rem; }
+  .feature-card p { font-size: .85rem; color: var(--lp-muted); }
+
+  /* テンプレート例 */
+  .templates-grid { display: grid; gap: 1.2rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .template-card {
+    display: block; text-decoration: none; color: inherit;
+    background: var(--lp-card); border: 1px solid var(--lp-border); border-radius: 14px; overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .template-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(44,40,32,.1); }
+  .template-thumb { height: 100px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; }
+  .template-cafe     { background: linear-gradient(135deg, #c8e0c0, #a8cca0); }
+  .template-bistro    { background: linear-gradient(135deg, #f0c8c0, #d89090); }
+  .template-izakaya   { background: linear-gradient(135deg, #4a3018, #2a1a0a); }
+  .template-teishoku  { background: linear-gradient(135deg, #f5dfc5, #e8c8a0); }
+  .template-kaiseki   { background: linear-gradient(135deg, #201810, #100c08); }
+  .template-body { padding: 1rem 1.2rem 1.3rem; }
+  .template-body .tag { font-size: .62rem; letter-spacing: .15em; text-transform: uppercase; color: var(--lp-muted); margin-bottom: .3rem; }
+  .template-body .name { font-weight: 700; font-size: .95rem; margin-bottom: .3rem; }
+  .template-body .desc { font-size: .76rem; color: var(--lp-muted); }
 </style>
 </head>
 <body>
 
-<div class="hero">
-  <h1>テンプレートから、自分だけの飲食店HPを。</h1>
-  <p>テーマを選んで、文字や写真を入力するだけ。月額制で公開できます。</p>
-</div>
-
-<div class="center-page" style="min-height:auto;padding-top:0">
-  <div class="auth-card app-card">
-    <div class="tabs">
-      <button id="tab-login" class="active">ログイン</button>
-      <button id="tab-signup">新規登録</button>
-    </div>
-
-    <div id="msg"></div>
-
-    <form id="auth-form">
-      <div class="app-form-group">
-        <label for="email">メールアドレス</label>
-        <input class="app-input" type="email" id="email" required autocomplete="email">
-      </div>
-      <div class="app-form-group">
-        <label for="password">パスワード</label>
-        <input class="app-input" type="password" id="password" required minlength="6" autocomplete="current-password">
-        <p class="hint">6文字以上</p>
-      </div>
-      <button type="submit" class="app-btn" style="width:100%" id="submit-btn">ログイン</button>
-    </form>
-
-    <p class="price-note">月額プラン：1サイトあたり月額1,000円（Stripe決済）</p>
+<header class="lp-header">
+  <a href="index.html" class="lp-logo">グルメHP作成アプリ</a>
+  <nav class="lp-nav">
+    <a href="#features">特徴</a>
+    <a href="#templates">テンプレート</a>
+    <a href="#how-it-works">使い方</a>
+    <a href="#pricing">料金</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <div class="lp-header-cta">
+    <a href="login.html" class="btn btn-secondary btn-sm">ログイン</a>
+    <a href="login.html?tab=signup" class="btn btn-primary btn-sm">無料で始める</a>
   </div>
-</div>
+</header>
 
-<script type="module">
-  import { signIn, signUp, getCurrentUser } from './js/supabase-client.js';
+<section id="hero">
+  <h1>テンプレートから、自分だけの飲食店HPを。</h1>
+  <p class="sub">店名・写真を入力するだけ。作成・プレビューは無料、公開する時だけ料金が発生します。</p>
+  <div class="hero-ctas">
+    <a href="login.html?tab=signup" class="btn btn-primary">無料で始める</a>
+    <a href="#pricing" class="btn btn-secondary">代行を相談する</a>
+  </div>
+</section>
 
-  const tabLogin = document.getElementById('tab-login');
-  const tabSignup = document.getElementById('tab-signup');
-  const submitBtn = document.getElementById('submit-btn');
-  const form = document.getElementById('auth-form');
-  const msg = document.getElementById('msg');
+<section id="features">
+  <p class="section-label">Features</p>
+  <h2 class="section-title">選ばれる理由</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <h3>スマホでもPCでも美しく</h3>
+      <p>どの端末で見ても整ったレイアウトで表示されます。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⏱️</div>
+      <h3>最短数十分で公開</h3>
+      <p>テーマを選び、文字と写真を入れるだけで完成します。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💰</div>
+      <h3>作成は無料、公開時だけ課金</h3>
+      <p>月額1,000円／サイトが必要になるのは「公開する」を押す時だけです。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📸</div>
+      <h3>写真をアップロードするだけ</h3>
+      <p>お店の写真を入れるだけでプロらしい仕上がりになります。</p>
+    </div>
+  </div>
+</section>
 
-  let mode = 'login';
-
-  function setMode(next) {
-    mode = next;
-    tabLogin.classList.toggle('active', mode === 'login');
-    tabSignup.classList.toggle('active', mode === 'signup');
-    submitBtn.textContent = mode === 'login' ? 'ログイン' : '新規登録';
-    document.getElementById('password').autocomplete = mode === 'login' ? 'current-password' : 'new-password';
-    msg.innerHTML = '';
-  }
-  tabLogin.addEventListener('click', () => setMode('login'));
-  tabSignup.addEventListener('click', () => setMode('signup'));
-
-  // 既にログイン済みならダッシュボードへ
-  getCurrentUser().then(user => {
-    if (user) location.href = 'dashboard.html';
-  });
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    submitBtn.disabled = true;
-    msg.innerHTML = '';
-    try {
-      if (mode === 'login') {
-        await signIn(email, password);
-        location.href = 'dashboard.html';
-      } else {
-        await signUp(email, password);
-        msg.innerHTML = `<div class="app-msg success">登録確認メールを送信しました。メール内のリンクから認証後、ログインしてください。</div>`;
-      }
-    } catch (err) {
-      msg.innerHTML = `<div class="app-msg error">${err.message}</div>`;
-    } finally {
-      submitBtn.disabled = false;
-    }
-  });
-</script>
+<section id="templates">
+  <p class="section-label">Templates</p>
+  <h2 class="section-title">テンプレート例</h2>
+  <div class="templates-grid">
+    <a href="../WEB制作担当/成果物/サンプル/カフェ用/index.html" class="template-card">
+      <div class="template-thumb template-cafe">☕</div>
+      <div class="template-body">
+        <p class="tag">Café</p>
+        <p class="name">カフェ用テンプレート</p>
+        <p class="desc">自家焙煎コーヒー・スイーツ・ランチ。明るく居心地の良いスタイル。</p>
+      </div>
+    </a>
+    <a href="../WEB制作担当/成果物/サンプル/ビストロ用/index.html" class="template-card">
+      <div class="template-thumb template-bistro">🍷</div>
+      <div class="template-body">
+        <p class="tag">Bistro</p>
+        <p class="name">ビストロ用テンプレート</p>
+        <p class="desc">フレンチコース・ワイン・記念日対応。エレガントなスタイル。</p>
+      </div>
+    </a>
+    <a href="../WEB制作担当/成果物/サンプル/居酒屋用/index.html" class="template-card">
+      <div class="template-thumb template-izakaya">🍺</div>
+      <div class="template-body">
+        <p class="tag">Izakaya</p>
+        <p class="name">居酒屋用テンプレート</p>
+        <p class="desc">旬の一品料理・地酒・宴会対応。活気あるダーク系スタイル。</p>
+      </div>
+    </a>
+    <a href="../WEB制作担当/成果物/サンプル/定食屋用/index.html" class="template-card">
+      <div class="template-thumb template-teishoku">🍱</div>
+      <div class="template-body">
+        <p class="tag">Teishoku</p>
+        <p class="name">定食屋用テンプレート</p>
+        <p class="desc">日替わり定食・地元野菜・テイクアウト。温かみのあるスタイル。</p>
+      </div>
+    </a>
+    <a href="../WEB制作担当/成果物/サンプル/高級店用/index.html" class="template-card">
+      <div class="template-thumb template-kaiseki">✨</div>
+      <div class="template-body">
+        <p class="tag">Fine Dining</p>
+        <p class="name">高級店用テンプレート</p>
+        <p class="desc">懐石コース・完全予約制。ラグジュアリーなスタイル。</p>
+      </div>
+    </a>
+  </div>
+</section>
 
 </body>
 </html>
