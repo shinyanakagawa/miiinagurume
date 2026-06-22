@@ -1,0 +1,655 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIIINA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400;700&family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:   #FAF7F2;
+      --beige:   #E8DFD0;
+      --brown:   #6B4F3A;
+      --dark:    #2C1F14;
+      --sage:    #7D9B76;
+      --rose:    #C8A090;
+      --gold:    #C5A55A;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Lato', 'Noto Serif JP', sans-serif;
+      background: var(--cream);
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.4rem 4rem;
+      background: rgba(250,247,242,0.88);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(107,79,58,.1);
+      transition: background .3s;
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; letter-spacing: .12em;
+      color: var(--brown);
+    }
+    .nav-links { display: flex; gap: 2.4rem; list-style: none; }
+    .nav-links a {
+      font-size: .82rem; letter-spacing: .18em; text-transform: uppercase;
+      text-decoration: none; color: var(--dark);
+      position: relative; padding-bottom: 2px;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      width: 0; height: 1px; background: var(--rose);
+      transition: width .3s;
+    }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-btn {
+      font-size: .78rem; letter-spacing: .2em; text-transform: uppercase;
+      padding: .6rem 1.6rem; background: var(--brown); color: #fff;
+      border: none; cursor: pointer;
+      transition: background .25s;
+    }
+    .nav-btn:hover { background: var(--dark); }
+
+    /* ── HERO ── */
+    #hero {
+      height: 100vh;
+      position: relative; overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .hero-image-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(200,160,144,.45) 0%, rgba(155,123,110,.45) 35%, rgba(107,79,58,.55) 70%, rgba(44,31,20,.7) 100%), url("images/hero.png") center center/cover no-repeat;
+    }
+    .hero-image-overlay {
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay; opacity: .6;
+    }
+    .hero-store-name {
+      position: relative; z-index: 2;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 9vw, 7.5rem);
+      color: #FAF7F2;
+      letter-spacing: .18em;
+      text-shadow: 0 2px 30px rgba(44,31,20,.5);
+      line-height: 1.15;
+    }
+
+    /* ── CONCEPT ── */
+    #concept {
+      display: grid; grid-template-columns: 1fr 1fr;
+      min-height: 600px;
+    }
+    .concept-visual {
+      background: linear-gradient(160deg, #7D9B76 0%, #4A6B43 100%);
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .concept-circle {
+      width: 280px; height: 280px; border-radius: 50%;
+      border: 60px solid rgba(255,255,255,.12);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .concept-circle-inner {
+      width: 160px; height: 160px; border-radius: 50%;
+      background: rgba(255,255,255,.15);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif; font-size: 1.2rem;
+      color: #fff; text-align: center; line-height: 1.4; font-style: italic;
+    }
+    .concept-text {
+      padding: 6rem 5rem;
+      background: var(--beige);
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .section-label {
+      font-size: .7rem; letter-spacing: .35em; text-transform: uppercase;
+      color: var(--rose); margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3vw, 2.8rem);
+      line-height: 1.2; margin-bottom: 1.6rem; color: var(--dark);
+    }
+    .concept-body { font-size: .9rem; line-height: 2; color: #5E5048; }
+    .concept-divider {
+      width: 48px; height: 2px; background: var(--rose);
+      margin: 2rem 0;
+    }
+    .concept-stats { display: flex; gap: 3rem; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem; color: var(--brown);
+    }
+    .stat-lbl { font-size: .72rem; letter-spacing: .15em; color: #7A6B60; }
+
+    /* ── MENU ── */
+    #menu { padding: 7rem 5rem; background: var(--cream); }
+    .section-header { text-align: center; margin-bottom: 4rem; }
+    .menu-tabs {
+      display: flex; justify-content: center; gap: 0;
+      margin-bottom: 3.5rem;
+    }
+    .tab {
+      padding: .7rem 2rem; font-size: .78rem; letter-spacing: .2em;
+      text-transform: uppercase; cursor: pointer;
+      border: 1.5px solid var(--beige); background: transparent;
+      color: #7A6B60; transition: all .25s;
+    }
+    .tab.active { background: var(--brown); color: #fff; border-color: var(--brown); }
+    .tab:hover:not(.active) { border-color: var(--rose); color: var(--rose); }
+
+    .menu-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1.5px; background: var(--beige);
+      max-width: 960px; margin: 0 auto;
+    }
+    .menu-card {
+      background: var(--cream); padding: 2.4rem 2rem;
+      transition: transform .25s, box-shadow .25s;
+      cursor: pointer;
+    }
+    .menu-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(44,31,20,.08);
+    }
+    .menu-card-tag {
+      font-size: .68rem; letter-spacing: .25em; text-transform: uppercase;
+      color: var(--sage); margin-bottom: .7rem;
+    }
+    .menu-card-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; color: var(--dark); margin-bottom: .5rem;
+    }
+    .menu-card-desc { font-size: .82rem; line-height: 1.7; color: #7A6B60; margin-bottom: 1rem; }
+    .menu-card-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; color: var(--brown);
+    }
+    .menu-card-icon {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--beige); display: flex; align-items: center;
+      justify-content: center; font-size: 1.4rem; margin-bottom: 1.2rem;
+    }
+
+    /* ── ATMOSPHERE ── */
+    #atmosphere { padding: 7rem 5rem; background: var(--dark); }
+    #atmosphere .section-title { color: var(--cream); }
+    #atmosphere .section-label { color: var(--rose); }
+    .atm-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 260px 260px;
+      gap: 1.5px; margin-top: 3rem;
+    }
+    .atm-card {
+      position: relative; overflow: hidden;
+      display: flex; align-items: flex-end;
+    }
+    .atm-card:first-child { grid-row: 1 / 3; }
+    .atm-bg {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      transition: transform .5s;
+    }
+    .atm-card:hover .atm-bg { transform: scale(1.05); }
+    .atm-bg-1 { background-image: url("images/atm-main.png"); }
+    .atm-bg-2 { background-image: url("images/atm-terrace.png"); }
+    .atm-bg-3 { background-image: url("images/atm-counter.png"); }
+    .atm-bg-4 { background-image: url("images/atm-private.png"); }
+    .atm-bg-5 { background-image: url("images/atm-roastery.png"); }
+    .atm-caption {
+      position: relative; z-index: 2;
+      padding: 1.4rem;
+      background: linear-gradient(transparent, rgba(0,0,0,.6));
+      width: 100%;
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem; color: #fff;
+    }
+    .atm-noise {
+      position: absolute; inset: 0; opacity: .15;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    }
+
+    /* ── HOURS ── */
+    #hours {
+      display: grid; grid-template-columns: 1fr 1fr;
+      background: var(--beige);
+    }
+    .hours-info { padding: 6rem 5rem; }
+    .hours-table { width: 100%; margin-top: 2rem; border-collapse: collapse; }
+    .hours-table tr { border-bottom: 1px solid rgba(107,79,58,.15); }
+    .hours-table td { padding: 1rem 0; font-size: .9rem; color: #5E5048; }
+    .hours-table td:last-child { text-align: right; color: var(--brown); font-weight: 700; }
+    .hours-table tr.closed td { color: #B0A090; }
+    .hours-map {
+      background: linear-gradient(160deg, #C8A090 0%, #A07060 100%);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .map-pin { font-size: 3rem; position: relative; z-index: 2; }
+    .map-ripple {
+      position: absolute; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.3);
+      animation: ripple 2.5s infinite ease-out;
+    }
+    .map-ripple:nth-child(2) { animation-delay: .8s; }
+    .map-ripple:nth-child(3) { animation-delay: 1.6s; }
+    @keyframes ripple {
+      0%   { width: 60px; height: 60px; opacity: .8; }
+      100% { width: 220px; height: 220px; opacity: 0; }
+    }
+
+    /* ── RESERVATION ── */
+    #reservation {
+      padding: 7rem 5rem; background: var(--cream);
+      text-align: center;
+    }
+    .res-form {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px; max-width: 800px; margin: 3rem auto 0;
+      background: var(--beige);
+    }
+    .res-form input, .res-form select {
+      padding: 1.2rem 1.6rem; border: none; outline: none;
+      background: var(--cream); font-size: .88rem;
+      font-family: inherit; color: var(--dark); width: 100%;
+      appearance: none; -webkit-appearance: none; cursor: pointer;
+    }
+    .res-form input::placeholder { color: #B0A090; }
+    .res-submit {
+      padding: 1.2rem 2.4rem; background: var(--brown); color: #fff;
+      border: none; font-size: .78rem; letter-spacing: .2em;
+      text-transform: uppercase; cursor: pointer; white-space: nowrap;
+      transition: background .25s;
+    }
+    .res-submit:hover { background: var(--dark); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark); color: rgba(250,247,242,.6);
+      padding: 4rem 5rem; display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 3rem;
+    }
+    .footer-brand .nav-logo { color: var(--cream); display: block; margin-bottom: 1rem; font-size: 1.4rem; }
+    .footer-brand p { font-size: .82rem; line-height: 1.8; }
+    .footer-col h4 {
+      font-size: .72rem; letter-spacing: .25em; text-transform: uppercase;
+      color: var(--rose); margin-bottom: 1.2rem;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: .6rem; font-size: .85rem; }
+    .footer-col ul li a { text-decoration: none; color: inherit; transition: color .2s; }
+    .footer-col ul li a:hover { color: var(--cream); }
+    .footer-bottom {
+      background: var(--dark); text-align: center;
+      padding: 1.4rem; font-size: .75rem;
+      border-top: 1px solid rgba(250,247,242,.1);
+      color: rgba(250,247,242,.35);
+    }
+
+    /* ── VOICE ── */
+    #voice { padding: 7rem 5rem; background: var(--beige); }
+    .voice-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem; max-width: 900px; margin: 3rem auto 0;
+    }
+    .voice-card {
+      background: var(--cream); padding: 2rem 1.8rem;
+      border-left: 3px solid var(--sage);
+    }
+    .voice-stars { color: var(--sage); font-size: .9rem; margin-bottom: .6rem; letter-spacing: .1em; }
+    .voice-text { font-size: .88rem; line-height: 1.9; font-style: italic; color: #5E5048; margin-bottom: .8rem; }
+    .voice-name { font-size: .72rem; color: #7A6B60; font-weight: 700; letter-spacing: .08em; }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s, transform .7s; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 900px) {
+      nav { padding: 1.2rem 2rem; }
+      .nav-links, .nav-btn { display: none; }
+      #concept, #hours { grid-template-columns: 1fr; }
+      #menu, #atmosphere, #reservation, #voice, footer { padding: 4rem 2rem; }
+      .voice-grid { grid-template-columns: 1fr; }
+      .menu-grid { grid-template-columns: 1fr; }
+      .atm-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .atm-card:first-child { grid-row: auto; grid-column: 1 / 3; }
+      .res-form { grid-template-columns: 1fr; }
+      footer { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">MIIINA</span>
+  <ul class="nav-links">
+    <li><a href="#concept">コンセプト</a></li>
+    <li><a href="#menu">メニュー</a></li>
+    <li><a href="#atmosphere">店内</a></li>
+    <li><a href="#hours">アクセス</a></li>
+  </ul>
+  <button class="nav-btn" onclick="document.getElementById('reservation').scrollIntoView({behavior:'smooth'})">予約する</button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-image-bg"></div>
+  <div class="hero-image-overlay"></div>
+  <h1 class="hero-store-name">MIIINA</h1>
+</section>
+
+<!-- CONCEPT -->
+<section id="concept">
+  <div class="concept-visual">
+    <div class="concept-circle">
+      <div class="concept-circle-inner">Farm<br>to<br>Cup</div>
+    </div>
+  </div>
+  <div class="concept-text reveal">
+    <p class="section-label">Our Concept</p>
+    <h2 class="section-title">素材の声に<br>耳を澄ます</h2>
+    <p class="concept-body">
+      エチオピア、コロンビア、エルサルバドル——世界中の農園と直接契約し、
+      収穫されたばかりの生豆を自家焙煎。一杯のコーヒーが生まれるまでのすべての工程に
+      敬意を払い、素材本来の風味を最大限に引き出します。
+    </p>
+    <div class="concept-divider"></div>
+    <div class="concept-stats">
+      <div>
+        <div class="stat-num">8</div>
+        <div class="stat-lbl">産地直送</div>
+      </div>
+      <div>
+        <div class="stat-num">3</div>
+        <div class="stat-lbl">焙煎レベル</div>
+      </div>
+      <div>
+        <div class="stat-num">∞</div>
+        <div class="stat-lbl">こだわり</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section id="menu">
+  <div class="section-header reveal">
+    <p class="section-label">Our Menu</p>
+    <h2 class="section-title">季節のラインアップ</h2>
+  </div>
+  <div class="menu-tabs reveal">
+    <button class="tab active" onclick="switchTab(this,'drink')">ドリンク</button>
+    <button class="tab" onclick="switchTab(this,'food')">フード</button>
+    <button class="tab" onclick="switchTab(this,'sweets')">スイーツ</button>
+  </div>
+  <div class="menu-grid" id="menu-grid"></div>
+</section>
+
+<!-- ATMOSPHERE -->
+<section id="atmosphere">
+  <div class="section-header reveal">
+    <p class="section-label">Interior</p>
+    <h2 class="section-title">光と緑に包まれた空間</h2>
+  </div>
+  <div class="atm-grid reveal">
+    <div class="atm-card"><div class="atm-bg atm-bg-1"></div><div class="atm-noise"></div><div class="atm-caption">メインホール</div></div>
+    <div class="atm-card"><div class="atm-bg atm-bg-2"></div><div class="atm-noise"></div><div class="atm-caption">テラス席</div></div>
+    <div class="atm-card"><div class="atm-bg atm-bg-3"></div><div class="atm-noise"></div><div class="atm-caption">カウンター</div></div>
+    <div class="atm-card"><div class="atm-bg atm-bg-4"></div><div class="atm-noise"></div><div class="atm-caption">個室</div></div>
+    <div class="atm-card"><div class="atm-bg atm-bg-5"></div><div class="atm-noise"></div><div class="atm-caption">焙煎室</div></div>
+  </div>
+</section>
+
+<!-- VOICE -->
+<section id="voice">
+  <div class="section-header reveal">
+    <p class="section-label">Guest Reviews</p>
+    <h2 class="section-title">お客様の声</h2>
+  </div>
+  <div class="voice-grid">
+    <div class="voice-card reveal">
+      <div class="voice-stars">★★★★★</div>
+      <p class="voice-text">「毎週末に通っています。シングルオリジンのエスプレッソはどれも個性的で、産地によってこんなに味が違うのかと驚きました。スタッフさんの説明も丁寧です。」</p>
+      <p class="voice-name">— 30代・コーヒー好き</p>
+    </div>
+    <div class="voice-card reveal">
+      <div class="voice-stars">★★★★★</div>
+      <p class="voice-text">「テラス席でコールドブリューを飲みながら読書するのが至福の時間です。雑味がなくクリアな味わいで、暑い日でもスルスル飲めてしまいます。」</p>
+      <p class="voice-name">— 20代・女性</p>
+    </div>
+    <div class="voice-card reveal">
+      <div class="voice-stars">★★★★★</div>
+      <p class="voice-text">「バスクチーズケーキと季節のラテのセットが最高。甘すぎず、コーヒーとのバランスが絶妙でした。友人へのお土産にケーキを買っていく人も多そうです。」</p>
+      <p class="voice-name">— 40代・女性</p>
+    </div>
+    <div class="voice-card reveal">
+      <div class="voice-stars">★★★★★</div>
+      <p class="voice-text">「在宅勤務の合間に利用しています。Wi-Fiが安定していて、長居しても嫌な顔をされません。穏やかな音楽と焙煎の香りで集中できます。」</p>
+      <p class="voice-name">— 30代・男性</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOURS & MAP -->
+<section id="hours">
+  <div class="hours-info reveal">
+    <p class="section-label">Hours & Access</p>
+    <h2 class="section-title">営業時間・アクセス</h2>
+    <table class="hours-table">
+      <tr><td>月曜日</td><td>08:00 — 20:00</td></tr>
+      <tr><td>火曜日</td><td>08:00 — 20:00</td></tr>
+      <tr><td>水曜日</td><td>08:00 — 20:00</td></tr>
+      <tr><td>木曜日</td><td>08:00 — 22:00</td></tr>
+      <tr><td>金曜日</td><td>08:00 — 22:00</td></tr>
+      <tr><td>土曜日</td><td>09:00 — 22:00</td></tr>
+      <tr class="closed"><td>日曜日</td><td>定休日</td></tr>
+    </table>
+    <div class="concept-divider" style="margin-top:2rem"></div>
+    <p style="font-size:.85rem;line-height:1.9;color:#5E5048">
+      みいな県みいな市みいな１－１ みいな市グリーンビル1F<br>
+      JR中央線「みいな市駅」南口 徒歩5分<br>
+      TEL: <a href="tel:1111111" style="color:var(--brown)">111-1111</a><br>
+      <span style="font-size:.75rem;color:#9e8878">※ サンプル情報（miina-web参照）</span>
+    </p>
+  </div>
+  <div class="hours-map">
+    <div class="map-ripple"></div>
+    <div class="map-ripple"></div>
+    <div class="map-ripple"></div>
+    <div class="map-pin">☕</div>
+  </div>
+</section>
+
+<!-- RESERVATION -->
+<section id="reservation">
+  <div class="reveal">
+    <p class="section-label">Reservation</p>
+    <h2 class="section-title">ご予約</h2>
+    <p style="margin-top:.8rem;color:#7A6B60;font-size:.9rem">特別なひとときを、ご予約でより快適に。</p>
+  </div>
+  <form class="res-form reveal" id="reservation-form" name="reservation" method="POST" data-netlify="true">
+    <input type="hidden" name="form-name" value="reservation">
+    <input type="text" id="res-name" name="name" placeholder="お名前" required>
+    <input type="tel" id="res-tel" name="tel" placeholder="電話番号" required>
+    <input type="date" id="res-date" name="date" required>
+    <select id="res-time" name="time" required></select>
+    <select id="res-pax" name="pax" required></select>
+    <input type="text" name="website" id="hp-field" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;opacity:0" aria-hidden="true">
+    <div class="cf-turnstile" data-sitekey="YOUR_TURNSTILE_SITE_KEY"></div>
+    <button class="res-submit" type="submit">予約する</button>
+  </form>
+  <p id="reservation-status" class="reveal" style="margin-top:1.2rem;font-size:.85rem;color:var(--brown)"></p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <span class="nav-logo">MIIINA</span>
+    <p>日常に溶け込む、静かな贅沢。<br>厳選素材とこだわりの焙煎が<br>奏でる一杯をどうぞ。</p>
+  </div>
+  <div class="footer-col">
+    <h4>Links</h4>
+    <ul>
+      <li><a href="#concept">コンセプト</a></li>
+      <li><a href="#menu">メニュー</a></li>
+      <li><a href="#atmosphere">店内紹介</a></li>
+      <li><a href="#hours">アクセス</a></li>
+      <li><a href="#reservation">ご予約</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Follow Us</h4>
+    <ul>
+      <li><a href="#">Instagram</a></li>
+      <li><a href="#">Twitter / X</a></li>
+      <li><a href="#">Facebook</a></li>
+      <li><a href="#">LINE公式</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">© 2024 MIIINA. All rights reserved. &nbsp;｜&nbsp; ※ このページはサンプルです</div>
+
+<script>
+const menuData = {
+  drink: [
+    { icon:'☕', tag:'Espresso', name:'シングルオリジン エスプレッソ', desc:'エチオピア イルガチェフェ産。ベリー系の甘みと明るい酸味。', price:'¥680' },
+    { icon:'🥛', tag:'Latte', name:'クラフト ミルクラテ', desc:'低温殺菌の北海道産牛乳で仕上げる、まろやかな一杯。', price:'¥780' },
+    { icon:'🧋', tag:'Seasonal', name:'ほうじ茶ラテ', desc:'京都宇治の香り高いほうじ茶と、自家製バニラシロップ。', price:'¥820' },
+    { icon:'🍵', tag:'Cold Brew', name:'コールドブリュー 24h', desc:'24時間かけて低温抽出。雑味のないクリアな味わい。', price:'¥850' },
+    { icon:'🫧', tag:'Tonic', name:'エスプレッソトニック', desc:'炭酸のシュワシュワとビターなエスプレッソの対比。', price:'¥900' },
+    { icon:'🍊', tag:'Juice', name:'季節のフレッシュジュース', desc:'その日仕入れた旬のフルーツをそのまま搾る。', price:'¥720' },
+  ],
+  food: [
+    { icon:'🥑', tag:'Toast', name:'アボカドトースト', desc:'自家製天然酵母パンにアボカドとスモークサーモン。', price:'¥1,200' },
+    { icon:'🥚', tag:'Egg', name:'エッグベネディクト', desc:'オランデーズソースが薫る本格的なブランチ。', price:'¥1,500' },
+    { icon:'🥗', tag:'Salad', name:'季節のグレインサラダ', desc:'古代穀物と旬野菜、レモンドレッシング。', price:'¥1,100' },
+    { icon:'🧀', tag:'Sandwich', name:'クラブハウスサンド', desc:'三段重ねの贅沢サンドイッチ、フライドポテト付。', price:'¥1,400' },
+    { icon:'🍝', tag:'Pasta', name:'和牛ラグービアンコ', desc:'和牛挽き肉のクリーミーなラグー、リングイネ。', price:'¥1,800' },
+    { icon:'🥣', tag:'Bowl', name:'アサイーボウル', desc:'スーパーフードが詰まった彩り豊かなボウル。', price:'¥1,300' },
+  ],
+  sweets: [
+    { icon:'🍰', tag:'Cake', name:'バスクチーズケーキ', desc:'外はとろり、中はふわとろ。毎朝手焼き。', price:'¥680' },
+    { icon:'🧁', tag:'Muffin', name:'バナナウォールナッツマフィン', desc:'自家製グラノーラ入りのざっくり食感。', price:'¥480' },
+    { icon:'🍮', tag:'Pudding', name:'特濃プリン', desc:'北海道産卵と牛乳で作るとろとろプリン。', price:'¥580' },
+    { icon:'🍫', tag:'Brownie', name:'チョコレートブラウニー', desc:'ベルギー産クーベルチュールを贅沢に使用。', price:'¥520' },
+    { icon:'🥧', tag:'Tart', name:'季節のフルーツタルト', desc:'旬のフルーツをカスタードクリームとともに。', price:'¥780' },
+    { icon:'🍨', tag:'Ice Cream', name:'ジェラート 2種盛り', desc:'毎日変わる自家製ジェラートを2種選べる。', price:'¥650' },
+  ]
+};
+
+let currentTab = 'drink';
+function switchTab(btn, tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  currentTab = tab;
+  renderMenu();
+}
+function renderMenu() {
+  const grid = document.getElementById('menu-grid');
+  grid.innerHTML = menuData[currentTab].map(item => `
+    <div class="menu-card">
+      <div class="menu-card-icon">${item.icon}</div>
+      <div class="menu-card-tag">${item.tag}</div>
+      <div class="menu-card-name">${item.name}</div>
+      <div class="menu-card-desc">${item.desc}</div>
+      <div class="menu-card-price">${item.price}</div>
+    </div>
+  `).join('');
+}
+renderMenu();
+
+// Reservation form init
+(function() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  document.getElementById('res-date').value = `${yyyy}-${mm}-${dd}`;
+
+  const timeSelect = document.getElementById('res-time');
+  timeSelect.innerHTML = '<option value="">時間を選択</option>';
+  for (let h = 9; h <= 18; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      if (h === 18 && m > 0) break;
+      const hh = String(h).padStart(2, '0');
+      const ms = String(m).padStart(2, '0');
+      const opt = document.createElement('option');
+      opt.value = `${hh}:${ms}`;
+      opt.textContent = `${hh}:${ms}`;
+      timeSelect.appendChild(opt);
+    }
+  }
+
+  const paxSelect = document.getElementById('res-pax');
+  paxSelect.innerHTML = '<option value="">人数を選択</option>';
+  for (let i = 1; i <= 20; i++) {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `${i}名`;
+    paxSelect.appendChild(opt);
+  }
+})();
+
+// Reservation form submit: notify by email (Netlify Forms) and LINE
+const reservationForm = document.getElementById('reservation-form');
+const reservationStatus = document.getElementById('reservation-status');
+reservationForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(reservationForm);
+  reservationStatus.textContent = '送信中...';
+
+  try {
+    await fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(formData).toString(),
+    });
+
+    await fetch('/.netlify/functions/send-line-cafe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.fromEntries(formData.entries())),
+    });
+
+    reservationStatus.textContent = 'ご予約を受け付けました。確認のご連絡をお待ちください。';
+    reservationForm.reset();
+  } catch (err) {
+    reservationStatus.textContent = '送信に失敗しました。お電話でお問い合わせください。';
+  }
+});
+
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Nav background on scroll
+window.addEventListener('scroll', () => {
+  document.querySelector('nav').style.background =
+    window.scrollY > 60 ? 'rgba(250,247,242,0.97)' : 'rgba(250,247,242,0.88)';
+});
+</script>
+</body>
+</html>
+
