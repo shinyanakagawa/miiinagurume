@@ -63,11 +63,16 @@
   .section-title { font-size: clamp(1.4rem, 3vw, 1.9rem); text-align: center; margin-bottom: 3rem; }
 
   /* 特徴 */
-  .features-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-  .feature-card { background: var(--lp-card); border: 1px solid var(--lp-border); border-radius: 14px; padding: 1.6rem; text-align: center; }
-  .feature-icon { font-size: 1.8rem; margin-bottom: .8rem; }
-  .feature-card h3 { font-size: 1rem; margin-bottom: .5rem; }
-  .feature-card p { font-size: .85rem; color: var(--lp-muted); }
+  .features-grid { display: grid; gap: 1.8rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .feature-card { background: var(--lp-card); border: 1px solid var(--lp-border); border-radius: 16px; padding: 2.2rem 1.8rem; text-align: center; }
+  .feature-icon {
+    width: 56px; height: 56px; margin: 0 auto 1.2rem; border-radius: 50%;
+    background: rgba(200,160,96,.12); color: var(--lp-accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .feature-icon svg { width: 26px; height: 26px; }
+  .feature-card h3 { font-size: 1.05rem; margin-bottom: .7rem; line-height: 1.5; }
+  .feature-card p { font-size: .9rem; color: var(--lp-muted); line-height: 1.8; }
 
   /* テンプレート例 */
   .templates-grid { display: grid; gap: 1.2rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
@@ -77,7 +82,14 @@
     transition: transform .2s, box-shadow .2s;
   }
   .template-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(44,40,32,.1); }
-  .template-thumb { height: 100px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; }
+  .template-card.is-disabled { cursor: default; opacity: .7; }
+  .template-card.is-disabled:hover { transform: none; box-shadow: none; }
+  .template-thumb { position: relative; height: 100px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; }
+  .template-soon-badge {
+    position: absolute; top: .5rem; right: .5rem;
+    background: rgba(0,0,0,.6); color: #fff; font-size: .62rem; letter-spacing: .05em;
+    padding: .25rem .55rem; border-radius: 999px;
+  }
   .template-cafe     { background: linear-gradient(135deg, #c8e0c0, #a8cca0); }
   .template-bistro    { background: linear-gradient(135deg, #f0c8c0, #d89090); }
   .template-izakaya   { background: linear-gradient(135deg, #4a3018, #2a1a0a); }
@@ -145,7 +157,7 @@
   </nav>
   <div class="lp-header-cta">
     <a href="login.html" class="btn btn-secondary btn-sm">ログイン</a>
-    <a href="login.html?tab=signup" class="btn btn-primary btn-sm">無料で始める</a>
+    <a href="login.html?tab=signup" class="btn btn-primary btn-sm">今すぐ無料で作る</a>
   </div>
 </header>
 
@@ -153,8 +165,8 @@
   <h1>テンプレートから、自分だけの飲食店HPを。</h1>
   <p class="sub">店名・写真を入力するだけ。作成・プレビューは無料、公開する時だけ料金が発生します。</p>
   <div class="hero-ctas">
-    <a href="login.html?tab=signup" class="btn btn-primary">無料で始める</a>
-    <a href="#pricing" class="btn btn-secondary">代行を相談する</a>
+    <a href="login.html?tab=signup" class="btn btn-primary">今すぐ無料で作る</a>
+    <a href="#pricing" class="btn btn-secondary">制作代行を相談する（無料）</a>
   </div>
 </section>
 
@@ -163,22 +175,45 @@
   <h2 class="section-title">選ばれる理由</h2>
   <div class="features-grid">
     <div class="feature-card">
-      <div class="feature-icon">📱</div>
+      <div class="feature-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="14" height="11" rx="1.5"></rect>
+          <line x1="2" y1="11" x2="16" y2="11"></line>
+          <rect x="14" y="9" width="8" height="13" rx="1.5"></rect>
+          <line x1="17" y1="19" x2="19" y2="19"></line>
+        </svg>
+      </div>
       <h3>スマホでもPCでも美しく</h3>
       <p>どの端末で見ても整ったレイアウトで表示されます。</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">⏱️</div>
+      <div class="feature-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 4 14 11 14 10 22 20 10 13 10 13 2"></polygon>
+        </svg>
+      </div>
       <h3>最短数十分で公開</h3>
       <p>テーマを選び、文字と写真を入れるだけで完成します。</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">💰</div>
+      <div class="feature-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="9" r="6.5"></circle>
+          <path d="M9 6v6"></path>
+          <path d="M6.5 9h5"></path>
+          <path d="M15 13.5c2.8.6 5 1.9 5 3.5 0 1.9-3.4 3.5-7.5 3.5S5 18.9 5 17c0-1 .8-1.9 2-2.6"></path>
+        </svg>
+      </div>
       <h3>作成は無料、公開時だけ課金</h3>
       <p>月額1,000円／サイトが必要になるのは「公開する」を押す時だけです。</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">📸</div>
+      <div class="feature-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 8h2.5l1.2-2h8.6l1.2 2H20a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 20H4a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 4 8z"></path>
+          <circle cx="12" cy="13.5" r="3.6"></circle>
+        </svg>
+      </div>
       <h3>写真をアップロードするだけ</h3>
       <p>お店の写真を入れるだけでプロらしい仕上がりになります。</p>
     </div>
@@ -189,15 +224,15 @@
   <p class="section-label">Templates</p>
   <h2 class="section-title">テンプレート例</h2>
   <div class="templates-grid">
-    <a href="../WEB制作担当/成果物/サンプル/カフェ用/index.html" class="template-card">
-      <div class="template-thumb template-cafe">☕</div>
+    <div class="template-card is-disabled" role="group" aria-disabled="true" aria-label="カフェ用テンプレート（近日公開）">
+      <div class="template-thumb template-cafe">☕<span class="template-soon-badge">近日公開</span></div>
       <div class="template-body">
         <p class="tag">Café</p>
         <p class="name">カフェ用テンプレート</p>
         <p class="desc">自家焙煎コーヒー・スイーツ・ランチ。明るく居心地の良いスタイル。</p>
       </div>
-    </a>
-    <a href="../WEB制作担当/成果物/サンプル/ビストロ用/index.html" class="template-card">
+    </div>
+    <a href="https://miiina-bistro.netlify.app/" class="template-card" target="_blank" rel="noopener">
       <div class="template-thumb template-bistro">🍷</div>
       <div class="template-body">
         <p class="tag">Bistro</p>
@@ -205,30 +240,30 @@
         <p class="desc">フレンチコース・ワイン・記念日対応。エレガントなスタイル。</p>
       </div>
     </a>
-    <a href="../WEB制作担当/成果物/サンプル/居酒屋用/index.html" class="template-card">
-      <div class="template-thumb template-izakaya">🍺</div>
+    <div class="template-card is-disabled" role="group" aria-disabled="true" aria-label="居酒屋用テンプレート（近日公開）">
+      <div class="template-thumb template-izakaya">🍺<span class="template-soon-badge">近日公開</span></div>
       <div class="template-body">
         <p class="tag">Izakaya</p>
         <p class="name">居酒屋用テンプレート</p>
         <p class="desc">旬の一品料理・地酒・宴会対応。活気あるダーク系スタイル。</p>
       </div>
-    </a>
-    <a href="../WEB制作担当/成果物/サンプル/定食屋用/index.html" class="template-card">
-      <div class="template-thumb template-teishoku">🍱</div>
+    </div>
+    <div class="template-card is-disabled" role="group" aria-disabled="true" aria-label="定食屋用テンプレート（近日公開）">
+      <div class="template-thumb template-teishoku">🍱<span class="template-soon-badge">近日公開</span></div>
       <div class="template-body">
         <p class="tag">Teishoku</p>
         <p class="name">定食屋用テンプレート</p>
         <p class="desc">日替わり定食・地元野菜・テイクアウト。温かみのあるスタイル。</p>
       </div>
-    </a>
-    <a href="../WEB制作担当/成果物/サンプル/高級店用/index.html" class="template-card">
-      <div class="template-thumb template-kaiseki">✨</div>
+    </div>
+    <div class="template-card is-disabled" role="group" aria-disabled="true" aria-label="高級店用テンプレート（近日公開）">
+      <div class="template-thumb template-kaiseki">✨<span class="template-soon-badge">近日公開</span></div>
       <div class="template-body">
         <p class="tag">Fine Dining</p>
         <p class="name">高級店用テンプレート</p>
         <p class="desc">懐石コース・完全予約制。ラグジュアリーなスタイル。</p>
       </div>
-    </a>
+    </div>
   </div>
 </section>
 
@@ -316,8 +351,8 @@
     <h2 class="section-title" style="margin-bottom:.6rem">まずは無料で試してみませんか？</h2>
     <p>会員登録・作成・プレビューはすべて無料です。</p>
     <div class="hero-ctas">
-      <a href="login.html?tab=signup" class="btn btn-primary">無料で始める</a>
-      <a href="#pricing" class="btn btn-secondary" style="border-color:rgba(255,255,255,.3);color:#fff">代行を相談する</a>
+      <a href="login.html?tab=signup" class="btn btn-primary">今すぐ無料で作る</a>
+      <a href="#pricing" class="btn btn-secondary" style="border-color:rgba(255,255,255,.3);color:#fff">制作代行を相談する（無料）</a>
     </div>
   </div>
 </section>
