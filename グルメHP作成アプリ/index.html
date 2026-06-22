@@ -8,12 +8,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --lp-bg: #faf9f6;
-    --lp-card: #ffffff;
-    --lp-text: #2c2820;
-    --lp-muted: #8a7a66;
-    --lp-border: #e8e0d8;
-    --lp-accent: #c8a060;
+    --lp-bg: #FAFAF8;
+    --lp-card: #FFFFFF;
+    --lp-text: #2C2C2C;
+    --lp-muted: #8C8479;
+    --lp-border: #E8E3DA;
+    --lp-accent: #B8966E;
+    --lp-accent-soft: #C9A96E;
+    --lp-plaque: #232220;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
@@ -28,7 +30,7 @@
   .lp-header {
     position: sticky; top: 0; z-index: 50;
     display: flex; align-items: center; justify-content: space-between;
-    padding: 1rem 1.5rem; background: rgba(250,249,246,.92); backdrop-filter: blur(6px);
+    padding: 1rem 1.5rem; background: rgba(250,250,248,.92); backdrop-filter: blur(6px);
     border-bottom: 1px solid var(--lp-border);
   }
   .lp-logo { font-weight: 700; font-size: 1.05rem; letter-spacing: .04em; text-decoration: none; }
@@ -44,7 +46,7 @@
     text-decoration: none; cursor: pointer; border: none; transition: background .15s, transform .1s;
   }
   .btn-primary { background: var(--lp-accent); color: #fff; }
-  .btn-primary:hover { background: #b08d4d; }
+  .btn-primary:hover { background: #9C7F5D; }
   .btn-secondary { background: transparent; color: var(--lp-text); border: 1px solid var(--lp-border); }
   .btn-secondary:hover { background: var(--lp-card); }
   .btn-sm { padding: .55rem 1.1rem; font-size: .78rem; }
@@ -67,7 +69,7 @@
   .feature-card { background: var(--lp-card); border: 1px solid var(--lp-border); border-radius: 16px; padding: 2.2rem 1.8rem; text-align: center; }
   .feature-icon {
     width: 56px; height: 56px; margin: 0 auto 1.2rem; border-radius: 50%;
-    background: rgba(200,160,96,.12); color: var(--lp-accent);
+    background: rgba(184,150,110,.12); color: var(--lp-accent);
     display: flex; align-items: center; justify-content: center;
   }
   .feature-icon svg { width: 26px; height: 26px; }
@@ -81,20 +83,25 @@
     background: var(--lp-card); border: 1px solid var(--lp-border); border-radius: 14px; overflow: hidden;
     transition: transform .2s, box-shadow .2s;
   }
-  .template-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(44,40,32,.1); }
+  .template-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(44,44,44,.08); }
   .template-card.is-disabled { cursor: default; opacity: .7; }
   .template-card.is-disabled:hover { transform: none; box-shadow: none; }
-  .template-thumb { position: relative; height: 100px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; }
-  .template-soon-badge {
-    position: absolute; top: .5rem; right: .5rem;
-    background: rgba(0,0,0,.6); color: #fff; font-size: .62rem; letter-spacing: .05em;
-    padding: .25rem .55rem; border-radius: 999px;
+  .template-thumb {
+    position: relative; height: 110px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #2A2724, #1A1815);
   }
-  .template-cafe     { background: linear-gradient(135deg, #c8e0c0, #a8cca0); }
-  .template-bistro    { background: linear-gradient(135deg, #f0c8c0, #d89090); }
-  .template-izakaya   { background: linear-gradient(135deg, #4a3018, #2a1a0a); }
-  .template-teishoku  { background: linear-gradient(135deg, #f5dfc5, #e8c8a0); }
-  .template-kaiseki   { background: linear-gradient(135deg, #201810, #100c08); }
+  .template-soon-badge {
+    position: absolute; top: .6rem; right: .6rem;
+    background: rgba(0,0,0,.25); border: 1px solid var(--lp-accent-soft); color: var(--lp-accent-soft);
+    font-size: .6rem; letter-spacing: .08em; text-transform: uppercase;
+    padding: .25rem .6rem; border-radius: 999px; backdrop-filter: blur(2px);
+  }
+  .thumb-icon-ring {
+    width: 52px; height: 52px; border-radius: 50%;
+    border: 1px solid var(--lp-accent-soft); color: var(--lp-accent-soft);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .thumb-icon-ring svg { width: 24px; height: 24px; }
   .template-body { padding: 1rem 1.2rem 1.3rem; }
   .template-body .tag { font-size: .62rem; letter-spacing: .15em; text-transform: uppercase; color: var(--lp-muted); margin-bottom: .3rem; }
   .template-body .name { font-weight: 700; font-size: .95rem; margin-bottom: .3rem; }
@@ -113,9 +120,19 @@
 
   /* 料金 */
   .pricing-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); align-items: start; }
-  .pricing-card { background: var(--lp-card); border: 1px solid var(--lp-border); border-radius: 16px; padding: 1.8rem; }
+  .pricing-card {
+    position: relative; background: var(--lp-card); border: 1px solid var(--lp-border);
+    border-radius: 16px; padding: 2.2rem; overflow: hidden;
+  }
+  .pricing-card::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--lp-accent), var(--lp-accent-soft));
+  }
   .pricing-card h3 { font-size: 1.05rem; margin-bottom: .4rem; }
-  .pricing-card .price { font-size: 1.6rem; font-weight: 700; margin-bottom: .8rem; }
+  .pricing-card .price {
+    font-family: 'Noto Serif JP', serif; font-size: 1.8rem; font-weight: 700;
+    color: var(--lp-accent); margin-bottom: .8rem;
+  }
   .pricing-card .price span { font-size: .8rem; font-weight: 400; color: var(--lp-muted); }
   .pricing-flow { list-style: none; font-size: .82rem; color: var(--lp-muted); margin-bottom: 1.2rem; }
   .pricing-flow li { padding: .25rem 0; }
@@ -123,7 +140,7 @@
   .pricing-plans { display: grid; gap: 1rem; }
   .plan-row {
     display: flex; justify-content: space-between; align-items: center; gap: 1rem;
-    border-top: 1px solid var(--lp-border); padding-top: 1rem;
+    border-top: 1px solid rgba(184,150,110,.25); padding-top: 1rem;
   }
   .plan-row:first-child { border-top: none; padding-top: 0; }
   .plan-row .plan-name { font-weight: 700; font-size: .9rem; }
@@ -225,7 +242,16 @@
   <h2 class="section-title">テンプレート例</h2>
   <div class="templates-grid">
     <div class="template-card is-disabled" role="group" aria-disabled="true" aria-label="カフェ用テンプレート（近日公開）">
-      <div class="template-thumb template-cafe">☕<span class="template-soon-badge">近日公開</span></div>
+      <div class="template-thumb template-cafe">
+        <span class="thumb-icon-ring">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 8h13v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8z"></path>
+            <path d="M17 9.5h1.5a2 2 0 0 1 0 4H17"></path>
+            <path d="M8 3c-.5 1 .5 1.5 0 2.5M11.5 3c-.5 1 .5 1.5 0 2.5"></path>
+          </svg>
+        </span>
+        <span class="template-soon-badge">近日公開</span>
+      </div>
       <div class="template-body">
         <p class="tag">Café</p>
         <p class="name">カフェ用テンプレート</p>
@@ -233,7 +259,15 @@
       </div>
     </div>
     <a href="https://miiina-bistro.netlify.app/" class="template-card" target="_blank" rel="noopener">
-      <div class="template-thumb template-bistro">🍷</div>
+      <div class="template-thumb template-bistro">
+        <span class="thumb-icon-ring">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 3h10l-1 8a4 4 0 0 1-8 0L7 3z"></path>
+            <path d="M12 15v6"></path>
+            <path d="M8.5 21h7"></path>
+          </svg>
+        </span>
+      </div>
       <div class="template-body">
         <p class="tag">Bistro</p>
         <p class="name">ビストロ用テンプレート</p>
@@ -241,7 +275,16 @@
       </div>
     </a>
     <div class="template-card is-disabled" role="group" aria-disabled="true" aria-label="居酒屋用テンプレート（近日公開）">
-      <div class="template-thumb template-izakaya">🍺<span class="template-soon-badge">近日公開</span></div>
+      <div class="template-thumb template-izakaya">
+        <span class="thumb-icon-ring">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 3h6l1 4-1 1H9L8 7l1-4z"></path>
+            <path d="M8 8l-1.5 9A2 2 0 0 0 8.5 19h7a2 2 0 0 0 2-2.2L16 8"></path>
+            <ellipse cx="6" cy="17" rx="3" ry="1.6"></ellipse>
+          </svg>
+        </span>
+        <span class="template-soon-badge">近日公開</span>
+      </div>
       <div class="template-body">
         <p class="tag">Izakaya</p>
         <p class="name">居酒屋用テンプレート</p>
@@ -249,7 +292,17 @@
       </div>
     </div>
     <div class="template-card is-disabled" role="group" aria-disabled="true" aria-label="定食屋用テンプレート（近日公開）">
-      <div class="template-thumb template-teishoku">🍱<span class="template-soon-badge">近日公開</span></div>
+      <div class="template-thumb template-teishoku">
+        <span class="thumb-icon-ring">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 12a8 8 0 0 0 16 0z"></path>
+            <path d="M3.5 12h17"></path>
+            <path d="M18 5l2.5-2"></path>
+            <path d="M19 6.5l2-2.5"></path>
+          </svg>
+        </span>
+        <span class="template-soon-badge">近日公開</span>
+      </div>
       <div class="template-body">
         <p class="tag">Teishoku</p>
         <p class="name">定食屋用テンプレート</p>
@@ -257,7 +310,15 @@
       </div>
     </div>
     <div class="template-card is-disabled" role="group" aria-disabled="true" aria-label="高級店用テンプレート（近日公開）">
-      <div class="template-thumb template-kaiseki">✨<span class="template-soon-badge">近日公開</span></div>
+      <div class="template-thumb template-kaiseki">
+        <span class="thumb-icon-ring">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v4M12 17v4M3 12h4M17 12h4"></path>
+            <path d="M12 9l1.5 1.5L12 12l-1.5-1.5L12 9z"></path>
+          </svg>
+        </span>
+        <span class="template-soon-badge">近日公開</span>
+      </div>
       <div class="template-body">
         <p class="tag">Fine Dining</p>
         <p class="name">高級店用テンプレート</p>
