@@ -131,13 +131,22 @@ exports.handler = async (event) => {
         Authorization: `Bearer ${resendKey}`,
       },
       body: JSON.stringify({
+        // 注意: onboarding@resend.dev はResendの未検証アカウント用共有送信元アドレスのため、
+        // Resendアカウントに登録・検証済みのメールアドレス宛にしか配信できない。
+        // NOTIFY_EMAIL が別アドレスの場合は配信に失敗するので、独自送信ドメインの検証を推奨。
         from: 'Kaiseki MIINA <onboarding@resend.dev>',
         to: [notifyEmail],
         subject: `【ご予約】${name || ''}様 ${date || ''} ${time || ''}`,
         html,
       }),
     });
-    results.email = emailRes.ok ? 'ok' : await emailRes.text();
+    if (emailRes.ok) {
+      results.email = 'ok';
+    } else {
+      const errorText = await emailRes.text();
+      console.error('Resendメール送信に失敗しました:', emailRes.status, errorText);
+      results.email = errorText;
+    }
   }
 
   return { statusCode: 200, body: JSON.stringify(results) };
