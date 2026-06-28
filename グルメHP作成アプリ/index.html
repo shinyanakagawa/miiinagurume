@@ -54,10 +54,32 @@
   .btn-sm { padding: .55rem 1.1rem; font-size: .78rem; }
 
   /* Hero */
-  #hero { text-align: center; padding: 5rem 1.5rem 4rem; }
-  #hero h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); margin-bottom: 1rem; }
-  #hero p.sub { color: var(--lp-muted); font-size: 1rem; margin-bottom: 2rem; }
+  #hero {
+    position: relative; overflow: hidden;
+    max-width: none; margin: 0; padding: 0;
+    text-align: center; color: #fff;
+    background: radial-gradient(ellipse 120% 90% at 50% -10%, #3a352d 0%, var(--lp-plaque) 55%, #131210 100%);
+  }
+  #hero::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 8%, rgba(201,169,110,.22), transparent 55%);
+    pointer-events: none;
+  }
+  .hero-inner {
+    position: relative; z-index: 1; max-width: 720px; margin: 0 auto;
+    padding: clamp(4.5rem, 12vw, 7.5rem) 1.5rem clamp(3.5rem, 9vw, 5.5rem);
+  }
+  .hero-eyebrow {
+    display: flex; align-items: center; justify-content: center; gap: .9rem;
+    font-size: .7rem; letter-spacing: .32em; text-transform: uppercase;
+    color: var(--lp-accent-soft); margin-bottom: 1.6rem;
+  }
+  .hero-eyebrow .rule { width: 26px; height: 1px; background: var(--lp-accent-soft); opacity: .6; }
+  #hero h1 { font-size: clamp(2.1rem, 5.6vw, 3.4rem); line-height: 1.45; margin-bottom: 1.3rem; color: #fff; }
+  #hero p.sub { color: rgba(255,255,255,.68); font-size: 1rem; margin: 0 auto 2.3rem; max-width: 30rem; }
   .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .btn-on-dark { color: #fff; border-color: rgba(255,255,255,.32); }
+  .btn-on-dark:hover { background: rgba(255,255,255,.08); }
 
   section { padding: 4rem 1.5rem; max-width: 1080px; margin: 0 auto; }
   .section-label {
@@ -67,16 +89,24 @@
   .section-title { font-size: clamp(1.4rem, 3vw, 1.9rem); text-align: center; margin-bottom: 3rem; }
 
   /* 特徴 */
-  .features-grid { display: grid; gap: 1.8rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-  .feature-card { background: var(--lp-card); border: 1px solid var(--lp-border); border-radius: 16px; padding: 2.2rem 1.8rem; text-align: center; }
+  .features-grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }
+  .feature-card { background: var(--lp-card); border: 1px solid var(--lp-border); border-radius: 14px; padding: 1.4rem 1rem; text-align: center; }
   .feature-icon {
-    width: 56px; height: 56px; margin: 0 auto 1.2rem; border-radius: 50%;
+    width: 44px; height: 44px; margin: 0 auto .9rem; border-radius: 50%;
     background: rgba(184,150,110,.12); color: var(--lp-accent);
     display: flex; align-items: center; justify-content: center;
   }
-  .feature-icon svg { width: 26px; height: 26px; }
-  .feature-card h3 { font-size: 1.05rem; margin-bottom: .7rem; line-height: 1.5; }
-  .feature-card p { font-size: .9rem; color: var(--lp-muted); line-height: 1.8; }
+  .feature-icon svg { width: 22px; height: 22px; }
+  .feature-card h3 { font-size: .88rem; margin-bottom: .5rem; line-height: 1.4; }
+  .feature-card p { font-size: .76rem; color: var(--lp-muted); line-height: 1.6; }
+  @media (min-width: 640px) {
+    .features-grid { gap: 1.8rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .feature-card { padding: 2.2rem 1.8rem; border-radius: 16px; }
+    .feature-icon { width: 56px; height: 56px; margin-bottom: 1.2rem; }
+    .feature-icon svg { width: 26px; height: 26px; }
+    .feature-card h3 { font-size: 1.05rem; margin-bottom: .7rem; line-height: 1.5; }
+    .feature-card p { font-size: .9rem; line-height: 1.8; }
+  }
 
   /* テンプレート例 */
   .templates-grid { display: grid; gap: 1.2rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
@@ -186,11 +216,14 @@
 </header>
 
 <section id="hero">
-  <h1>テンプレートから、自分だけの飲食店HPを。</h1>
-  <p class="sub">店名・写真を入力するだけ。作成・プレビューは無料、公開する時だけ料金が発生します。</p>
-  <div class="hero-ctas">
-    <a href="login.html?tab=signup" class="btn btn-primary">今すぐ無料で作る</a>
-    <a href="#pricing" class="btn btn-secondary">制作代行を相談する（無料）</a>
+  <div class="hero-inner">
+    <p class="hero-eyebrow"><span class="rule"></span>MIIINAGURUME<span class="rule"></span></p>
+    <h1>テンプレートから、<br>自分だけの飲食店HPを。</h1>
+    <p class="sub">店名・写真を入力するだけ。作成・プレビューは無料、公開する時だけ料金が発生します。</p>
+    <div class="hero-ctas">
+      <a href="login.html?tab=signup" class="btn btn-primary">今すぐ無料で作る</a>
+      <a href="#pricing" class="btn btn-secondary btn-on-dark">制作代行を相談する（無料）</a>
+    </div>
   </div>
 </section>
 
@@ -417,7 +450,7 @@
     <p>会員登録・作成・プレビューはすべて無料です。</p>
     <div class="hero-ctas">
       <a href="login.html?tab=signup" class="btn btn-primary">今すぐ無料で作る</a>
-      <a href="#pricing" class="btn btn-secondary" style="border-color:rgba(255,255,255,.3);color:#fff">制作代行を相談する（無料）</a>
+      <a href="#pricing" class="btn btn-secondary btn-on-dark">制作代行を相談する（無料）</a>
     </div>
   </div>
 </section>
