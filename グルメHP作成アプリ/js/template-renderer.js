@@ -182,6 +182,80 @@ function renderInfoAndAccess(data) {
   </section>`;
 }
 
+// ============================================================
+// PostHog 訪問者解析（公開HP/site.html 側の追加スコープ）
+// ------------------------------------------------------------
+// 既存の `データ連携担当/参考資料/2026-06-20-posthog-analytics-plan.md` は
+// 管理画面（index.html / dashboard.html / editor.html）のみが対象だったが、
+// ここでは公開HP（site.html が renderSiteHTML() の出力を document.write する）
+// 側の訪問者解析を追加スコープとして実装する。
+//
+// 重要: 匿名トラッキングのみ。サイト訪問者は店舗オーナーのアプリアカウント
+// （Supabase Auth の user_id）とは無関係の一般客なので、posthog.identify()
+// は呼ばない（PostHogのデフォルトの匿名 distinct_id のみを使う）。
+//
+// APIキーはまだ実際のPostHogプロジェクトが存在しないためプレースホルダ
+// （'YOUR_POSTHOG_API_KEY'）。既存のTurnstile site keyプレースホルダ
+// （'YOUR_TURNSTILE_SITE_KEY'）と同様の扱い。
+// 実際にPostHogプロジェクトを作成しAPIキーを取得した後、下記
+// POSTHOG_API_KEY の値を 'phc_xxx' 形式の実キーに置き換えること。
+// ============================================================
+const POSTHOG_API_KEY = 'YOUR_POSTHOG_API_KEY';
+const POSTHOG_HOST = 'https://us.i.posthog.com'; // EUリージョンの場合は https://eu.i.posthog.com に変更
+
+/**
+ * site.html が出力するHTMLの</head>直前に挿入するPostHog snippetを生成する。
+ * 計測イベントは最小限に絞る:
+ *   - $pageview（PostHog SDKが自動収集）
+ *   - tel_link_click（tel:リンクのクリック。電話番号タップ計測）
+ *   - reservation_form_submit（予約フォーム送信。#reservation-form が
+ *     存在する場合のみ発火。汎用テンプレートに予約フォームが未実装の
+ *     現状ではフォームが無いため発火しないが、将来追加された際に
+ *     そのまま動作するよう先行実装する）
+ *   - map_open_click（Googleマップを開くリンクのクリック）
+ *
+ * 公式snippetの読み込みに失敗してもページ表示自体は壊さないよう、
+ * <script>タグはbody末尾に置き、PostHog SDK初期化失敗時も
+ * try/catchで握りつぶす。
+ */
+export function renderAnalyticsSnippet() {
+  return `
+<script>
+(function () {
+  try {
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.uploaded_to_v2||t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('${POSTHOG_API_KEY}', {
+      api_host: '${POSTHOG_HOST}',
+      person_profiles: 'identified_only', // 匿名訪問者はPersonプロファイルを作らない（店主アカウントとは紐付けない）
+      autocapture: false // 必要なイベントのみ明示的にcaptureする
+    });
+
+    document.addEventListener('click', function (e) {
+      var telLink = e.target.closest('a[href^="tel:"]');
+      if (telLink) {
+        posthog.capture('tel_link_click');
+        return;
+      }
+      var mapLink = e.target.closest('a[href*="maps.google.com"], a[href*="google.com/maps"]');
+      if (mapLink) {
+        posthog.capture('map_open_click');
+      }
+    });
+
+    var reservationForm = document.getElementById('reservation-form');
+    if (reservationForm) {
+      reservationForm.addEventListener('submit', function () {
+        posthog.capture('reservation_form_submit');
+      });
+    }
+  } catch (err) {
+    // PostHog読み込み失敗時もページ表示自体には影響させない
+    console.warn('analytics snippet failed to initialize', err);
+  }
+})();
+</script>`;
+}
+
 // weekly_hours を使って「営業中／準備中」バッジを判定するための軽量スクリプト。
 // weekly_hours が無いサイトでは #site-open-badge 自体が出力されないため何もしない。
 function renderOpenStatusScript(weeklyHours) {
@@ -286,6 +360,7 @@ ${data.phone ? `
   <a href="${telHref(data.phone)}">${meta.ctaIcon} 電話で予約する</a>
 </div>` : ''}
 ${renderOpenStatusScript(data.weekly_hours)}
+${renderAnalyticsSnippet()}
 
 </body>
 </html>`;

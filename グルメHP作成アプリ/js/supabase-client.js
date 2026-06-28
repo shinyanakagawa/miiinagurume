@@ -58,7 +58,17 @@ export async function getSiteById(id) {
   return data;
 }
 
-/** スラッグから公開サイトを取得（公開ページ表示用・誰でも可） */
+/**
+ * スラッグから公開サイトを取得（公開ページ表示用・誰でも可）
+ *
+ * セキュリティ注意: select('*') は絶対に使わないこと。
+ * notify_email / line_admin_user_id / turnstile_site_key は店主個人の
+ * 連絡先情報であり、公開読み取りパス（site.html など匿名アクセス）から
+ * 取得してはならない。これらはNetlify Functions側がservice roleキーで
+ * 別途取得する（グルメHP作成アプリ/netlify/functions/send-reservation.js
+ * を参照）。カラムを追加する際は、ここに明示列挙されたものだけが
+ * 公開ページに渡る、という前提を必ず確認すること。
+ */
 export async function getPublishedSiteBySlug(slug) {
   const { data, error } = await supabase
     .from('sites')
@@ -105,6 +115,42 @@ export async function updateSiteData(id, { theme, data, status }) {
 export async function deleteSite(id) {
   const { error } = await supabase.from('sites').delete().eq('id', id);
   if (error) throw error;
+}
+
+// ---- 予約通知先（店主の個人連絡先・非公開カラム） -----------------
+//
+// notify_email / line_admin_user_id / turnstile_site_key は data 列とは
+// 別の専用カラムで管理する（理由はカラム定義側のコメント・
+// データ連携担当/成果物/成果物.md を参照）。
+// これらはオーナー自身のみがRLSで読み書き可能（auth.uid() = user_id）。
+// 公開ページ（site.html）からは絶対に取得しないこと
+// （getPublishedSiteBySlug は意図的にこれらのカラムを含めていない）。
+
+/** ログインユーザー自身のサイトの通知設定を取得（編集画面用） */
+export async function getSiteNotifySettings(id) {
+  const { data, error } = await supabase
+    .from('sites')
+    .select('id, notify_email, line_admin_user_id, turnstile_site_key')
+    .eq('id', id)
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+/** ログインユーザー自身のサイトの通知設定を更新（編集画面用） */
+export async function updateSiteNotifySettings(id, { notifyEmail, lineAdminUserId, turnstileSiteKey }) {
+  const patch = {};
+  if (notifyEmail !== undefined) patch.notify_email = notifyEmail;
+  if (lineAdminUserId !== undefined) patch.line_admin_user_id = lineAdminUserId;
+  if (turnstileSiteKey !== undefined) patch.turnstile_site_key = turnstileSiteKey;
+  const { data: row, error } = await supabase
+    .from('sites')
+    .update(patch)
+    .eq('id', id)
+    .select('id, notify_email, line_admin_user_id, turnstile_site_key')
+    .single();
+  if (error) throw error;
+  return row;
 }
 
 // ---- 写真アップロード ------------------------------------------

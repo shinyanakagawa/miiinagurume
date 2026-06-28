@@ -685,3 +685,64 @@ git commit -m "feat: Stripeサブスクリプション有効化時にPostHogへ�
 
 - `npm test`（`グルメHP作成アプリ/`配下）が全件PASSする
 - PostHog管理画面の「Live events」で、ログイン・サインアップ・サイト作成・保存・公開・課金導線クリック・サブスクリプション有効化の各イベントが実際に確認できる
+
+---
+
+## 追加スコープ：site.html（公開HP）訪問者解析（2026-06-28追記）
+
+> 上記「Global Constraints」では「site.html（店舗公開HP）の訪問者解析は対象外」としていたが、
+> フェーズ2の依頼により本節でスコープに追加する。対象は店舗の公開HP（一般客が訪れるページ）の
+> 訪問者解析のみであり、上記Task 1〜6（管理画面側）の計測とは別物として扱う。
+
+### 設計方針
+
+- **匿名トラッキングのみ。** `posthog.identify()` は呼ばない。site.html の訪問者は一般の来店客であり、
+  店舗オーナーのSupabase Auth `user_id` とは無関係なため、店主アカウントの行動ログと混在させない。
+  PostHogのデフォルトの匿名 `distinct_id`（cookie/localStorageベース）のみを使う。
+- **計測イベントは最小限の4種類：**
+  - `$pageview`（PostHog SDKが自動収集。ページビュー）
+  - `tel_link_click`（`tel:` リンクのクリック＝電話番号タップ）
+  - `reservation_form_submit`（予約フォーム送信。`#reservation-form` の `submit` イベント）
+  - `map_open_click`（Googleマップを開くリンクのクリック）
+- **autocapture は無効化**し、上記4イベントのみ明示的に `posthog.capture()` する
+  （訪問者の全クリック・全入力を収集しない。プライバシー配慮と通信量の最小化のため）。
+- PostHog Cloud無料枠を利用する想定（管理画面側の計測と同じプロジェクトを共有してよいが、
+  イベント名のprefixや`$current_url`等の標準プロパティで管理画面イベントと区別可能）。
+
+### 実装
+
+- **実装ファイル：** `グルメHP作成アプリ/js/template-renderer.js`
+  - `renderAnalyticsSnippet()` 関数を追加。PostHog公式スニペット（インライン、esm.sh等のCDN importではなく
+    `<script>`内に直接埋め込む形）と、上記4イベントを発火させるクリック/submitリスナーを文字列として返す。
+  - `renderSiteHTML()` の `</body>` 直前で `renderAnalyticsSnippet()` の出力を埋め込む。
+  - APIキーはプレースホルダ `YOUR_POSTHOG_API_KEY`（既存のTurnstile `YOUR_TURNSTILE_SITE_KEY` と同じ扱い）。
+    実際にPostHogプロジェクトを作成しProject API Keyを取得した後、`template-renderer.js` 内の
+    `POSTHOG_API_KEY` 定数を実際の値（`phc_` で始まる文字列）に置き換える。
+    リージョンがEUの場合は `POSTHOG_HOST` を `https://eu.i.posthog.com` に変更する。
+- `tel_link_click` は `a[href^="tel:"]` を持つ要素のクリックをイベント委譲（`document` への1つのリスナー）で検知する。
+  ヘッダーCTA・フローティング予約ボタン・店舗情報テーブルのTEL行など、複数箇所にある `tel:` リンク全てを
+  個別にリスナー登録せずカバーできる。
+- `map_open_click` は `a[href*="maps.google.com"]` または `a[href*="google.com/maps"]` を持つリンクのクリックを検知する。
+- `reservation_form_submit` は `#reservation-form` が存在する場合のみ発火する。
+  **現状の汎用テンプレート（`editor.html` / `template-renderer.js`）には予約フォーム自体が未実装のため、
+  現時点ではこのイベントは発火しない。** Phase2の別タスク（予約フォームの汎用化、本ファイルとは別の
+  WEB制作担当の実装範囲）で `#reservation-form` というIDのフォームが追加された時点で、追加のコード変更なしに
+  そのまま計測が動作するよう先行実装した。
+
+### Go-live前に必要な外部対応
+
+1. https://posthog.com で無料プランのアカウント・プロジェクトを新規作成する
+   （既存の管理画面用プロジェクトと共用してもよいが、イベント数の無料枠消費は合算されることに注意）。
+2. プロジェクト設定から実際のProject API Key（`phc_...`）とリージョン（US/EU）を取得する。
+3. `グルメHP作成アプリ/js/template-renderer.js` の `POSTHOG_API_KEY`（および必要なら `POSTHOG_HOST`）を
+   実際の値に書き換える。
+4. ブラウザで実際に公開済みサイト（`site.html?slug=...`）を開き、PostHog管理画面の
+   「Activity」→「Live events」で `$pageview` / `tel_link_click` / `map_open_click` が実際に届くことを確認する
+   （`reservation_form_submit` は予約フォームの実装後に確認する）。
+
+### 完了条件（追加スコープ分）
+
+- `site.html` を開くと PostHog の `$pageview` イベントが記録される（実APIキー設定後）
+- `tel:` リンク・Googleマップを開くリンクのクリックで、それぞれ対応イベントが記録される
+- サイト訪問者のイベントが店舗オーナーの `user_id` と `identify` で紐付けられていないことを確認する
+  （PostHog「People」一覧に一般訪問者の匿名IDが店主のメールアドレス等と統合されていないこと）

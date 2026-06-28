@@ -16,6 +16,11 @@ CREATE TABLE sites (
                             CHECK (subscription_status IN ('inactive','active','past_due','canceled')),
   stripe_customer_id      TEXT,
   stripe_subscription_id  TEXT,
+  -- 予約通知用の店舗連絡先（非公開カラム。公開クエリでは絶対にSELECTしないこと。
+  -- 詳細は本ファイル下部「2026-06-28 予約フォーム通知先カラム追加」のコメントを参照）
+  notify_email            TEXT,
+  line_admin_user_id      TEXT,
+  turnstile_site_key      TEXT,
   created_at              TIMESTAMPTZ DEFAULT NOW(),
   updated_at              TIMESTAMPTZ DEFAULT NOW()
 );
@@ -89,3 +94,44 @@ CREATE POLICY "owner delete own images" ON storage.objects
 -- 画像は誰でも閲覧可能（公開HPに表示するため）
 CREATE POLICY "public read images" ON storage.objects
   FOR SELECT USING (bucket_id = 'site-images');
+
+-- ============================================================
+-- 2026-06-28 予約フォーム通知先カラム追加（マイグレーション）
+-- ------------------------------------------------------------
+-- 既にSupabase上で sites テーブルを作成済みの環境向けに、
+-- 上記 CREATE TABLE 文に統合済みの3カラムを ALTER TABLE で追加する。
+-- 新規にスキーマを流し込む場合（CREATE TABLE から実行する場合）は
+-- このセクションは不要（IF NOT EXISTS のため実行しても無害）。
+--
+-- 背景・セキュリティ方針:
+--   notify_email / line_admin_user_id は店主個人の連絡先であり、
+--   sites テーブルには「公開済み・契約有効なサイトは誰でもSELECT可能」
+--   という行レベルのRLSポリシー（public read published active sites）が
+--   既に存在する。RLSは行単位のフィルタであり列単位のアクセス制御は
+--   行わないため、このポリシーが有効な限り notify_email 等の新規カラムも
+--   理論上は同じSELECT権限の対象になる。
+--   よって「公開SELECTでは個人連絡先を返さない」という要件は、
+--   DBのRLSではなく【アプリケーション層（クライアントの select() 呼び出し）】
+--   で保証する。具体的には：
+--     - グルメHP作成アプリ/js/supabase-client.js の公開読み取り関数
+--       （getPublishedSiteBySlug など）は select('*') を使わず、
+--       必要なカラムを明示的に列挙し、notify_email / line_admin_user_id /
+--       turnstile_site_key を含めない。
+--     - Netlify Functions（send-reservation.js）は SUPABASE_SERVICE_ROLE_KEY
+--       を使い、サーバーサイドのみでこれらのカラムを取得する
+--       （service role キーはRLSをバイパスするため、anon keyをクライアントに
+--       渡す経路とは完全に分離されている）。
+--   より厳密な防御をDB側でも行いたい場合は、将来的に
+--   notify_email 等を別テーブル（例: site_notify_settings、サーバー専用）に
+--   切り出し、anon/authenticated ロールにはそのテーブルへのSELECT権限を
+--   一切与えない設計への移行を検討すること（本マイグレーションでは
+--   既存スキーマへの影響を小さくするため同一テーブルへの列追加とした）。
+-- ============================================================
+
+ALTER TABLE sites ADD COLUMN IF NOT EXISTS notify_email TEXT;
+ALTER TABLE sites ADD COLUMN IF NOT EXISTS line_admin_user_id TEXT;
+ALTER TABLE sites ADD COLUMN IF NOT EXISTS turnstile_site_key TEXT;
+
+-- 既存のRLSポリシーに変更はない（書き込みは引き続き
+-- "owner update own sites" = auth.uid() = user_id のみが許可される）。
+-- 上記の理由により、新規カラム追加に伴うポリシーの追加・変更は不要。

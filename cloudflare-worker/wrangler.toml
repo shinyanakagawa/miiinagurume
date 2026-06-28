@@ -1,0 +1,28 @@
+# ============================================================
+# Cloudflare Worker 設定ファイル
+# ------------------------------------------------------------
+# 実際のデプロイには以下のプレースホルダを実際の値に置き換える必要がある:
+#   - account_id        : Cloudflareダッシュボード右サイドバーで確認できるAccount ID
+#   - zone_name（routes）: 実際に購入・Cloudflareに追加したドメイン名
+#   - NETLIFY_ORIGIN    : グルメHP作成アプリをデプロイしたNetlifyサイトの実際のURL
+#
+# デプロイ前にCEO承認が必要（ドメイン購入は実費が発生するため）。
+# 詳細手順は cloudflare-worker/README.md を参照。
+# ============================================================
+
+name = "miiinagurume-site-router"
+main = "src/worker.js"
+compatibility_date = "2026-06-20"
+
+account_id = "YOUR_CLOUDFLARE_ACCOUNT_ID"
+
+[vars]
+ROOT_DOMAIN = "miiinagurume.com"
+NETLIFY_ORIGIN = "https://REPLACE_WITH_YOUR_NETLIFY_SITE.netlify.app"
+
+# ワイルドカードサブドメイン（店舗公開HP）のみをこのWorkerに通す。
+# app.miiinagurume.com（管理画面）はDNSのみで直接Netlifyに向けるため、
+# このroutesには含めない。
+[[routes]]
+pattern = "*.miiinagurume.com/*"
+zone_name = "miiinagurume.com"
