@@ -131,6 +131,11 @@
     background: linear-gradient(90deg, var(--lp-accent), var(--lp-accent-soft));
   }
   .pricing-card h3 { font-size: 1.05rem; margin-bottom: .4rem; }
+  .pricing-trial-badge {
+    display: inline-block; font-size: .7rem; font-weight: 700; letter-spacing: .03em;
+    color: var(--lp-accent); background: rgba(184,150,110,.14);
+    padding: .25rem .7rem; border-radius: 999px; margin-bottom: .8rem;
+  }
   .pricing-card .price {
     font-family: 'Noto Serif JP', serif; font-size: 1.8rem; font-weight: 700;
     color: var(--lp-accent); margin-bottom: .8rem;
@@ -349,6 +354,7 @@
   <h2 class="section-title">料金プラン</h2>
   <div class="pricing-grid">
     <div class="pricing-card">
+      <span class="pricing-trial-badge">公開前は完全無料でお試しいただけます</span>
       <h3>セルフサーブ</h3>
       <div class="price">月額1,000円<span> ／ サイト</span></div>
       <ul class="pricing-flow">

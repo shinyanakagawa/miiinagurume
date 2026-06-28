@@ -22,6 +22,18 @@
   .ai-modal-box h3 { margin: 0 0 1rem; font-size: 1.1rem; }
   #gen-preview-img { width: 100%; border-radius: 8px; margin-top: .8rem; display: block; }
   .ai-modal-actions { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1rem; }
+  .weekly-hours-list { display: flex; flex-direction: column; gap: .4rem; }
+  .weekly-hours-row {
+    display: grid; grid-template-columns: 2.6em 1fr auto 1fr auto; gap: .5rem; align-items: center;
+  }
+  .weekly-hours-row .wh-day-label { font-size: .85rem; color: var(--app-text); }
+  .weekly-hours-row .wh-sep { font-size: .8rem; color: var(--app-muted); text-align: center; }
+  .weekly-hours-row .wh-closed-label {
+    display: flex; align-items: center; gap: .3rem; font-size: .8rem; color: var(--app-muted);
+    grid-column: 1 / -1; margin-top: .1rem;
+  }
+  .weekly-hours-row input[type="time"] { width: 100%; }
+  .weekly-hours-row.is-closed input[type="time"] { opacity: .4; }
 </style>
 </head>
 <body>
@@ -129,6 +141,11 @@
         <div class="app-form-group">
           <label for="hours">営業時間</label>
           <input class="app-input" id="hours">
+        </div>
+        <div class="app-form-group">
+          <label>曜日別の営業時間（任意・入力すると公開ページに「営業中／準備中」が自動表示されます）</label>
+          <div id="weekly-hours-list" class="weekly-hours-list"></div>
+          <p class="hint" style="margin-top:.4rem">入力しない場合は上の「営業時間」欄の文字だけが表示されます。</p>
         </div>
         <div class="app-form-group">
           <label for="closed_days">定休日</label>
@@ -252,6 +269,7 @@
     renderGallery();
     renderMenu(d.menu_items || []);
     renderReviews(d.reviews || []);
+    renderWeeklyHours(d.weekly_hours || []);
     renderStatus();
     updatePreview();
   }
@@ -263,6 +281,7 @@
     }
     d.menu_items = collectMenu();
     d.reviews = collectReviews();
+    d.weekly_hours = collectWeeklyHours();
     site.data = d;
     return d;
   }
@@ -435,6 +454,54 @@
   }
 
   document.getElementById('add-review').addEventListener('click', () => addReview());
+
+  // ---- 曜日別営業時間（任意） ----
+  const WEEKDAY_LABELS = ['月', '火', '水', '木', '金', '土', '日'];
+  const weeklyHoursListEl = document.getElementById('weekly-hours-list');
+
+  function renderWeeklyHours(items) {
+    weeklyHoursListEl.innerHTML = '';
+    const byDay = {};
+    (items || []).forEach(it => { if (it && typeof it.day === 'number') byDay[it.day] = it; });
+
+    WEEKDAY_LABELS.forEach((label, day) => {
+      const data = byDay[day] || { day, open: '', close: '', closed: false };
+      const row = document.createElement('div');
+      row.className = 'weekly-hours-row' + (data.closed ? ' is-closed' : '');
+      row.dataset.day = String(day);
+      row.innerHTML = `
+        <span class="wh-day-label">${label}</span>
+        <input type="time" class="app-input wh-open" value="${data.open ? esc(data.open) : ''}" ${data.closed ? 'disabled' : ''}>
+        <span class="wh-sep">〜</span>
+        <input type="time" class="app-input wh-close" value="${data.close ? esc(data.close) : ''}" ${data.closed ? 'disabled' : ''}>
+        <label class="wh-closed-label"><input type="checkbox" class="wh-closed" ${data.closed ? 'checked' : ''}> 定休日</label>
+      `;
+      const openInput = row.querySelector('.wh-open');
+      const closeInput = row.querySelector('.wh-close');
+      const closedInput = row.querySelector('.wh-closed');
+      closedInput.addEventListener('change', () => {
+        row.classList.toggle('is-closed', closedInput.checked);
+        openInput.disabled = closedInput.checked;
+        closeInput.disabled = closedInput.checked;
+        collectData();
+        updatePreview();
+      });
+      [openInput, closeInput].forEach(el => {
+        el.addEventListener('input', () => { collectData(); updatePreview(); });
+      });
+      weeklyHoursListEl.appendChild(row);
+    });
+  }
+
+  function collectWeeklyHours() {
+    return [...weeklyHoursListEl.children].map(row => {
+      const day = Number(row.dataset.day);
+      const open = row.querySelector('.wh-open').value;
+      const close = row.querySelector('.wh-close').value;
+      const closed = row.querySelector('.wh-closed').checked;
+      return { day, open, close, closed };
+    }).filter(d => d.closed || d.open || d.close);
+  }
 
   function esc(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
