@@ -62,17 +62,28 @@ export async function getSiteById(id) {
  * スラッグから公開サイトを取得（公開ページ表示用・誰でも可）
  *
  * セキュリティ注意: select('*') は絶対に使わないこと。
- * notify_email / line_admin_user_id / turnstile_site_key は店主個人の
- * 連絡先情報であり、公開読み取りパス（site.html など匿名アクセス）から
- * 取得してはならない。これらはNetlify Functions側がservice roleキーで
- * 別途取得する（グルメHP作成アプリ/netlify/functions/send-reservation.js
- * を参照）。カラムを追加する際は、ここに明示列挙されたものだけが
- * 公開ページに渡る、という前提を必ず確認すること。
+ * notify_email / line_admin_user_id は店主個人の連絡先情報であり、
+ * 公開読み取りパス（site.html など匿名アクセス）から取得してはならない。
+ * これらはNetlify Functions側がservice roleキーで別途取得する
+ * （グルメHP作成アプリ/netlify/functions/send-reservation.js を参照）。
+ *
+ * turnstile_site_key は上記2つとは性質が異なり、Cloudflare Turnstileの
+ * 「サイトキー」（reCAPTCHAのsite keyと同様、クライアント側に埋め込んで
+ * 公開して使う前提の値）であり秘密情報ではない。予約フォームのTurnstile
+ * ウィジェットをsite.html側で表示するために必要なため、ここでは選択する
+ * （秘密情報は TURNSTILE_SECRET_KEY という別の環境変数であり、本クエリの
+ * 対象であるDBカラムには存在しない）。
+ *
+ * slug もURLのクエリパラメータとして既に公開済みの値であり、予約フォーム
+ * 送信時にどの店舗宛かをNetlify Function側で特定するために必要なため選択する。
+ *
+ * カラムを追加する際は、ここに明示列挙されたものだけが公開ページに渡る、
+ * という前提を必ず確認すること。
  */
 export async function getPublishedSiteBySlug(slug) {
   const { data, error } = await supabase
     .from('sites')
-    .select('theme, status, data')
+    .select('slug, theme, status, data, turnstile_site_key')
     .eq('slug', slug)
     .eq('status', 'published')
     .single();

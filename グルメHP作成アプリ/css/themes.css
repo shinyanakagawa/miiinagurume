@@ -1,9 +1,12 @@
 /* ============================================================
    グルメHP作成アプリ - テーマカラー定義
    テーマは data-theme 属性で切り替える
+   （renderSiteHTML() は data-theme を <body> に付与するため、
+    :root ではなく属性セレクタそのものを使う。:root は <html> 要素を
+    指すため :root[data-theme] では <body> の属性にマッチしない）
    ============================================================ */
 
-:root[data-theme="cafe"] {
+[data-theme="cafe"] {
   --bg: #faf7f2;
   --surface: #ffffff;
   --text: #2c2820;
@@ -15,7 +18,7 @@
   --font-body: 'Noto Sans JP', sans-serif;
 }
 
-:root[data-theme="bistro"] {
+[data-theme="bistro"] {
   --bg: #fbf6f3;
   --surface: #ffffff;
   --text: #2e201c;
@@ -27,7 +30,7 @@
   --font-body: 'Noto Sans JP', sans-serif;
 }
 
-:root[data-theme="izakaya"] {
+[data-theme="izakaya"] {
   --bg: #fdf8ef;
   --surface: #ffffff;
   --text: #2a2220;
@@ -39,7 +42,7 @@
   --font-body: 'Noto Sans JP', sans-serif;
 }
 
-:root[data-theme="teishoku"] {
+[data-theme="teishoku"] {
   --bg: #fef9f4;
   --surface: #ffffff;
   --text: #2c2620;
@@ -51,7 +54,7 @@
   --font-body: 'Noto Sans JP', sans-serif;
 }
 
-:root[data-theme="kaiseki"] {
+[data-theme="kaiseki"] {
   --bg: #faf9f7;
   --surface: #ffffff;
   --text: #1f1c1a;
@@ -146,7 +149,12 @@ body.site-body {
 }
 .site-menu-item {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: 12px; padding: 1.2rem;
+  border-radius: 12px; padding: 1.2rem; overflow: hidden;
+}
+.site-menu-item img {
+  display: block; width: calc(100% + 2.4rem); aspect-ratio: 4 / 3; object-fit: cover;
+  border-radius: 8px; margin: -1.2rem -1.2rem .8rem;
+  background: var(--accent-soft);
 }
 .site-menu-item .name { font-weight: 700; margin-bottom: .3rem; }
 .site-menu-item .price { color: var(--accent); font-weight: 700; margin-bottom: .4rem; }
@@ -210,6 +218,51 @@ body.site-body {
   display: inline-block; font-family: var(--font-heading);
   font-size: clamp(1.6rem, 5vw, 2.2rem); font-weight: 700;
   color: var(--accent); text-decoration: none; margin: 1rem 0;
+}
+
+/* 予約フォーム */
+.site-reservation-form {
+  max-width: 640px; margin: 0 auto;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 1.8rem;
+}
+.site-form-row {
+  display: grid; gap: 1rem; grid-template-columns: 1fr;
+}
+.site-form-group {
+  display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1rem;
+}
+.site-form-group label {
+  font-size: .8rem; color: var(--muted); font-weight: 700;
+}
+.site-reservation-form input[type="text"],
+.site-reservation-form input[type="tel"],
+.site-reservation-form input[type="date"],
+.site-reservation-form input[type="time"],
+.site-reservation-form input[type="number"] {
+  width: 100%; padding: .7rem .9rem; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--bg);
+  color: var(--text); font-family: var(--font-body); font-size: .95rem;
+}
+.site-reservation-form input:focus {
+  outline: 2px solid var(--accent); outline-offset: 1px;
+}
+.site-reservation-form .cf-turnstile {
+  margin-bottom: 1rem; display: flex; justify-content: center;
+}
+.site-form-submit {
+  display: flex; width: 100%; justify-content: center;
+  border: none; cursor: pointer; font-size: .9rem;
+}
+.site-form-submit:disabled {
+  opacity: .6; cursor: not-allowed;
+}
+.site-form-status {
+  text-align: center; margin-top: 1rem; font-size: .85rem; color: var(--muted);
+}
+
+@media (min-width: 600px) {
+  .site-form-row { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* フッター */

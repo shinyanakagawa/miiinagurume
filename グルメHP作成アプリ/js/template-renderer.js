@@ -89,6 +89,7 @@ function renderMenu(items = []) {
   if (!items.length) return '';
   const cards = items.map(item => `
     <div class="site-menu-item">
+      ${item.image ? `<img src="${esc(safeUrl(item.image))}" alt="${esc(item.name)}" loading="lazy">` : ''}
       <div class="name">${esc(item.name)}</div>
       ${item.price ? `<div class="price">${esc(item.price)}</div>` : ''}
       ${item.description ? `<div class="desc">${esc(item.description)}</div>` : ''}
@@ -125,9 +126,24 @@ function renderSpecial(data) {
   </section>`;
 }
 
-function renderReviews(reviews = []) {
+function renderReviews(reviews = [], data = {}) {
   const valid = reviews.filter(r => r && (r.comment || r.name));
-  if (!valid.length) return '';
+  if (!valid.length && !data.address) return '';
+
+  const mapLink = data.address ? `
+  <div style="text-align:center;margin-top:1.5rem">
+    <a href="https://maps.google.com/?q=${encodeURIComponent(data.address)}" class="site-cta" style="display:inline-flex" target="_blank" rel="noopener">★ Googleマップで全レビューを見る</a>
+  </div>` : '';
+
+  if (!valid.length) {
+    return `
+  <section class="site-section" id="reviews">
+    <span class="site-section-label">VOICE</span>
+    <h2 class="site-section-title">お客様の声</h2>
+    ${mapLink}
+  </section>`;
+  }
+
   const cards = valid.map(r => `
     <div class="site-review">
       ${r.rating ? `<div class="stars">${'★'.repeat(Math.min(5, Math.max(1, Number(r.rating) || 5)))}</div>` : ''}
@@ -139,7 +155,98 @@ function renderReviews(reviews = []) {
     <span class="site-section-label">VOICE</span>
     <h2 class="site-section-title">お客様の声</h2>
     <div class="site-reviews">${cards}</div>
+    ${mapLink}
   </section>`;
+}
+
+// turnstileSiteKey が設定されている場合のみ、Cloudflare Turnstileの公式スクリプトを
+// 読み込む（<head>用）。未設定の店舗では3rd-partyスクリプトを読み込まない。
+function renderTurnstileScriptTag(turnstileSiteKey) {
+  if (!turnstileSiteKey) return '';
+  return `
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>`;
+}
+
+// 予約フォーム（汎用Netlify Function /.netlify/functions/send-reservation 宛）。
+// data.phone が無い店舗では予約導線自体を出さない既存規約（ヘッダーCTA・
+// フローティングボタンと同じ判定）に合わせる。
+function renderReservationForm(data, slug, turnstileSiteKey) {
+  if (!data.phone) return '';
+  return `
+  <section class="site-section" id="reservation">
+    <span class="site-section-label">CONTACT</span>
+    <h2 class="site-section-title">ご予約・お問い合わせ</h2>
+    ${data.phone ? `<p style="text-align:center;margin-bottom:1.5rem"><a href="${telHref(data.phone)}" class="site-tel-big">${esc(data.phone)}</a></p>` : ''}
+    <form id="reservation-form" class="site-reservation-form">
+      <input type="hidden" name="slug" value="${esc(slug)}">
+      <div class="site-form-row">
+        <div class="site-form-group">
+          <label for="reservation-name">お名前</label>
+          <input type="text" id="reservation-name" name="name" required>
+        </div>
+        <div class="site-form-group">
+          <label for="reservation-tel">電話番号</label>
+          <input type="tel" id="reservation-tel" name="tel" required>
+        </div>
+      </div>
+      <div class="site-form-row">
+        <div class="site-form-group">
+          <label for="reservation-date">日付</label>
+          <input type="date" id="reservation-date" name="date" required>
+        </div>
+        <div class="site-form-group">
+          <label for="reservation-time">時間</label>
+          <input type="time" id="reservation-time" name="time" required>
+        </div>
+        <div class="site-form-group">
+          <label for="reservation-pax">人数</label>
+          <input type="number" id="reservation-pax" name="pax" min="1" required>
+        </div>
+      </div>
+      <input type="text" name="website" id="hp-field" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;opacity:0" aria-hidden="true">
+      ${turnstileSiteKey ? `<div class="cf-turnstile" data-sitekey="${esc(turnstileSiteKey)}"></div>` : ''}
+      <button type="submit" class="site-cta site-form-submit">この内容で予約する</button>
+    </form>
+    <p id="reservation-status" class="site-form-status"></p>
+  </section>`;
+}
+
+// 予約フォーム送信処理（body末尾に追加で出力する文字列。
+// #reservation-form が存在しない場合は何もしない）。
+function renderReservationFormScript() {
+  return `
+<script>
+(function () {
+  var form = document.getElementById('reservation-form');
+  if (!form) return;
+  var statusEl = document.getElementById('reservation-status');
+  var submitBtn = form.querySelector('button[type="submit"]');
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (submitBtn) submitBtn.disabled = true;
+    if (statusEl) statusEl.textContent = '送信中...';
+    try {
+      var formData = new FormData(form);
+      var payload = Object.fromEntries(formData.entries());
+      var res = await fetch('/.netlify/functions/send-reservation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        if (statusEl) statusEl.textContent = 'ご予約を受け付けました。確認のご連絡をお待ちください。';
+        form.reset();
+      } else {
+        if (statusEl) statusEl.textContent = '送信に失敗しました。お電話でお問い合わせください。';
+      }
+    } catch (err) {
+      if (statusEl) statusEl.textContent = '送信に失敗しました。お電話でお問い合わせください。';
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+    }
+  });
+})();
+</script>`;
 }
 
 function renderInfoAndAccess(data) {
@@ -291,15 +398,17 @@ function renderOpenStatusScript(weeklyHours) {
 }
 
 /**
- * site = { theme, status, data }
+ * site = { slug, theme, status, data, turnstile_site_key }
  * data = {
  *   store_name, logo_text, genre, catch_copy, description,
  *   hero_image, address, phone, hours, closed_days, station,
- *   seats, budget, menu_items[], gallery_images[],
+ *   seats, budget, menu_items[] (各要素は { name, price, description, image }),
+ *   gallery_images[],
  *   special_title, special_body, reviews[], sns_instagram,
  *   weekly_hours[] (任意・後方互換: 未設定なら hours の文字列のみ表示)
  *     weekly_hours の各要素: { day: 0-6 (0=月...6=日), open: 'HH:MM', close: 'HH:MM', closed: boolean }
  * }
+ * site.slug / site.turnstile_site_key は予約フォーム（renderReservationForm）で使用する。
  */
 export function renderSiteHTML(site) {
   const theme = THEMES[site.theme] ? site.theme : 'cafe';
@@ -320,7 +429,7 @@ export function renderSiteHTML(site) {
 <title>${esc(storeName)}${data.catch_copy ? `｜${esc(data.catch_copy)}` : ''}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/themes.css">${renderHeadMeta(data, storeName, genre)}
+<link rel="stylesheet" href="css/themes.css">${renderHeadMeta(data, storeName, genre)}${renderTurnstileScriptTag(site.turnstile_site_key)}
 </head>
 <body class="site-body" data-theme="${theme}">
 
@@ -345,7 +454,8 @@ ${data.description ? `
 ${renderMenu(data.menu_items)}
 ${renderSpecial(data)}
 ${renderGallery(data.gallery_images)}
-${renderReviews(data.reviews)}
+${renderReviews(data.reviews, data)}
+${renderReservationForm(data, site.slug || '', site.turnstile_site_key || '')}
 ${renderInfoAndAccess(data)}
 
 <footer class="site-footer">
@@ -360,6 +470,7 @@ ${data.phone ? `
   <a href="${telHref(data.phone)}">${meta.ctaIcon} 電話で予約する</a>
 </div>` : ''}
 ${renderOpenStatusScript(data.weekly_hours)}
+${renderReservationFormScript()}
 ${renderAnalyticsSnippet()}
 
 </body>

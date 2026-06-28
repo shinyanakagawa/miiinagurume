@@ -365,6 +365,7 @@
   function addMenuItem(item = {}) {
     const div = document.createElement('div');
     div.className = 'repeat-item';
+    div.dataset.image = item.image || '';
     div.innerHTML = `
       <button type="button" class="remove-btn">削除</button>
       <div class="app-form-group">
@@ -379,15 +380,53 @@
         <label>説明</label>
         <textarea class="app-textarea menu-desc">${item.description ? esc(item.description) : ''}</textarea>
       </div>
+      <div class="app-form-group">
+        <label>メニュー写真（任意）</label>
+        <input type="file" accept="image/*" class="menu-image-input">
+        <div class="image-thumb-list menu-image-preview"></div>
+      </div>
     `;
     div.querySelector('.remove-btn').addEventListener('click', () => {
       div.remove();
       collectData();
       updatePreview();
     });
-    div.querySelectorAll('input, textarea').forEach(el => {
+    div.querySelectorAll('input:not(.menu-image-input), textarea').forEach(el => {
       el.addEventListener('input', () => { collectData(); updatePreview(); });
     });
+
+    function renderMenuItemImage() {
+      const wrap = div.querySelector('.menu-image-preview');
+      wrap.innerHTML = '';
+      const url = div.dataset.image;
+      if (!url) return;
+      wrap.innerHTML = `<div class="image-thumb"><img src="${url}"><button type="button" data-role="remove-menu-image">×</button></div>`;
+      wrap.querySelector('[data-role="remove-menu-image"]').addEventListener('click', () => {
+        div.dataset.image = '';
+        renderMenuItemImage();
+        collectData();
+        updatePreview();
+      });
+    }
+    renderMenuItemImage();
+
+    div.querySelector('.menu-image-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      msgEl.innerHTML = '<div class="app-msg">アップロード中...</div>';
+      try {
+        const url = await uploadSiteImage(file);
+        div.dataset.image = url;
+        renderMenuItemImage();
+        collectData();
+        updatePreview();
+        msgEl.innerHTML = '';
+      } catch (err) {
+        msgEl.innerHTML = `<div class="app-msg error">${err.message}</div>`;
+      }
+      e.target.value = '';
+    });
+
     menuListEl.appendChild(div);
   }
 
@@ -396,7 +435,8 @@
       name: div.querySelector('.menu-name').value,
       price: div.querySelector('.menu-price').value,
       description: div.querySelector('.menu-desc').value,
-    })).filter(item => item.name || item.price || item.description);
+      image: div.dataset.image || '',
+    })).filter(item => item.name || item.price || item.description || item.image);
   }
 
   function renderMenu(items) {
