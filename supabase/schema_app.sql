@@ -110,28 +110,41 @@ CREATE POLICY "public read images" ON storage.objects
 --   既に存在する。RLSは行単位のフィルタであり列単位のアクセス制御は
 --   行わないため、このポリシーが有効な限り notify_email 等の新規カラムも
 --   理論上は同じSELECT権限の対象になる。
---   よって「公開SELECTでは個人連絡先を返さない」という要件は、
---   DBのRLSではなく【アプリケーション層（クライアントの select() 呼び出し）】
---   で保証する。具体的には：
+--   アプリケーション層（クライアントの select() 呼び出しで該当カラムを
+--   含めない）を第一の防御としつつ、PostgRESTのanon keyは公開鍵であり
+--   クライアントが任意のカラムを明示指定して直接APIを叩く経路を
+--   完全には防げないため、2026-06-28にDB側でも列単位のREVOKEを
+--   追加適用済み（下記）。これにより anon ロールはRLSの行条件を
+--   満たしても notify_email / line_admin_user_id を取得できない。
 --     - グルメHP作成アプリ/js/supabase-client.js の公開読み取り関数
 --       （getPublishedSiteBySlug など）は select('*') を使わず、
 --       必要なカラムを明示的に列挙し、notify_email / line_admin_user_id /
---       turnstile_site_key を含めない。
+--       turnstile_site_key を含めない（第一の防御）。
 --     - Netlify Functions（send-reservation.js）は SUPABASE_SERVICE_ROLE_KEY
 --       を使い、サーバーサイドのみでこれらのカラムを取得する
---       （service role キーはRLSをバイパスするため、anon keyをクライアントに
---       渡す経路とは完全に分離されている）。
+--       （service role キーはRLSもREVOKEもバイパスするため、
+--       anon keyをクライアントに渡す経路とは完全に分離されている）。
+--     - authenticated ロールは引き続きSELECT可能（店主が自分のサイトの
+--       通知設定を編集画面で読み書きするために必要）。REVOKEはanonのみ
+--       を対象とする。turnstile_site_key は公開して問題ない値
+--       （reCAPTCHAのsite keyに相当）なのでREVOKE対象外。
 --   より厳密な防御をDB側でも行いたい場合は、将来的に
 --   notify_email 等を別テーブル（例: site_notify_settings、サーバー専用）に
---   切り出し、anon/authenticated ロールにはそのテーブルへのSELECT権限を
---   一切与えない設計への移行を検討すること（本マイグレーションでは
---   既存スキーマへの影響を小さくするため同一テーブルへの列追加とした）。
+--   切り出す設計への移行も検討余地はあるが、列単位REVOKEにより
+--   当面のリスクは解消済み。
 -- ============================================================
 
 ALTER TABLE sites ADD COLUMN IF NOT EXISTS notify_email TEXT;
 ALTER TABLE sites ADD COLUMN IF NOT EXISTS line_admin_user_id TEXT;
 ALTER TABLE sites ADD COLUMN IF NOT EXISTS turnstile_site_key TEXT;
 
--- 既存のRLSポリシーに変更はない（書き込みは引き続き
+-- 列単位の権限制御（2026-06-28 本番適用済み）:
+-- anon ロールから notify_email / line_admin_user_id へのSELECT権限を剥奪。
+-- RLSの行条件（public read published active sites）を満たす行でも、
+-- anon keyでこの2列を直接指定してSELECTすることはできなくなる。
+-- authenticated ロールの権限は変更なし（店主自身の編集UIで必要）。
+REVOKE SELECT (notify_email, line_admin_user_id) ON public.sites FROM anon;
+
+-- 既存のRLSポリシー自体に変更はない（書き込みは引き続き
 -- "owner update own sites" = auth.uid() = user_id のみが許可される）。
 -- 上記の理由により、新規カラム追加に伴うポリシーの追加・変更は不要。
