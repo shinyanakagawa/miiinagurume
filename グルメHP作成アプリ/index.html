@@ -109,7 +109,7 @@
   }
 
   /* テンプレート例 */
-  .templates-grid { display: grid; gap: 1.2rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .templates-grid { display: grid; gap: .8rem; grid-template-columns: repeat(2, 1fr); }
   .template-card {
     display: block; text-decoration: none; color: inherit;
     background: var(--lp-card); border: 1px solid var(--lp-border); border-radius: 14px; overflow: hidden;
@@ -119,7 +119,7 @@
   .template-card.is-disabled { cursor: default; opacity: .7; }
   .template-card.is-disabled:hover { transform: none; box-shadow: none; }
   .template-thumb {
-    position: relative; height: 110px; display: flex; align-items: center; justify-content: center;
+    position: relative; height: 80px; display: flex; align-items: center; justify-content: center;
     background: linear-gradient(135deg, #2A2724, #1A1815);
   }
   .template-soon-badge {
@@ -129,15 +129,25 @@
     padding: .25rem .6rem; border-radius: 999px; backdrop-filter: blur(2px);
   }
   .thumb-icon-ring {
-    width: 52px; height: 52px; border-radius: 50%;
+    width: 38px; height: 38px; border-radius: 50%;
     border: 1px solid var(--lp-accent-soft); color: var(--lp-accent-soft);
     display: flex; align-items: center; justify-content: center;
   }
-  .thumb-icon-ring svg { width: 24px; height: 24px; }
-  .template-body { padding: 1rem 1.2rem 1.3rem; }
-  .template-body .tag { font-size: .62rem; letter-spacing: .15em; text-transform: uppercase; color: var(--lp-muted); margin-bottom: .3rem; }
-  .template-body .name { font-weight: 700; font-size: .95rem; margin-bottom: .3rem; }
-  .template-body .desc { font-size: .76rem; color: var(--lp-muted); }
+  .thumb-icon-ring svg { width: 18px; height: 18px; }
+  .template-body { padding: .7rem .8rem .9rem; }
+  .template-body .tag { font-size: .58rem; letter-spacing: .12em; text-transform: uppercase; color: var(--lp-muted); margin-bottom: .25rem; }
+  .template-body .name { font-weight: 700; font-size: .82rem; margin-bottom: .25rem; }
+  .template-body .desc { font-size: .7rem; color: var(--lp-muted); line-height: 1.5; }
+  @media (min-width: 640px) {
+    .templates-grid { gap: 1.2rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .template-thumb { height: 110px; }
+    .thumb-icon-ring { width: 52px; height: 52px; }
+    .thumb-icon-ring svg { width: 24px; height: 24px; }
+    .template-body { padding: 1rem 1.2rem 1.3rem; }
+    .template-body .tag { font-size: .62rem; letter-spacing: .15em; margin-bottom: .3rem; }
+    .template-body .name { font-size: .95rem; margin-bottom: .3rem; }
+    .template-body .desc { font-size: .76rem; line-height: 1.6; }
+  }
 
   /* 使い方（簡素版） */
   .steps-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 2rem; }
