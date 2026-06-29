@@ -67,7 +67,7 @@
   }
   .hero-inner {
     position: relative; z-index: 1; max-width: 720px; margin: 0 auto;
-    padding: clamp(4.5rem, 12vw, 7.5rem) 1.5rem clamp(3.5rem, 9vw, 5.5rem);
+    padding: clamp(4.5rem, 12vw, 7.5rem) 1.5rem 2.6rem;
   }
   .hero-eyebrow {
     display: flex; align-items: center; justify-content: center; gap: .9rem;
@@ -80,6 +80,38 @@
   .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
   .btn-on-dark { color: #fff; border-color: rgba(255,255,255,.32); }
   .btn-on-dark:hover { background: rgba(255,255,255,.08); }
+
+  /* Hero モックアップ（仕上がりイメージ） */
+  .hero-mockup-wrap {
+    position: relative; z-index: 1; max-width: 760px; margin: 0 auto;
+    padding: 1.8rem 1.2rem clamp(3.5rem, 9vw, 5.5rem);
+  }
+  .hero-mockup {
+    position: relative; border-radius: 12px; overflow: hidden; background: #0d0c0a;
+    border: 1px solid rgba(201,169,110,.35);
+    box-shadow: 0 24px 50px -18px rgba(0,0,0,.65), 0 0 40px -10px rgba(201,169,110,.18);
+  }
+  .hero-mockup-bar {
+    display: flex; align-items: center; gap: .35rem;
+    padding: .55rem .8rem; background: #1a1815; border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .hero-mockup-bar .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.18); flex-shrink: 0; }
+  .hero-mockup-url {
+    margin-left: .5rem; font-size: .62rem; color: rgba(255,255,255,.42);
+    background: rgba(255,255,255,.05); border-radius: 999px; padding: .22rem .7rem;
+    letter-spacing: .01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .hero-mockup-img { display: block; width: 100%; height: auto; }
+  .hero-mockup-caption {
+    text-align: center; margin-top: .9rem; font-size: .7rem;
+    color: rgba(255,255,255,.45); letter-spacing: .03em;
+  }
+  @media (min-width: 640px) {
+    .hero-mockup-bar { padding: .7rem 1rem; }
+    .hero-mockup-bar .dot { width: 8px; height: 8px; }
+    .hero-mockup-url { font-size: .72rem; padding: .28rem .9rem; }
+    .hero-mockup-caption { font-size: .82rem; margin-top: 1.2rem; }
+  }
 
   section { padding: 4rem 1.5rem; max-width: 1080px; margin: 0 auto; }
   .section-label {
@@ -234,6 +266,16 @@
       <a href="login.html?tab=signup" class="btn btn-primary">今すぐ無料で作る</a>
       <a href="#pricing" class="btn btn-secondary btn-on-dark">制作代行を相談する（無料）</a>
     </div>
+  </div>
+  <div class="hero-mockup-wrap">
+    <div class="hero-mockup">
+      <div class="hero-mockup-bar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="hero-mockup-url">〇〇.miiinagurume.com</span>
+      </div>
+      <img src="images/lp-hero-mockup.jpg" alt="みーなグルメで作成した飲食店HPの完成イメージ" class="hero-mockup-img" loading="eager">
+    </div>
+    <p class="hero-mockup-caption">テンプレートを選ぶだけで、こんな仕上がりに。</p>
   </div>
 </section>
 
