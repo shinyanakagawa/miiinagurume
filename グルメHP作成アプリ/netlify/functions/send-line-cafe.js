@@ -85,15 +85,20 @@ exports.handler = async (event) => {
       `時間: ${time || '-'}\n` +
       `人数: ${pax ? pax + '名' : '-'}`;
 
-    const lineRes = await fetch('https://api.line.me/v2/bot/message/push', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${lineToken}`,
-      },
-      body: JSON.stringify({ to: lineAdminUserId, messages: [{ type: 'text', text: message }] }),
-    });
-    results.line = lineRes.ok ? 'ok' : await lineRes.text();
+    try {
+      const lineRes = await fetch('https://api.line.me/v2/bot/message/push', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${lineToken}`,
+        },
+        body: JSON.stringify({ to: lineAdminUserId, messages: [{ type: 'text', text: message }] }),
+      });
+      results.line = lineRes.ok ? 'ok' : await lineRes.text();
+    } catch (err) {
+      console.error('LINE通知中に例外が発生しました:', err);
+      results.line = 'failed';
+    }
   }
 
   // メール通知
@@ -124,28 +129,33 @@ exports.handler = async (event) => {
       </div>
     `;
 
-    const emailRes = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${resendKey}`,
-      },
-      body: JSON.stringify({
-        // 注意: onboarding@resend.dev はResendの未検証アカウント用共有送信元アドレスのため、
-        // Resendアカウントに登録・検証済みのメールアドレス宛にしか配信できない。
-        // NOTIFY_EMAIL が別アドレスの場合は配信に失敗するので、独自送信ドメインの検証を推奨。
-        from: 'Cafe MIIINA <onboarding@resend.dev>',
-        to: [notifyEmail],
-        subject: `【ご予約】${name || ''}様 ${date || ''} ${time || ''}`,
-        html,
-      }),
-    });
-    if (emailRes.ok) {
-      results.email = 'ok';
-    } else {
-      const errorText = await emailRes.text();
-      console.error('Resendメール送信に失敗しました:', emailRes.status, errorText);
-      results.email = errorText;
+    try {
+      const emailRes = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${resendKey}`,
+        },
+        body: JSON.stringify({
+          // 注意: onboarding@resend.dev はResendの未検証アカウント用共有送信元アドレスのため、
+          // Resendアカウントに登録・検証済みのメールアドレス宛にしか配信できない。
+          // NOTIFY_EMAIL が別アドレスの場合は配信に失敗するので、独自送信ドメインの検証を推奨。
+          from: 'Cafe MIIINA <onboarding@resend.dev>',
+          to: [notifyEmail],
+          subject: `【ご予約】${name || ''}様 ${date || ''} ${time || ''}`,
+          html,
+        }),
+      });
+      if (emailRes.ok) {
+        results.email = 'ok';
+      } else {
+        const errorText = await emailRes.text();
+        console.error('Resendメール送信に失敗しました:', emailRes.status, errorText);
+        results.email = errorText;
+      }
+    } catch (err) {
+      console.error('Resendメール送信中に例外が発生しました:', err);
+      results.email = 'failed';
     }
   }
 

@@ -40,12 +40,26 @@ function mapStripeStatus(status: string): string {
   }
 }
 
+// 更新結果を必ず確認する。エラーや0件マッチ（site_idが存在しない・削除済み等）を
+// 握りつぶすと、Stripeには200を返してしまうため再送されず、課金状態の反映漏れが
+// ログにも残らず完全に見えなくなる。ここでは（再送ストームを避けるため）Stripeへの
+// レスポンス自体は変えず、Edge Functionのログに必ず残すことで可観測性を確保する。
 async function updateBySiteId(siteId: string, patch: Record<string, unknown>) {
-  await supabase.from('sites').update(patch).eq('id', siteId);
+  const { data, error } = await supabase.from('sites').update(patch).eq('id', siteId).select('id');
+  if (error) {
+    console.error(`sites更新に失敗しました（site_id=${siteId}）:`, error, patch);
+  } else if (!data || data.length === 0) {
+    console.error(`sites更新が0件マッチでした。site_idが存在しないか削除済みの可能性があります（site_id=${siteId}）:`, patch);
+  }
 }
 
 async function updateBySubscriptionId(subscriptionId: string, patch: Record<string, unknown>) {
-  await supabase.from('sites').update(patch).eq('stripe_subscription_id', subscriptionId);
+  const { data, error } = await supabase.from('sites').update(patch).eq('stripe_subscription_id', subscriptionId).select('id');
+  if (error) {
+    console.error(`sites更新に失敗しました（stripe_subscription_id=${subscriptionId}）:`, error, patch);
+  } else if (!data || data.length === 0) {
+    console.error(`sites更新が0件マッチでした。該当するstripe_subscription_idがありません（stripe_subscription_id=${subscriptionId}）:`, patch);
+  }
 }
 
 Deno.serve(async (req) => {

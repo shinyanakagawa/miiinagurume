@@ -73,7 +73,12 @@
   const sitesEl = document.getElementById('sites');
   const msgEl = document.getElementById('msg');
 
-  const user = await getCurrentUser();
+  let user = null;
+  try {
+    user = await getCurrentUser();
+  } catch {
+    // 未ログイン時はSupabaseが AuthSessionMissingError を投げる（正常なケース）
+  }
   if (!user) {
     location.href = 'index.html';
   } else {
@@ -134,8 +139,12 @@
         `;
         card.querySelector('.delete-btn').addEventListener('click', async () => {
           if (!confirm(`「${name}」を削除しますか？この操作は取り消せません。`)) return;
-          await deleteSite(site.id);
-          loadSites();
+          try {
+            await deleteSite(site.id);
+            loadSites();
+          } catch (err) {
+            msgEl.innerHTML = `<div class="app-msg error">${err.message}</div>`;
+          }
         });
         sitesEl.appendChild(card);
       }

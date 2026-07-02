@@ -84,9 +84,10 @@
   }
 
   // 既にログイン済みならダッシュボードへ
+  // （未ログイン時はSupabaseが AuthSessionMissingError を投げる。正常なケースなので握りつぶす）
   getCurrentUser().then(user => {
     if (user) location.href = 'dashboard.html';
-  });
+  }).catch(() => {});
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();

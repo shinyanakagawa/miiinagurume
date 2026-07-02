@@ -14,6 +14,7 @@
     display: flex; align-items: center; justify-content: center;
     z-index: 1000;
   }
+  .ai-modal-overlay[hidden] { display: none; }
   .ai-modal-box {
     background: var(--app-card); border-radius: 12px;
     padding: 1.5rem; max-width: 480px; width: calc(100% - 2rem);
@@ -86,13 +87,13 @@
       <div class="app-card editor-form-section">
         <h3>写真</h3>
         <div class="app-form-group">
-          <label>メイン画像（トップ背景）</label>
+          <label for="hero_image_input">メイン画像（トップ背景）</label>
           <input type="file" accept="image/*" id="hero_image_input">
           <button type="button" class="app-btn secondary ai-gen-btn" id="ai-gen-hero-btn">✨ AIで生成</button>
           <div class="image-thumb-list" id="hero_image_preview"></div>
         </div>
         <div class="app-form-group">
-          <label>ギャラリー画像（複数可）</label>
+          <label for="gallery_image_input">ギャラリー画像（複数可）</label>
           <input type="file" accept="image/*" id="gallery_image_input" multiple>
           <button type="button" class="app-btn secondary ai-gen-btn" id="ai-gen-gallery-btn">✨ AIで生成して追加</button>
           <div class="image-thumb-list" id="gallery_preview"></div>
@@ -169,6 +170,28 @@
         </div>
       </div>
 
+      <!-- 予約通知先 -->
+      <div class="app-card editor-form-section">
+        <h3>予約通知先</h3>
+        <p class="hint" style="margin-bottom:.8rem">予約フォームからの送信をメール・LINEで受け取るための設定です。未設定のままだと、お客様から予約が届いても通知されません。</p>
+        <div class="app-form-group">
+          <label for="notify_email">通知先メールアドレス</label>
+          <input class="app-input" type="email" id="notify_email" placeholder="your-email@example.com">
+        </div>
+        <div class="app-form-group">
+          <label for="line_admin_user_id">LINE通知先ユーザーID（任意）</label>
+          <input class="app-input" id="line_admin_user_id" placeholder="Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+          <p class="hint">LINE公式アカウントの管理画面で確認できるユーザーIDです。</p>
+        </div>
+        <div class="app-form-group">
+          <label for="turnstile_site_key">Turnstileサイトキー（任意・スパム対策）</label>
+          <input class="app-input" id="turnstile_site_key" placeholder="0x4AAAAAAA...">
+          <p class="hint">Cloudflare Turnstileのダッシュボードで取得できます。未設定でも予約フォーム自体は利用できます。</p>
+        </div>
+        <button type="button" class="app-btn secondary" id="save-notify-btn">通知設定を保存</button>
+        <span id="notify-save-status" style="color:var(--app-muted);font-size:.85rem;margin-left:.6rem"></span>
+      </div>
+
       <!-- 公開・課金 -->
       <div class="app-card editor-form-section">
         <h3>公開設定</h3>
@@ -218,6 +241,7 @@
 <script type="module">
   import {
     getCurrentUser, getSiteById, updateSiteData, uploadSiteImage, createCheckoutSession,
+    updateSiteNotifySettings,
   } from './js/supabase-client.js';
   import { renderSiteHTML, THEMES } from './js/template-renderer.js';
 
@@ -229,7 +253,12 @@
     location.href = 'dashboard.html';
   }
 
-  const user = await getCurrentUser();
+  let user = null;
+  try {
+    user = await getCurrentUser();
+  } catch {
+    // 未ログイン時はSupabaseが AuthSessionMissingError を投げる（正常なケース）
+  }
   if (!user) location.href = 'index.html';
 
   let site = null;
@@ -245,6 +274,7 @@
     div.dataset.theme = key;
     div.innerHTML = `<div class="theme-swatch" style="background:${swatchColors[key]}"></div>${meta.label}`;
     div.addEventListener('click', () => {
+      if (!site) return; // サイト読み込み完了前のクリックは無視する
       site.theme = key;
       [...themeSelect.children].forEach(c => c.classList.toggle('selected', c.dataset.theme === key));
       updatePreview();
@@ -275,6 +305,7 @@
   }
 
   function collectData() {
+    if (!site) return {}; // サイト読み込み完了前は何もしない（読み込み完了後にfillForm()が反映する）
     const d = site.data || {};
     for (const key of simpleFields) {
       d[key] = document.getElementById(key).value;
@@ -308,6 +339,7 @@
   }
 
   document.getElementById('hero_image_input').addEventListener('change', async (e) => {
+    if (!site) return; // サイト読み込み完了前は無視する
     const file = e.target.files[0];
     if (!file) return;
     msgEl.innerHTML = '<div class="app-msg">アップロード中...</div>';
@@ -341,6 +373,7 @@
   }
 
   document.getElementById('gallery_image_input').addEventListener('change', async (e) => {
+    if (!site) return; // サイト読み込み完了前は無視する
     const files = [...e.target.files];
     if (!files.length) return;
     msgEl.innerHTML = '<div class="app-msg">アップロード中...</div>';
@@ -549,8 +582,9 @@
 
   // ---- プレビュー ----
   function updatePreview() {
+    if (!site) return; // サイト読み込み完了前は何もしない
     const iframe = document.getElementById('preview');
-    iframe.srcdoc = renderSiteHTML(site);
+    iframe.srcdoc = renderSiteHTML(site, { preview: true });
   }
 
   // ---- 公開設定 ----
@@ -567,12 +601,14 @@
   }
 
   document.getElementById('publish-btn').addEventListener('click', async () => {
+    if (!site) return; // サイト読み込み完了前は無視する
     collectData();
     site = await updateSiteData(siteId, { theme: site.theme, data: site.data, status: 'published' });
     renderStatus();
     msgEl.innerHTML = '<div class="app-msg success">公開設定にしました</div>';
   });
   document.getElementById('unpublish-btn').addEventListener('click', async () => {
+    if (!site) return; // サイト読み込み完了前は無視する
     collectData();
     site = await updateSiteData(siteId, { theme: site.theme, data: site.data, status: 'draft' });
     renderStatus();
@@ -590,6 +626,7 @@
 
   // ---- 保存 ----
   document.getElementById('save-btn').addEventListener('click', async () => {
+    if (!site) return; // サイト読み込み完了前は無視する
     collectData();
     const status = document.getElementById('save-status');
     status.textContent = '保存中...';
@@ -602,12 +639,41 @@
     }
   });
 
+  // ---- 予約通知先 ----
+  function fillNotifyForm() {
+    document.getElementById('notify_email').value = site.notify_email || '';
+    document.getElementById('line_admin_user_id').value = site.line_admin_user_id || '';
+    document.getElementById('turnstile_site_key').value = site.turnstile_site_key || '';
+  }
+
+  document.getElementById('save-notify-btn').addEventListener('click', async () => {
+    if (!site) return; // サイト読み込み完了前は無視する
+    const statusEl = document.getElementById('notify-save-status');
+    statusEl.textContent = '保存中...';
+    try {
+      const updated = await updateSiteNotifySettings(siteId, {
+        notifyEmail: document.getElementById('notify_email').value.trim(),
+        lineAdminUserId: document.getElementById('line_admin_user_id').value.trim(),
+        turnstileSiteKey: document.getElementById('turnstile_site_key').value.trim(),
+      });
+      site.notify_email = updated.notify_email;
+      site.line_admin_user_id = updated.line_admin_user_id;
+      site.turnstile_site_key = updated.turnstile_site_key;
+      statusEl.textContent = '保存しました';
+      setTimeout(() => statusEl.textContent = '', 2000);
+    } catch (err) {
+      statusEl.textContent = '';
+      msgEl.innerHTML = `<div class="app-msg error">${err.message}</div>`;
+    }
+  });
+
   // ---- 初期読み込み ----
   try {
     site = await getSiteById(siteId);
     if (site.user_id !== user.id) throw new Error('このサイトを編集する権限がありません');
     site.data = site.data || {};
     fillForm();
+    fillNotifyForm();
   } catch (err) {
     msgEl.innerHTML = `<div class="app-msg error">${err.message}</div>`;
   }
