@@ -56,10 +56,16 @@ function isRateLimited(ip) {
   return typeof last === 'number' && now - last < RATE_LIMIT_WINDOW_MS;
 }
 
-async function verifyTurnstile(token, remoteIp) {
+// siteHasTurnstileKey: この店舗の turnstile_site_key（フロントの予約フォームに
+// Turnstileウィジェットを表示するかどうかの判定と同じ値）。falsy の場合、
+// そもそもフォーム側にウィジェットが出力されずトークンを取得しようがないため、
+// TURNSTILE_SECRET_KEY が設定済みでも検証をスキップする。これが無いと、
+// site key未設定の店舗（editor.htmlでは「任意」項目）の予約が
+// TURNSTILE_SECRET_KEY設定後は永久に「Bot確認に失敗しました」になってしまう。
+async function verifyTurnstile(token, remoteIp, siteHasTurnstileKey) {
   const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) {
-    console.warn('TURNSTILE_SECRET_KEY が未設定のため、Turnstile検証をスキップしています');
+  if (!secret || !siteHasTurnstileKey) {
+    if (!secret) console.warn('TURNSTILE_SECRET_KEY が未設定のため、Turnstile検証をスキップしています');
     return true;
   }
   if (!token) return false;
@@ -89,7 +95,7 @@ async function getSiteContactBySlug(slug) {
   }
 
   const params = new URLSearchParams({
-    select: 'id,notify_email,line_admin_user_id,data,status',
+    select: 'id,notify_email,line_admin_user_id,turnstile_site_key,data,status',
     slug: `eq.${slug}`,
     status: 'eq.published',
     limit: '1',
@@ -135,6 +141,13 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: `必須項目が未入力です: ${missing.join(', ')}` };
   }
 
+  // レート制限はSupabaseへの問い合わせより前に行う（連打された場合に
+  // 無駄なDBアクセスを発生させないため）
+  const remoteIp = event.headers['x-nf-client-connection-ip'] || event.headers['client-ip'];
+  if (isRateLimited(remoteIp)) {
+    return { statusCode: 429, body: '送信間隔が短すぎます。少し待ってから再度お試しください。' };
+  }
+
   const site = await getSiteContactBySlug(slug);
   if (!site) {
     // slugが存在しない・未公開・Supabase接続失敗のいずれも、
@@ -142,13 +155,7 @@ exports.handler = async (event) => {
     return { statusCode: 404, body: '指定された店舗が見つかりません' };
   }
 
-  const remoteIp = event.headers['x-nf-client-connection-ip'] || event.headers['client-ip'];
-
-  if (isRateLimited(remoteIp)) {
-    return { statusCode: 429, body: '送信間隔が短すぎます。少し待ってから再度お試しください。' };
-  }
-
-  const turnstileOk = await verifyTurnstile(data['cf-turnstile-response'], remoteIp);
+  const turnstileOk = await verifyTurnstile(data['cf-turnstile-response'], remoteIp, !!site.turnstile_site_key);
   if (!turnstileOk) {
     return { statusCode: 400, body: 'Bot確認に失敗しました' };
   }

@@ -253,7 +253,12 @@
     location.href = 'dashboard.html';
   }
 
-  const user = await getCurrentUser();
+  let user = null;
+  try {
+    user = await getCurrentUser();
+  } catch {
+    // 未ログイン時はSupabaseが AuthSessionMissingError を投げる（正常なケース）
+  }
   if (!user) location.href = 'index.html';
 
   let site = null;
