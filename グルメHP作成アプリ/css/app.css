@@ -76,6 +76,7 @@ a { color: var(--app-accent-dark); }
 .app-btn.secondary:hover { background: var(--app-bg); }
 .app-btn.danger { background: var(--app-danger); }
 .app-btn:disabled { opacity: .5; cursor: not-allowed; }
+.app-btn[hidden] { display: none; }
 
 .app-grid {
   display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

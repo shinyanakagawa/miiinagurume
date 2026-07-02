@@ -213,7 +213,29 @@ function renderReservationForm(data, slug, turnstileSiteKey) {
 
 // 予約フォーム送信処理（body末尾に追加で出力する文字列。
 // #reservation-form が存在しない場合は何もしない）。
-function renderReservationFormScript() {
+//
+// preview=true（エディタのプレビューiframe用）の場合は本番の
+// /.netlify/functions/send-reservation へは絶対に送信しない。
+// iframeは<iframe srcdoc>で親ページと同一オリジン扱いになるため、
+// sandbox属性だけでは相対パスへのfetch自体は止められず、店主が
+// 編集中にプレビューでフォームを試すたびに本番の予約通知（LINE/メール）や
+// レート制限が実際に発火してしまう。そのため送信処理自体をプレビュー専用の
+// 見た目だけのモックに差し替える。
+function renderReservationFormScript(preview) {
+  if (preview) {
+    return `
+<script>
+(function () {
+  var form = document.getElementById('reservation-form');
+  if (!form) return;
+  var statusEl = document.getElementById('reservation-status');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (statusEl) statusEl.textContent = '※ プレビューのため実際には送信されません（公開後は本番に届きます）。';
+  });
+})();
+</script>`;
+  }
   return `
 <script>
 (function () {
@@ -409,8 +431,13 @@ function renderOpenStatusScript(weeklyHours) {
  *     weekly_hours の各要素: { day: 0-6 (0=月...6=日), open: 'HH:MM', close: 'HH:MM', closed: boolean }
  * }
  * site.slug / site.turnstile_site_key は予約フォーム（renderReservationForm）で使用する。
+ *
+ * @param {object} site
+ * @param {{ preview?: boolean }} [options] preview=true の場合、予約フォームは
+ *   見た目のみでNetlify Functionへは送信しない（エディタのプレビューiframe用）。
  */
-export function renderSiteHTML(site) {
+export function renderSiteHTML(site, options = {}) {
+  const preview = !!options.preview;
   const theme = THEMES[site.theme] ? site.theme : 'cafe';
   const data = site.data || {};
   const meta = THEMES[theme];
@@ -470,7 +497,7 @@ ${data.phone ? `
   <a href="${telHref(data.phone)}">${meta.ctaIcon} 電話で予約する</a>
 </div>` : ''}
 ${renderOpenStatusScript(data.weekly_hours)}
-${renderReservationFormScript()}
+${renderReservationFormScript(preview)}
 ${renderAnalyticsSnippet()}
 
 </body>
