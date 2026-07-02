@@ -29,13 +29,22 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get('Authorization') ?? '';
+    // 重要: Authorizationヘッダーを上書きしないこと。上書きするとPostgRESTが
+    // JWTから実効ロールを authenticated と解決してしまい、後段の
+    // stripe_customer_id 書き込み（UPDATE）が protect_billing_columns トリガー
+    // （service_role以外からの課金カラム変更を拒否する）に阻まれ、サイレントに
+    // 保存されない（決済自体は成功するが、次回チェックアウト時に毎回新規の
+    // Stripe顧客が作られてしまう）。service role key のみで認証すれば
+    // service_role として実行され、トリガーを正しく通過する。
+    // ユーザー本人確認は auth.getUser(jwt) にJWTを明示的に渡すことで行っており、
+    // クライアントのAuthorizationヘッダーには依存しないため、この変更で
+    // 認証チェック自体は影響を受けない。
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
-      { global: { headers: { Authorization: authHeader } } },
     );
 
+    const authHeader = req.headers.get('Authorization') ?? '';
     const { data: { user }, error: userError } = await supabase.auth.getUser(
       authHeader.replace('Bearer ', ''),
     );
